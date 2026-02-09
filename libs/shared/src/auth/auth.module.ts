@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { UserService } from './user.service';
-import { PasswordModule } from '@org/shared/password';
-import { DatabaseModule } from '@org/shared/db';
+import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserResolver } from './user.resolver';
+
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    PasswordModule,
-    DatabaseModule,
+    PassportModule,
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -18,7 +17,7 @@ import { UserResolver } from './user.resolver';
       }),
     }),
   ],
-  providers: [UserService, UserResolver],
-  exports: [UserService],
+  providers: [JwtStrategy],
+  exports: [JwtModule],
 })
-export class UserModule {}
+export class AuthModule {}

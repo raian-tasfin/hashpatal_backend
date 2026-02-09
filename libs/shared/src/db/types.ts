@@ -9,7 +9,17 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type Role = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIENT";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export interface RefreshToken {
+  expiresAt: Timestamp;
+  id: Generated<number>;
+  jit: string;
+  tokenHash: string;
+  userId: number;
+}
 
 export interface User {
   birthDate: Timestamp;
@@ -20,6 +30,14 @@ export interface User {
   uuid: Generated<string>;
 }
 
+export interface UserRole {
+  id: Generated<number>;
+  role: Role;
+  userId: number;
+}
+
 export interface DB {
+  refresh_token: RefreshToken;
   user: User;
+  user_role: UserRole;
 }

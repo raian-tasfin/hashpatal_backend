@@ -1,0 +1,97 @@
+{
+  "users": [
+    {
+      "email": "admin@mail.com",
+      "name": "Admin Proshashok",
+      "birthDate": "2000-01-01",
+      "password": "1234",
+      "roles": [
+        "PATIENT",
+        "ADMIN"
+      ]
+    },
+    {
+      "email": "doctor@mail.com",
+      "name": "Doctor Chikitshok",
+      "birthDate": "2000-01-01",
+      "password": "1234",
+      "roles": [
+        "PATIENT",
+        "DOCTOR"
+      ]
+    },
+    {
+      "email": "lab-nurse@mail.com",
+      "name": "Nurse Porishebika",
+      "birthDate": "2000-01-01",
+      "password": "1234",
+      "roles": [
+        "PATIENT",
+        "LAB_NURSE"
+      ]
+    },
+    {
+      "email": "lab-technician@mail.com",
+      "name": "Technicial Kousholi",
+      "birthDate": "2000-01-01",
+      "password": "1234",
+      "roles": [
+        "PATIENT",
+        "LAB_TECHNICIAN"
+      ]
+    },
+    {
+      "email": "patient@mail.com",
+      "name": "Patient Rogi",
+      "birthDate": "2000-01-01",
+      "password": "1234",
+      "roles": [
+        "PATIENT"
+      ]
+    }
+  ],
+  "doctorProfiles": [
+    {
+      "email": "doctor@mail.com",
+      "experience": [
+        {
+          "title": "Intern",
+          "organization": "Dhaka Medical College",
+          "location": "Dhaka",
+          "startYear": "2010",
+          "endYear": "2012"
+        }
+      ],
+      "academic": [
+        {
+          "degree": "MBBS",
+          "institute": "Dhaka Medical College",
+          "year": "2009"
+        }
+      ],
+      "schedule": {
+        "minutesPerSlot": 15
+      },
+      "regularSlots": [
+        {"weekday": "SUNDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekday": "SUNDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekday": "MONDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekday": "MONDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekday": "TUESDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekday": "TUESDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekday": "WEDNESDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekday": "WEDNESDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekday": "THURSDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekday": "THURSDAY", "startTime": "14:30", "endTime": "19:00" }
+      ],
+      "overrideSlots": [
+        { "date": "2026-06-01", "startTime": "08:00", "endTime": "10:00" },
+        { "date": "2026-06-01", "startTime": "20:00", "endTime": "22:00" },
+        { "date": "2026-06-02", "startTime": "09:00", "endTime": "12:00" },
+        { "date": "2026-06-02", "startTime": "13:00", "endTime": "15:00" },
+        { "date": "2026-06-03", "startTime": "07:00", "endTime": "09:00" },
+        { "date": "2026-06-03", "startTime": "18:00", "endTime": "21:00" }
+      ]
+    }
+  ]
+}

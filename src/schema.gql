@@ -2,6 +2,59 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TokenPair {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type UserOutput {
+  uuid: String!
+  email: String!
+  roles: [Role!]!
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  LAB_NURSE
+  LAB_TECHNICIAN
+  PATIENT
+}
+
 type Query {
   sayHello: String!
+  find_user(data: FindByEmailInput!): UserOutput!
+}
+
+input FindByEmailInput {
+  email: String!
+}
+
+type Mutation {
+  register_user(data: RegisterInput!): UserOutput!
+  login(data: LoginInput!): TokenPair!
+  refresh_token(data: RefreshLoginInput!): TokenPair!
+  logout(data: LogoutInput!): Boolean!
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String!
+
+  """Birthday in YYYY-MM-DD format"""
+  birthDate: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RefreshLoginInput {
+  refreshToken: String!
+}
+
+input LogoutInput {
+  refreshToken: String!
 }

@@ -1,5 +1,6 @@
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@nestjs/core'
+  - bcrypt
   - esbuild
   - unrs-resolver

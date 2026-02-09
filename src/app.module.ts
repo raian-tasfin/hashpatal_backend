@@ -1,13 +1,17 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
+import { AuthModule } from '@org/shared/auth';
+import { LoginGuard, RolesGuard, UseGqlContext } from '@org/shared/guards';
 import { Request } from 'express';
+import { join } from 'path';
+import { AppController } from './app.controller';
 import { AppResolver } from './app.resolver';
+import { AppService } from './app.service';
+import { UserModule } from './user';
 
 @Module({
   imports: [
@@ -19,8 +23,15 @@ import { AppResolver } from './app.resolver';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       context: ({ req }: { req: Request }) => ({ req }),
     }),
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppResolver],
+  providers: [
+    AppService,
+    AppResolver,
+    { provide: APP_GUARD, useClass: UseGqlContext(LoginGuard) },
+    { provide: APP_GUARD, useClass: UseGqlContext(RolesGuard) },
+  ],
 })
 export class AppModule {}

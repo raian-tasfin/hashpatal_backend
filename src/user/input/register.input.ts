@@ -7,7 +7,7 @@ import {
 } from '@org/shared/fields';
 
 @InputType()
-export class RegisterUserInput {
+export class RegisterInput {
   @EmailField()
   email: string;
 
