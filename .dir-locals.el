@@ -1,0 +1,5 @@
+((nil . ((indent-tabs-mode . nil)
+         (standard-indent . 2)
+         (eval . (highlight-indentation-set-offset 2))
+         (eval . (setq-local truncate-lines t))
+         (eval . (auto-fill-mode -1)))))
