@@ -39,6 +39,36 @@ export const userRole = pgTable(
   (t) => [unique('user_role_composite_pk').on(t.userId, t.role)],
 );
 
+export const doctorProfile = pgTable('doctor_profile', {
+  id: serial('id').primaryKey(),
+  userId: integer('userId')
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: 'cascade' }),
+});
+
+export const doctorExperience = pgTable('doctor_experience', {
+  id: serial('id').primaryKey(),
+  doctorProfileId: integer('doctorProfileId')
+    .notNull()
+    .references(() => doctorProfile.id, { onDelete: 'cascade' }),
+  startYear: date('startYear').notNull(),
+  endYear: date('endYear'),
+  title: text('title').notNull(),
+  organization: text('organization').notNull(),
+  location: text('location'),
+});
+
+export const academicRecord = pgTable('academic_record', {
+  id: serial('id').primaryKey(),
+  doctorProfileId: integer('doctorProfileId')
+    .notNull()
+    .references(() => doctorProfile.id, { onDelete: 'cascade' }),
+  degree: text('degree').notNull(),
+  institute: text('institute').notNull(),
+  year: date('year').notNull(),
+});
+
 export const refreshToken = pgTable('refresh_token', {
   id: serial('id').primaryKey(),
   jit: uuid('jit').notNull().unique(),

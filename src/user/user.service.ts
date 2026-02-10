@@ -21,6 +21,7 @@ import {
   LogoutInput,
   RefreshLoginInput,
   RegisterInput,
+  SyncRolesInput,
 } from './input';
 import { TokenPair } from './output';
 
@@ -41,12 +42,18 @@ export class UserService {
     this._logger.log(`Registering user with email ${email}, name: ${name}`);
     const passwordHash = await this._passwordService.hash(password);
     try {
-      const newUser = await this._db
-        .insertInto('user')
-        .values({ email, name, passwordHash, birthDate: new Date(birthDate) })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-      return newUser;
+      return await this._db.transaction().execute(async (trx) => {
+        const newUser = await trx
+          .insertInto('user')
+          .values({ email, name, passwordHash, birthDate: new Date(birthDate) })
+          .returningAll()
+          .executeTakeFirstOrThrow();
+        await trx
+          .insertInto('user_role')
+          .values({ userId: newUser.id, role: Role.PATIENT })
+          .executeTakeFirstOrThrow();
+        return newUser;
+      });
     } catch (err: any) {
       this._logger.warn(`${err.message}`);
       if (err.code === '23505') {
@@ -122,10 +129,28 @@ export class UserService {
     await this._db.deleteFrom('refresh_token').where('jit', '=', jit).execute();
   }
 
+  async sync_roles({ email, roles }: SyncRolesInput): Promise<void> {
+    this._logger.log(`Syncing roles for user ${email}: ${roles.join(', ')}`);
+    const user = await this.find_by_email({ email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found.`);
+    }
+    await this._db.transaction().execute(async (trx) => {
+      await trx.deleteFrom('user_role').where('userId', '=', user.id).execute();
+      if (roles.length > 0) {
+        const roleRecords = roles.map((role) => ({
+          userId: user.id,
+          role: role,
+        }));
+        await trx.insertInto('user_role').values(roleRecords).execute();
+      }
+    });
+    this._logger.log(`Successfully synced roles for ${email}`);
+  }
   /**
    * Utilities
    */
-  private async _find_roles(userId: number): Promise<Role[]> {
+  async _find_roles(userId: number): Promise<Role[]> {
     const roles = await this._db
       .selectFrom('user_role')
       .select('role')

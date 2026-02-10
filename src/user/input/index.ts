@@ -6,3 +6,4 @@ export * from './logout.input';
 export * from './refresh-login.input';
 export * from './register.input';
 export * from './register.input';
+export * from './sync-roles.input';

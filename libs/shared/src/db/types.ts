@@ -13,6 +13,29 @@ export type Role = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIEN
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface AcademicRecord {
+  degree: string;
+  doctorProfileId: number;
+  id: Generated<number>;
+  institute: string;
+  year: Timestamp;
+}
+
+export interface DoctorExperience {
+  doctorProfileId: number;
+  endYear: Timestamp | null;
+  id: Generated<number>;
+  location: string | null;
+  organization: string;
+  startYear: Timestamp;
+  title: string;
+}
+
+export interface DoctorProfile {
+  id: Generated<number>;
+  userId: number;
+}
+
 export interface RefreshToken {
   expiresAt: Timestamp;
   id: Generated<number>;
@@ -37,6 +60,9 @@ export interface UserRole {
 }
 
 export interface DB {
+  academic_record: AcademicRecord;
+  doctor_experience: DoctorExperience;
+  doctor_profile: DoctorProfile;
   refresh_token: RefreshToken;
   user: User;
   user_role: UserRole;

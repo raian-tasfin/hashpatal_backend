@@ -10,7 +10,8 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
-  roles: [Role!]!
+  user_roles: [Role!]!
+  doctor_profile: DoctorProfileOutput
 }
 
 enum Role {
@@ -21,9 +22,33 @@ enum Role {
   PATIENT
 }
 
+type DoctorProfileOutput {
+  experience: [DoctorExperienceOutput!]
+  academic_record: [AcademicRecordOutput!]
+}
+
+type DoctorExperienceOutput {
+  """Date in YYYY-MM-DD format"""
+  startYear: String!
+
+  """Date in YYYY-MM-DD format"""
+  endYear: String!
+  location: String!
+  organization: String!
+  title: String!
+}
+
+type AcademicRecordOutput {
+  degree: String!
+  institute: String!
+
+  """Date in YYYY-MM-DD format"""
+  year: String!
+}
+
 type Query {
   sayHello: String!
-  find_user(data: FindByEmailInput!): UserOutput!
+  user_find(data: FindByEmailInput!): UserOutput!
 }
 
 input FindByEmailInput {
@@ -31,10 +56,12 @@ input FindByEmailInput {
 }
 
 type Mutation {
-  register_user(data: RegisterInput!): UserOutput!
-  login(data: LoginInput!): TokenPair!
-  refresh_token(data: RefreshLoginInput!): TokenPair!
-  logout(data: LogoutInput!): Boolean!
+  user_register(data: RegisterInput!): UserOutput!
+  user_login(data: LoginInput!): TokenPair!
+  user_refresh_token(data: RefreshLoginInput!): TokenPair!
+  user_logout(data: LogoutInput!): Boolean!
+  user_sync_roles(data: SyncRolesInput!): Boolean!
+  doctor_sync_profile: Boolean!
 }
 
 input RegisterInput {
@@ -57,4 +84,9 @@ input RefreshLoginInput {
 
 input LogoutInput {
   refreshToken: String!
+}
+
+input SyncRolesInput {
+  email: String!
+  roles: [Role!]!
 }

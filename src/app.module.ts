@@ -12,6 +12,7 @@ import { AppController } from './app.controller';
 import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { UserModule } from './user';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './user';
     }),
     AuthModule,
     UserModule,
+    DoctorModule,
   ],
   controllers: [AppController],
   providers: [
