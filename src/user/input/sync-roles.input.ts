@@ -1,5 +1,5 @@
 import { InputType } from '@nestjs/graphql';
-import { Role } from '@org/shared/db';
+import { RoleType } from '@org/shared/db';
 import { EmailField, RolesField } from '@org/shared/fields';
 
 @InputType()
@@ -8,5 +8,5 @@ export class SyncRolesInput {
   email: string;
 
   @RolesField()
-  roles: Role[];
+  roles: RoleType[];
 }

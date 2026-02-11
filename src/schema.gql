@@ -10,11 +10,11 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
-  user_roles: [Role!]!
+  user_roles: [RoleType!]!
   doctor_profile: DoctorProfileOutput
 }
 
-enum Role {
+enum RoleType {
   ADMIN
   DOCTOR
   LAB_NURSE
@@ -25,6 +25,7 @@ enum Role {
 type DoctorProfileOutput {
   experience: [DoctorExperienceOutput!]
   academic_record: [AcademicRecordOutput!]
+  schedule: SchedulableOutput
 }
 
 type DoctorExperienceOutput {
@@ -46,6 +47,10 @@ type AcademicRecordOutput {
   year: String!
 }
 
+type SchedulableOutput {
+  minutesPerSlot: Int!
+}
+
 type Query {
   sayHello: String!
   user_find(data: FindByEmailInput!): UserOutput!
@@ -62,6 +67,7 @@ type Mutation {
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
   doctor_sync_profile: Boolean!
+  doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
 }
 
 input RegisterInput {
@@ -88,5 +94,10 @@ input LogoutInput {
 
 input SyncRolesInput {
   email: String!
-  roles: [Role!]!
+  roles: [RoleType!]!
+}
+
+input DoctorScheduleSyncInput {
+  email: String!
+  minutesPerSlot: Int!
 }

@@ -1,0 +1,26 @@
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { DatabaseModule } from '@org/shared/db';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleSercvice } from './schedule.service';
+import { DoctorScheduleResolver, ScheduleResolver } from './schedule.resolver';
+import { UserModule } from 'src/user';
+import { DoctorModule } from 'src/doctor/doctor.module';
+
+@Module({
+  imports: [
+    DatabaseModule,
+    UserModule,
+    DoctorModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }),
+  ],
+  providers: [ScheduleSercvice, ScheduleResolver, DoctorScheduleResolver],
+  exports: [ScheduleResolver, DoctorScheduleResolver],
+})
+export class ScheduleModule {}

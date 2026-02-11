@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { KyselyDatabaseService, Role, User } from '@org/shared/db';
+import { KyselyDatabaseService, RoleType, User } from '@org/shared/db';
 import { DB } from '@org/shared/db/types';
 import { PasswordService } from '@org/shared/password';
 import { addDays } from 'date-fns';
@@ -50,7 +50,7 @@ export class UserService {
           .executeTakeFirstOrThrow();
         await trx
           .insertInto('user_role')
-          .values({ userId: newUser.id, role: Role.PATIENT })
+          .values({ userId: newUser.id, role: RoleType.PATIENT })
           .executeTakeFirstOrThrow();
         return newUser;
       });
@@ -150,18 +150,18 @@ export class UserService {
   /**
    * Utilities
    */
-  async _find_roles(userId: number): Promise<Role[]> {
+  async _find_roles(userId: number): Promise<RoleType[]> {
     const roles = await this._db
       .selectFrom('user_role')
       .select('role')
       .where('userId', '=', userId)
       .execute();
-    return roles.map((r) => r.role as Role);
+    return roles.map((r) => r.role as RoleType);
   }
 
   private async _issue_token(
     user: User,
-    roles: Role[],
+    roles: RoleType[],
     db: Kysely<DB> = this._db,
   ): Promise<TokenPair> {
     this._logger.log(`Issuing token for ${user.email}`);

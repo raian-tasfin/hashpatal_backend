@@ -13,7 +13,7 @@ import { PasswordModule } from '@org/shared/password';
 import { DatabaseModule } from '@org/shared/db';
 // import { UserRolesModule } from 'src/user-roles/user-roles.module';
 // import { UserRolesService } from 'src/user-roles/user-roles.service';
-import { Role } from '@org/shared/db';
+import { RoleType } from '@org/shared/db';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { DoctorService } from 'src/doctor/doctor.service';
 // import { DoctorModule } from 'src/doctor/doctor.module';
@@ -74,7 +74,7 @@ async function assign_roles(app: INestApplicationContext) {
       }
       await userService.sync_roles({
         email: user?.email,
-        roles: roles as Role[],
+        roles: roles as RoleType[],
       });
       logger.log(`Updated roles for ${email} to ${roles}`);
     } catch (err) {

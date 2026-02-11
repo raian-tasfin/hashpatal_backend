@@ -7,7 +7,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Role } from '@org/shared/db';
+import { RoleType } from '@org/shared/db';
 import {
   FindByEmailInput,
   LoginInput,
@@ -69,8 +69,8 @@ export class UserResolver {
     return user ? UserOutput.from_model(user) : undefined;
   }
 
-  @ResolveField(() => [Role])
-  async user_roles(@Parent() user: UserOutput): Promise<Role[]> {
+  @ResolveField(() => [RoleType])
+  async user_roles(@Parent() user: UserOutput): Promise<RoleType[]> {
     return (this._userService as any)._find_roles(user.id);
   }
 }

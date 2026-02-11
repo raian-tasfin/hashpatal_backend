@@ -11,7 +11,7 @@ import {
   DoctorExperience,
   DoctorProfile,
   KyselyDatabaseService,
-  Role,
+  RoleType,
 } from '@org/shared/db';
 import { UserService } from 'src/user/user.service';
 import { UpdateProfileInput } from './input';
@@ -38,7 +38,7 @@ export class DoctorService {
       }
       this.logger.log(`Fetching user roles ${email}.`);
       const roles = await this.userService._find_roles(user.id);
-      const isDoctor = roles.some((r) => r === Role.DOCTOR);
+      const isDoctor = roles.some((r) => r === RoleType.DOCTOR);
       if (!isDoctor) {
         const msg = `User ${email} does not have role DOCTOR`;
         this.logger.warn(msg);

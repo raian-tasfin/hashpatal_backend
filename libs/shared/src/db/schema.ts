@@ -1,3 +1,4 @@
+import { ImATeapotException } from '@nestjs/common';
 import {
   date,
   integer,
@@ -6,17 +7,25 @@ import {
   serial,
   text,
   timestamp,
+  time,
   unique,
   uuid,
 } from 'drizzle-orm/pg-core';
+import {
+  create_pg_enum,
+  RoleType,
+  WeekDayType,
+  AppointmentStatusType,
+  SchedulableType,
+} from './_enums';
 
-export const roleEnum = pgEnum('role', [
-  'ADMIN',
-  'DOCTOR',
-  'LAB_NURSE',
-  'LAB_TECHNICIAN',
-  'PATIENT',
-]);
+export const roleEnum = create_pg_enum('role_type', RoleType);
+export const schedulableTypeEnum = pgEnum('schedulable_type', SchedulableType);
+export const weekDayEnum = create_pg_enum('weekday_type', WeekDayType);
+export const appointmentStatusEnum = create_pg_enum(
+  'appointment_status_type',
+  AppointmentStatusType,
+);
 
 export const user = pgTable('user', {
   id: serial('id').primaryKey(),
@@ -45,6 +54,9 @@ export const doctorProfile = pgTable('doctor_profile', {
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: 'cascade' }),
+  schedulableId: integer('schedulableId')
+    .unique()
+    .references(() => schedulable.id, { onDelete: 'set null' }),
 });
 
 export const doctorExperience = pgTable('doctor_experience', {
@@ -77,4 +89,46 @@ export const refreshToken = pgTable('refresh_token', {
   userId: integer('userId')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+});
+
+export const schedulable = pgTable('schedulable', {
+  id: serial('id').primaryKey(),
+  entityId: integer('entityId').notNull(),
+  schedulableType: schedulableTypeEnum('type').notNull(),
+  minutesPerSlot: integer('minutesPerSlot').notNull(),
+});
+
+/* overlaps and stuff are to be handled service layer. instead of
+ * add/delete make sync the only functionality.
+ */
+export const regularRoutine = pgTable('regular_routine', {
+  id: serial('id').primaryKey(),
+  weekDay: weekDayEnum('weekDay').notNull(),
+  startTime: time('startTime').notNull(),
+  endTime: time('endTime').notNull(),
+  schedulableId: integer('schedulableId')
+    .notNull()
+    .references(() => schedulable.id, { onDelete: 'cascade' }),
+});
+
+export const overrideRoutine = pgTable('override_routine', {
+  id: serial('id').primaryKey(),
+  date: date('date').notNull(),
+  weekDay: weekDayEnum('weekDay').notNull(),
+  startTime: time('startTime').notNull(),
+  endTime: time('endTime').notNull(),
+  schedulableId: integer('schedulableId')
+    .notNull()
+    .references(() => schedulable.id, { onDelete: 'cascade' }),
+});
+
+export const appointment = pgTable('appointment', {
+  id: serial('id').primaryKey(),
+  schedulableId: integer('schedulableId')
+    .notNull()
+    .references(() => schedulable.id, { onDelete: 'cascade' }),
+  startTime: time('startTime').notNull(),
+  endTime: time('endTime').notNull(),
+  minutesPerSlot: integer('minutesPerSlot').notNull(),
+  status: appointmentStatusEnum('status').notNull(),
 });

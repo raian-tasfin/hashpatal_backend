@@ -5,13 +5,19 @@
 
 import type { ColumnType } from "kysely";
 
+export type AppointmentStatusType = "CANCELLED" | "COMPLETED" | "DIDNTSHOW" | "SCHEDULED";
+
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
-export type Role = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIENT";
+export type RoleType = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIENT";
+
+export type SchedulableType = "DOCTOR";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export type WeekdayType = "FRIDAY" | "MONDAY" | "SATURDAY" | "SUNDAY" | "THURSDAY" | "TUESDAY" | "WEDNESDAY";
 
 export interface AcademicRecord {
   degree: string;
@@ -19,6 +25,15 @@ export interface AcademicRecord {
   id: Generated<number>;
   institute: string;
   year: Timestamp;
+}
+
+export interface Appointment {
+  endTime: string;
+  id: Generated<number>;
+  minutesPerSlot: number;
+  schedulableId: number;
+  startTime: string;
+  status: AppointmentStatusType;
 }
 
 export interface DoctorExperience {
@@ -33,7 +48,17 @@ export interface DoctorExperience {
 
 export interface DoctorProfile {
   id: Generated<number>;
+  schedulableId: number | null;
   userId: number;
+}
+
+export interface OverrideRoutine {
+  date: Timestamp;
+  endTime: string;
+  id: Generated<number>;
+  schedulableId: number;
+  startTime: string;
+  weekDay: WeekdayType;
 }
 
 export interface RefreshToken {
@@ -42,6 +67,21 @@ export interface RefreshToken {
   jit: string;
   tokenHash: string;
   userId: number;
+}
+
+export interface RegularRoutine {
+  endTime: string;
+  id: Generated<number>;
+  schedulableId: number;
+  startTime: string;
+  weekDay: WeekdayType;
+}
+
+export interface Schedulable {
+  entityId: number;
+  id: Generated<number>;
+  minutesPerSlot: number;
+  type: SchedulableType;
 }
 
 export interface User {
@@ -55,15 +95,19 @@ export interface User {
 
 export interface UserRole {
   id: Generated<number>;
-  role: Role;
+  role: RoleType;
   userId: number;
 }
 
 export interface DB {
   academic_record: AcademicRecord;
+  appointment: Appointment;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
+  override_routine: OverrideRoutine;
   refresh_token: RefreshToken;
+  regular_routine: RegularRoutine;
+  schedulable: Schedulable;
   user: User;
   user_role: UserRole;
 }

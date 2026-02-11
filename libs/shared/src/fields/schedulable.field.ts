@@ -1,13 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import { Field, FieldOptions } from '@nestjs/graphql';
 import { IsArray, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { RoleType } from '../db';
+import { SchedulableType } from '../db';
 
-export function RolesField(options?: FieldOptions) {
+export function SchedulableField(options?: FieldOptions) {
   return applyDecorators(
-    Field(() => [RoleType], options),
+    Field(() => [SchedulableType], options),
     options?.nullable ? IsOptional() : IsNotEmpty(),
     IsArray(),
-    IsEnum(RoleType, { each: true, message: 'Inavlid role provided' }),
+    IsEnum(SchedulableType, { each: true, message: 'Inavlid role provided' }),
   );
 }

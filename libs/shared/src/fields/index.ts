@@ -7,6 +7,7 @@ export * from './integer.field';
 export * from './name.field';
 export * from './password.field';
 export * from './roles.field';
+export * from './schedulable.field';
 export * from './string.field';
 export * from './token.field';
 export * from './uuid.field';

@@ -2,5 +2,7 @@ onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@nestjs/core'
   - bcrypt
+  - couchbase
   - esbuild
+  - oracledb
   - unrs-resolver
