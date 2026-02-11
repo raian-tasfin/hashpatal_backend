@@ -68,6 +68,7 @@ type Mutation {
   user_sync_roles(data: SyncRolesInput!): Boolean!
   doctor_sync_profile: Boolean!
   doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
+  doctor_schedule_regular_slots_sync(data: DoctorRegularRoutineSyncInput!): Boolean!
 }
 
 input RegisterInput {
@@ -100,4 +101,25 @@ input SyncRolesInput {
 input DoctorScheduleSyncInput {
   email: String!
   minutesPerSlot: Int!
+}
+
+input DoctorRegularRoutineSyncInput {
+  email: String!
+  slots: [RegularRoutineSlotInput!]!
+}
+
+input RegularRoutineSlotInput {
+  weekDay: WeekDayType!
+  startTime: String!
+  endTime: String!
+}
+
+enum WeekDayType {
+  SATURDAY
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
 }

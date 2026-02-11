@@ -16,6 +16,8 @@ import { DatabaseModule } from '@org/shared/db';
 import { RoleType } from '@org/shared/db';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { DoctorService } from 'src/doctor/doctor.service';
+import { ScheduleSercvice } from 'src/schedule/schedule.service';
+import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
@@ -32,6 +34,7 @@ const logger = new Logger('seed');
     PasswordModule,
     DatabaseModule,
     UserModule,
+    ScheduleModule,
     //     UserRolesModule,
     //     ScheduleModule,
     DoctorModule,
@@ -106,6 +109,18 @@ async function create_doctor_profiles(app: INestApplicationContext) {
   logger.log(`Doctor profile creation phase complete.`);
 }
 
+async function create_doctor_schedule(app: INestApplicationContext) {
+  const scheduleService = app.get(ScheduleSercvice);
+  logger.log('Creating doctor schedules...');
+  for (const profileData of data.doctorProfiles) {
+    await scheduleService.doctor_schedule_sync({
+      email: profileData.email,
+      minutesPerSlot: profileData.schedule.minutesPerSlot,
+    });
+  }
+  logger.log('Doctor schedules phase complete');
+}
+
 // async function create_doctor_regular_schedules(app: INestApplicationContext) {
 //   logger.log('Creating regular schedules for doctors...');
 //   const scheduleService = app.get(ScheduleService);
@@ -174,6 +189,7 @@ async function bootstrap() {
   await register_users(app);
   await assign_roles(app);
   await create_doctor_profiles(app);
+  await create_doctor_schedule(app);
   // await create_doctor_regular_schedules(app);
   // await add_doctor_regular_slots(app);
   // await add_doctor_override_slots(app);

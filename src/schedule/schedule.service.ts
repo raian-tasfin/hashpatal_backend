@@ -13,8 +13,10 @@ import {
   RoleType,
   Schedulable,
   SchedulableType,
+  WeekDayType,
 } from '@org/shared/db';
-import { SchedulableOutput } from './output/schedulable.output';
+import { DoctorRegularRoutineSyncInput } from './input/doctor-regular-routine-sync.input';
+import { RegularRoutineSlotInput } from '@org/shared/fields';
 
 @Injectable()
 export class ScheduleSercvice {
@@ -66,6 +68,39 @@ export class ScheduleSercvice {
     return true;
   }
 
+  async doctor_regular_routine_sync(data: DoctorRegularRoutineSyncInput) {
+    const { email, slots } = data;
+    const user = await this.userService.find_by_email({ email });
+    if (!user) throw new NotFoundException(`User ${email} not found.`);
+    const doctor = await this.doctorService.get_profile(user.id);
+    if (!doctor) throw new NotFoundException(`No doctor profile for ${email}`);
+    const schedule = await this.get_doctor_schedule(doctor.id);
+    if (!schedule) {
+      throw new NotFoundException(`No doctor schedule for ${email}`);
+    }
+    const { id: schedulableId, minutesPerSlot } = schedule;
+    const exSlots = this._explode_slots(slots, minutesPerSlot);
+    await this._db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom('regular_routine')
+        .where('schedulableId', '=', schedulableId)
+        .execute();
+      await trx
+        .insertInto('regular_routine')
+        .values(
+          exSlots.map((slot) => ({
+            ...slot,
+            schedulableId,
+          })),
+        )
+        .execute();
+    });
+    return true;
+  }
+
+  /**
+   * Queries
+   */
   async get_doctor_schedule(
     doctorProfileId: number,
   ): Promise<Schedulable | undefined> {
@@ -75,5 +110,41 @@ export class ScheduleSercvice {
       .where('entityId', '=', doctorProfileId)
       .where('type', '=', SchedulableType.DOCTOR)
       .executeTakeFirst();
+  }
+
+  /**
+   * Private utilities
+   */
+  private _hhmm_to_minutes(t: string): number {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  private _minutes_to_hhmm(m: number): string {
+    const hh = Math.floor(m / 60)
+      .toString()
+      .padStart(2, '0');
+    const mm = (m % 60).toString().padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  private _explode_slots(
+    data: RegularRoutineSlotInput[],
+    minutesPerSlot: number,
+  ): RegularRoutineSlotInput[] {
+    const exploded = [];
+    for (const range of data) {
+      let current = this._hhmm_to_minutes(range.startTime);
+      const end = this._hhmm_to_minutes(range.endTime);
+      while (current + minutesPerSlot <= end) {
+        exploded.push({
+          weekDay: range.weekDay,
+          startTime: this._minutes_to_hhmm(current),
+          endTime: this._minutes_to_hhmm(current + minutesPerSlot),
+        });
+        current += minutesPerSlot;
+      }
+    }
+    return exploded;
   }
 }

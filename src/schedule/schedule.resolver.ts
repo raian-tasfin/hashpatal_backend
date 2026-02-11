@@ -7,7 +7,10 @@ import {
 } from '@nestjs/graphql';
 import { ScheduleSercvice } from './schedule.service';
 import { Inject } from '@nestjs/common';
-import { DoctorScheduleSyncInput } from './input';
+import {
+  DoctorRegularRoutineSyncInput,
+  DoctorScheduleSyncInput,
+} from './input';
 import { SchedulableOutput } from './output/schedulable.output';
 import { DoctorProfileOutput } from 'src/doctor/output';
 
@@ -26,6 +29,13 @@ export class ScheduleResolver {
     @Args('data') data: DoctorScheduleSyncInput,
   ): Promise<boolean> {
     return this._scheduleService.doctor_schedule_sync(data);
+  }
+
+  @Mutation(() => Boolean)
+  async doctor_schedule_regular_slots_sync(
+    @Args('data') data: DoctorRegularRoutineSyncInput,
+  ): Promise<boolean> {
+    return this._scheduleService.doctor_regular_routine_sync(data);
   }
 }
 
