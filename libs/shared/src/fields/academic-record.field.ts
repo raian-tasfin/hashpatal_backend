@@ -1,6 +1,6 @@
 import { YearField } from './year.field';
 import { StringField } from './string.field';
-import { Field, FieldOptions, InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { applyDecorators } from '@nestjs/common';
 import {
   IsArray,
@@ -9,6 +9,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  field,
+  generate_field,
+  is_array,
+  nullable,
+  OrgFieldOptions,
+} from './org-field-options.type';
 
 export const AcademicRecord = {
   DegreeField: StringField,
@@ -28,15 +35,9 @@ export class AcademicRecordInput {
   year: string;
 }
 
-export function AcademicRecordField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => [AcademicRecordInput], {
-      ...options,
-      description: 'Full list of academic record',
-    }),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsArray(),
-    ValidateNested({ each: true }),
-    Type(() => AcademicRecordInput),
-  );
+export function AcademicRecordField(options?: OrgFieldOptions) {
+  return generate_field({
+    type: AcademicRecordInput,
+    objectType: true,
+  })(options);
 }

@@ -1,13 +1,11 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsArray, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { RoleType } from '../db';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function RolesField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => [RoleType], options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsArray(),
-    IsEnum(RoleType, { each: true, message: 'Inavlid role provided' }),
-  );
+export function RoleField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? true;
+  return generate_field({
+    type: RoleType,
+    extraDecorators: [IsEnum(RoleType, { each })],
+  })(options);
 }

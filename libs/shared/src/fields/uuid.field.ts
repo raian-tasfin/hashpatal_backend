@@ -1,11 +1,10 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
+import { IsUUID } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function UuidField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => String, options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsUUID(),
-  );
+export function UuidField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: String,
+    extraDecorators: [IsUUID('4', { each })],
+  })(options);
 }

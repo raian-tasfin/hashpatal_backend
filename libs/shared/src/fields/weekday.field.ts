@@ -1,12 +1,12 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { WeekDayType } from '../db';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function WeekDayField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => WeekDayType, options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsEnum(WeekDayType, { message: 'Inavlid week day provided' }),
-  );
+export function WeekDayField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+
+  return generate_field({
+    type: WeekDayType,
+    extraDecorators: [IsEnum(WeekDayType, { each })],
+  })(options);
 }

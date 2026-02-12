@@ -1,13 +1,12 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsNotEmpty, Validate, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { IsValidYearConstraint } from '@org/shared/constraints';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function YearField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => String, { description: '4-digit year (YYYY)', ...options }),
-    IsNotEmpty(),
-    IsString(),
-    Validate(IsValidYearConstraint),
-  );
+export function YearField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: String,
+    constraints: [IsValidYearConstraint],
+    extraDecorators: [IsString({ each })],
+  })(options);
 }

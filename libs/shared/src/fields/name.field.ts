@@ -1,7 +1,6 @@
-import { applyDecorators } from '@nestjs/common';
-import { FieldOptions } from '@nestjs/graphql';
 import { StringField } from './string.field';
+import { OrgFieldOptions } from './org-field-options.type';
 
-export function NameField(options?: FieldOptions) {
-  return applyDecorators(StringField(options));
+export function NameField(options?: OrgFieldOptions) {
+  return StringField(options);
 }

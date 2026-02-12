@@ -1,13 +1,13 @@
-import { applyDecorators } from '@nestjs/common';
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { Field, FieldOptions } from '@nestjs/graphql';
+import { IsString } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function StringField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => String, options),
-    IsString(),
-    Transform(({ value }) => value?.trim()),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-  );
+export function StringField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  const formatter = (v: any) => (typeof v === 'string' ? v.trim() : v);
+
+  return generate_field({
+    type: String,
+    formatter,
+    extraDecorators: [IsString({ each })],
+  })(options);
 }

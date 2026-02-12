@@ -1,14 +1,13 @@
-import { applyDecorators } from '@nestjs/common';
-import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { Field, FieldOptions } from '@nestjs/graphql';
+import { IsEmail, IsString } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function EmailField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => String, options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsEmail({}, { message: 'Please provide a valid email address' }),
-    IsString(),
-    Transform(({ value }) => value?.trim().toLowerCase()),
-  );
+export function EmailField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  const formatter = (v: any) =>
+    typeof v === 'string' ? v.trim().toLowerCase() : v;
+  return generate_field({
+    type: String,
+    formatter,
+    extraDecorators: [IsString({ each }), IsEmail({}, { each })],
+  })(options);
 }

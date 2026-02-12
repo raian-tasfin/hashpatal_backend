@@ -1,12 +1,10 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function PasswordField(minLen = 4) {
-  return applyDecorators(
-    Field(() => String),
-    IsNotEmpty(),
-    IsString(),
-    MinLength(minLen),
-  );
+export function PasswordField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: String,
+    extraDecorators: [IsString({ each }), MinLength(4, { each })],
+  })(options);
 }

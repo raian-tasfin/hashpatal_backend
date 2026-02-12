@@ -1,16 +1,12 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsISO8601, Validate } from 'class-validator';
+import { IsISO8601 } from 'class-validator';
 import { IsAdultConstraint } from '@org/shared/constraints';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function BirthdateField() {
-  return applyDecorators(
-    Field(() => String, { description: 'Birthday in YYYY-MM-DD format' }),
-    IsNotEmpty(),
-    IsISO8601(
-      { strict: true },
-      { message: 'Birthday must be in YYYY-MM-DD format' },
-    ),
-    Validate(IsAdultConstraint),
-  );
+export function BirthdateField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: String,
+    constraints: [IsAdultConstraint],
+    extraDecorators: [IsISO8601({ strict: true }, { each })],
+  })(options);
 }

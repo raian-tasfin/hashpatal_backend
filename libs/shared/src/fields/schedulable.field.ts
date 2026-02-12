@@ -1,13 +1,11 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsArray, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { SchedulableType } from '../db';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function SchedulableField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => [SchedulableType], options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsArray(),
-    IsEnum(SchedulableType, { each: true, message: 'Inavlid role provided' }),
-  );
+export function SchedulableField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: SchedulableType,
+    extraDecorators: [IsEnum(SchedulableType, { each })],
+  })(options);
 }

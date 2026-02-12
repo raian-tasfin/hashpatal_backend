@@ -1,6 +1,13 @@
 import { YearField } from './year.field';
+import {
+  field,
+  generate_field,
+  is_array,
+  nullable,
+  OrgFieldOptions,
+} from './org-field-options.type';
 import { StringField } from './string.field';
-import { Field, FieldOptions, InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import {
   IsArray,
   IsNotEmpty,
@@ -36,15 +43,9 @@ export class ExperienceInput {
   endYear: string | null;
 }
 
-export function ExperienceField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => [ExperienceInput], {
-      ...options,
-      description: 'Full list of professional experience',
-    }),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsArray(),
-    ValidateNested({ each: true }),
-    Type(() => ExperienceInput),
-  );
+export function ExperienceField(options?: OrgFieldOptions) {
+  return generate_field({
+    type: ExperienceInput,
+    objectType: true,
+  })(options);
 }

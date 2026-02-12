@@ -1,11 +1,10 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field, FieldOptions } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function TokenField(options?: FieldOptions) {
-  return applyDecorators(
-    Field(() => String, options),
-    options?.nullable ? IsOptional() : IsNotEmpty(),
-    IsString(),
-  );
+export function TokenField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  return generate_field({
+    type: String,
+    extraDecorators: [IsString({ each })],
+  })(options);
 }

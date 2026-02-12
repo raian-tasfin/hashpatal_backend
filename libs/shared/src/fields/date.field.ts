@@ -1,21 +1,13 @@
-import { applyDecorators } from '@nestjs/common';
-import { Field } from '@nestjs/graphql';
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsISO8601 } from 'class-validator';
+import { IsISO8601 } from 'class-validator';
+import { generate_field, OrgFieldOptions } from './org-field-options.type';
 
-export function DateField() {
-  return applyDecorators(
-    Field(() => String, { description: 'Date in YYYY-MM-DD format' }),
-    Transform(({ value }) => {
-      if (value instanceof Date) {
-        return value.toISOString().split('T')[0];
-      }
-      return value;
-    }),
-    IsNotEmpty(),
-    IsISO8601(
-      { strict: true },
-      { message: 'Date must be in YYYY-MM-DD format' },
-    ),
-  );
+export function DateField(options?: OrgFieldOptions) {
+  const each = options?.isArray ?? false;
+  const formatter = (v: any) =>
+    v instanceof Date ? v.toISOString().split('T')[0] : v;
+  return generate_field({
+    type: String,
+    extraDecorators: [IsISO8601({ strict: true }, { each })],
+    formatter,
+  })(options);
 }
