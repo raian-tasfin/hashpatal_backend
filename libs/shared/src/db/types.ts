@@ -36,6 +36,12 @@ export interface Appointment {
   status: AppointmentStatusType;
 }
 
+export interface BlockedDays {
+  date: Timestamp;
+  id: Generated<number>;
+  schedulableId: number;
+}
+
 export interface DoctorExperience {
   doctorProfileId: number;
   endYear: Timestamp | null;
@@ -101,6 +107,7 @@ export interface UserRole {
 export interface DB {
   academic_record: AcademicRecord;
   appointment: Appointment;
+  blocked_days: BlockedDays;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
   override_routine: OverrideRoutine;

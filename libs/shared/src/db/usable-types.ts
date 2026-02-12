@@ -10,6 +10,7 @@ import {
   Schedulable as SchedulableTable,
   User as UserTable,
   UserRole as UserRoleTable,
+  BlockedDays as BlockedDaysTable,
 } from './types';
 
 export type AcademicRecord = Selectable<AcademicRecordTable>;
@@ -22,3 +23,4 @@ export type RegularRoutine = Selectable<RegularRoutineTable>;
 export type Schedulable = Selectable<SchedulableTable>;
 export type User = Selectable<UserTable>;
 export type UserRole = Selectable<UserRoleTable>;
+export type BlockedDays = Selectable<BlockedDaysTable>;

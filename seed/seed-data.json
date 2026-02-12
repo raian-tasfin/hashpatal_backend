@@ -85,12 +85,9 @@
         {"weekDay": "THURSDAY", "startTime": "14:30", "endTime": "19:00" }
       ],
       "overrideSlots": [
-        { "date": "2026-06-01", "startTime": "08:00", "endTime": "10:00" },
         { "date": "2026-06-01", "startTime": "20:00", "endTime": "22:00" },
-        { "date": "2026-06-02", "startTime": "09:00", "endTime": "12:00" },
-        { "date": "2026-06-02", "startTime": "13:00", "endTime": "15:00" },
-        { "date": "2026-06-03", "startTime": "07:00", "endTime": "09:00" },
-        { "date": "2026-06-03", "startTime": "18:00", "endTime": "21:00" }
+        { "date": "2026-06-02", "startTime": "20:00", "endTime": "22:00" },
+        { "date": "2026-06-03", "startTime": "20:00", "endTime": "22:00" }
       ]
     }
   ]

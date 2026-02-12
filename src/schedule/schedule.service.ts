@@ -84,6 +84,10 @@ export class ScheduleService {
     return this._sync_slots('override_routine', schedule, slots);
   }
 
+  //   async doctor_blocked_days_add(data: DoctorBlockedDaysAddInput) {
+  //     const {email, days} = data;
+  //   }
+
   /**
    * Queries
    */

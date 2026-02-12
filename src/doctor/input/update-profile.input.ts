@@ -12,9 +12,9 @@ export class UpdateProfileInput {
   @EmailField()
   email: string;
 
-  @ExperienceField()
+  @ExperienceField({ isArray: true })
   experience: ExperienceInput[];
 
-  @AcademicRecordField()
+  @AcademicRecordField({ isArray: true })
   academic: AcademicRecordInput[];
 }

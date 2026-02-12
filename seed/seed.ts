@@ -18,7 +18,7 @@ import { DoctorModule } from 'src/doctor/doctor.module';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { ScheduleService } from 'src/schedule/schedule.service';
 import { ScheduleModule } from 'src/schedule/schedule.module';
-import { RegularSlotInput } from '@org/shared/slots';
+import { OverrideSlotInput, RegularSlotInput } from '@org/shared/slots';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
@@ -147,6 +147,31 @@ async function create_doctor_regular_schedules(app: INestApplicationContext) {
   logger.log('Regular slot creation phase done');
 }
 
+async function create_doctor_override_schedule(app: INestApplicationContext) {
+  logger.log('Creating override for doctors...');
+  const scheduleService = app.get(ScheduleService);
+
+  // Use map to create an array of PROMISES and return them
+  const promises = data.doctorProfiles.map(async ({ email, overrideSlots }) => {
+    try {
+      await scheduleService.doctor_override_routine_sync({
+        email,
+        slots: overrideSlots.map(({ date, startTime, endTime }) => ({
+          date,
+          startTime,
+          endTime,
+        })) as OverrideSlotInput[],
+      });
+      logger.log(`Synced slots for ${email}`);
+    } catch (err) {
+      logger.error(`Failed syncing ${email}: ${err.message}`);
+    }
+  });
+
+  await Promise.all(promises);
+  logger.log('Override slot creation phase done');
+}
+
 // async function add_doctor_regular_slots(app: INestApplicationContext) {
 //   logger.log('Adding regular slots for doctors...');
 //   const scheduleService = app.get(ScheduleService);
@@ -199,8 +224,7 @@ async function bootstrap() {
   await create_doctor_profiles(app);
   await create_doctor_schedule(app);
   await create_doctor_regular_schedules(app);
-  // await add_doctor_regular_slots(app);
-  // await add_doctor_override_slots(app);
+  await create_doctor_override_schedule(app);
   logger.log('Finished seeding database.');
   await app.close();
 }

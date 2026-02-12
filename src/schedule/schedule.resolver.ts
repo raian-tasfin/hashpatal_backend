@@ -6,7 +6,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { ScheduleService } from './schedule.service';
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   DoctorOverrideRoutineSyncInput,
   DoctorRegularRoutineSyncInput,
@@ -73,6 +73,8 @@ export class DoctorScheduleResolver {
 
 @Resolver(() => SchedulableOutput)
 export class SchedulableResolver {
+  private readonly logger = new Logger(SchedulableResolver.name);
+
   constructor(
     @Inject(ScheduleService)
     private readonly _scheduleService: ScheduleService,
@@ -87,6 +89,7 @@ export class SchedulableResolver {
   @ResolveField(() => [OverrideRoutineOutput], { nullable: true })
   async override_routine(@Parent() { id }: SchedulableOutput) {
     const res = await this._scheduleService.get_doctor_override_slots(id);
+    this.logger.log(res);
     return res.map((r) => OverrideRoutineOutput.from_model(r));
   }
 }

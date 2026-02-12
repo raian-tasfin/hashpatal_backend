@@ -29,10 +29,7 @@ type DoctorProfileOutput {
 }
 
 type DoctorExperienceOutput {
-  """Date in YYYY-MM-DD format"""
   startYear: String!
-
-  """Date in YYYY-MM-DD format"""
   endYear: String!
   location: String!
   organization: String!
@@ -42,13 +39,10 @@ type DoctorExperienceOutput {
 type AcademicRecordOutput {
   degree: String!
   institute: String!
-
-  """Date in YYYY-MM-DD format"""
   year: String!
 }
 
 type OverrideRoutineOutput {
-  """Date in YYYY-MM-DD format"""
   date: String!
   startTime: String!
   endTime: String!
@@ -101,8 +95,6 @@ input RegisterInput {
   email: String!
   name: String!
   password: String!
-
-  """Birthday in YYYY-MM-DD format"""
   birthDate: String!
 }
 
@@ -131,7 +123,7 @@ input DoctorScheduleSyncInput {
 
 input DoctorRegularRoutineSyncInput {
   email: String!
-  slots: [RegularSlotInput!]!
+  slots: RegularSlotInput!
 }
 
 input RegularSlotInput {
@@ -148,7 +140,5 @@ input DoctorOverrideRoutineSyncInput {
 input OverrideSlotInput {
   startTime: String!
   endTime: String!
-
-  """Date in YYYY-MM-DD format"""
   date: String!
 }
