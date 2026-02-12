@@ -1,5 +1,6 @@
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
+  - '@compodoc/compodoc'
   - '@nestjs/core'
   - bcrypt
   - couchbase

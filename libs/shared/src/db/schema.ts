@@ -114,7 +114,6 @@ export const regularRoutine = pgTable('regular_routine', {
 export const overrideRoutine = pgTable('override_routine', {
   id: serial('id').primaryKey(),
   date: date('date').notNull(),
-  weekDay: weekDayEnum('weekDay').notNull(),
   startTime: time('startTime').notNull(),
   endTime: time('endTime').notNull(),
   schedulableId: integer('schedulableId')

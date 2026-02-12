@@ -47,8 +47,33 @@ type AcademicRecordOutput {
   year: String!
 }
 
+type OverrideRoutineOutput {
+  """Date in YYYY-MM-DD format"""
+  date: String!
+  startTime: String!
+  endTime: String!
+}
+
+type RegularRoutineOutput {
+  weekDay: WeekDayType!
+  startTime: String!
+  endTime: String!
+}
+
+enum WeekDayType {
+  SATURDAY
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}
+
 type SchedulableOutput {
   minutesPerSlot: Int!
+  regular_routine: [RegularRoutineOutput!]
+  override_routine: [OverrideRoutineOutput!]
 }
 
 type Query {
@@ -69,6 +94,7 @@ type Mutation {
   doctor_sync_profile: Boolean!
   doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
   doctor_schedule_regular_slots_sync(data: DoctorRegularRoutineSyncInput!): Boolean!
+  doctor_schedule_override_slots_sync(data: DoctorOverrideRoutineSyncInput!): Boolean!
 }
 
 input RegisterInput {
@@ -105,21 +131,24 @@ input DoctorScheduleSyncInput {
 
 input DoctorRegularRoutineSyncInput {
   email: String!
-  slots: [RegularRoutineSlotInput!]!
+  slots: [RegularSlotInput!]!
 }
 
-input RegularRoutineSlotInput {
-  weekDay: WeekDayType!
+input RegularSlotInput {
   startTime: String!
   endTime: String!
+  weekDay: WeekDayType!
 }
 
-enum WeekDayType {
-  SATURDAY
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
+input DoctorOverrideRoutineSyncInput {
+  email: String!
+  slots: [OverrideSlotInput!]!
+}
+
+input OverrideSlotInput {
+  startTime: String!
+  endTime: String!
+
+  """Date in YYYY-MM-DD format"""
+  date: String!
 }

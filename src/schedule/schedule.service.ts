@@ -5,22 +5,26 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { DoctorScheduleSyncInput } from './input';
+import {
+  DoctorOverrideRoutineSyncInput,
+  DoctorScheduleSyncInput,
+} from './input';
 import { UserService } from 'src/user';
 import { DoctorService } from 'src/doctor/doctor.service';
 import {
   KyselyDatabaseService,
+  OverrideRoutine,
+  RegularRoutine,
   RoleType,
   Schedulable,
   SchedulableType,
-  WeekDayType,
 } from '@org/shared/db';
 import { DoctorRegularRoutineSyncInput } from './input/doctor-regular-routine-sync.input';
-import { RegularRoutineSlotInput } from '@org/shared/fields';
+import { ISlot } from '@org/shared/slots';
 
 @Injectable()
-export class ScheduleSercvice {
-  private readonly _logger = new Logger(ScheduleSercvice.name);
+export class ScheduleService {
+  private readonly _logger = new Logger(ScheduleService.name);
 
   constructor(
     @Inject(UserService) private readonly userService: UserService,
@@ -70,32 +74,14 @@ export class ScheduleSercvice {
 
   async doctor_regular_routine_sync(data: DoctorRegularRoutineSyncInput) {
     const { email, slots } = data;
-    const user = await this.userService.find_by_email({ email });
-    if (!user) throw new NotFoundException(`User ${email} not found.`);
-    const doctor = await this.doctorService.get_profile(user.id);
-    if (!doctor) throw new NotFoundException(`No doctor profile for ${email}`);
-    const schedule = await this.get_doctor_schedule(doctor.id);
-    if (!schedule) {
-      throw new NotFoundException(`No doctor schedule for ${email}`);
-    }
-    const { id: schedulableId, minutesPerSlot } = schedule;
-    const exSlots = this._explode_slots(slots, minutesPerSlot);
-    await this._db.transaction().execute(async (trx) => {
-      await trx
-        .deleteFrom('regular_routine')
-        .where('schedulableId', '=', schedulableId)
-        .execute();
-      await trx
-        .insertInto('regular_routine')
-        .values(
-          exSlots.map((slot) => ({
-            ...slot,
-            schedulableId,
-          })),
-        )
-        .execute();
-    });
-    return true;
+    const schedule = await this._get_doctor_schedule_or_throw(email);
+    return this._sync_slots('regular_routine', schedule, slots);
+  }
+
+  async doctor_override_routine_sync(data: DoctorOverrideRoutineSyncInput) {
+    const { email, slots } = data;
+    const schedule = await this._get_doctor_schedule_or_throw(email);
+    return this._sync_slots('override_routine', schedule, slots);
   }
 
   /**
@@ -110,6 +96,26 @@ export class ScheduleSercvice {
       .where('entityId', '=', doctorProfileId)
       .where('type', '=', SchedulableType.DOCTOR)
       .executeTakeFirst();
+  }
+
+  async get_doctor_regular_slots(
+    scheduleId: number,
+  ): Promise<RegularRoutine[]> {
+    return await this._db
+      .selectFrom('regular_routine')
+      .selectAll()
+      .where('schedulableId', '=', scheduleId)
+      .execute();
+  }
+
+  async get_doctor_override_slots(
+    scheduleId: number,
+  ): Promise<OverrideRoutine[]> {
+    return await this._db
+      .selectFrom('override_routine')
+      .selectAll()
+      .where('schedulableId', '=', scheduleId)
+      .execute();
   }
 
   /**
@@ -128,17 +134,17 @@ export class ScheduleSercvice {
     return `${hh}:${mm}`;
   }
 
-  private _explode_slots(
-    data: RegularRoutineSlotInput[],
+  private _explode_slots<T extends ISlot>(
+    data: T[],
     minutesPerSlot: number,
-  ): RegularRoutineSlotInput[] {
-    const exploded = [];
+  ): T[] {
+    const exploded: T[] = [];
     for (const range of data) {
       let current = this._hhmm_to_minutes(range.startTime);
       const end = this._hhmm_to_minutes(range.endTime);
       while (current + minutesPerSlot <= end) {
         exploded.push({
-          weekDay: range.weekDay,
+          ...range,
           startTime: this._minutes_to_hhmm(current),
           endTime: this._minutes_to_hhmm(current + minutesPerSlot),
         });
@@ -146,5 +152,44 @@ export class ScheduleSercvice {
       }
     }
     return exploded;
+  }
+
+  private async _get_doctor_schedule_or_throw(
+    email: string,
+  ): Promise<Schedulable> {
+    const user = await this.userService.find_by_email({ email });
+    if (!user) throw new NotFoundException(`User ${email} not found.`);
+    const doctor = await this.doctorService.get_profile(user.id);
+    if (!doctor) throw new NotFoundException(`No doctor profile for ${email}`);
+    const schedule = await this.get_doctor_schedule(doctor.id);
+    if (!schedule) {
+      throw new NotFoundException(`No doctor schedule for ${email}`);
+    }
+    return schedule;
+  }
+
+  private async _sync_slots<T extends ISlot>(
+    table: 'regular_routine' | 'override_routine',
+    schedule: Schedulable,
+    slots: T[],
+  ): Promise<boolean> {
+    const { id: schedulableId, minutesPerSlot } = schedule;
+    const exSlots = this._explode_slots(slots, minutesPerSlot);
+    await this._db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom(table)
+        .where('schedulableId', '=', schedulableId)
+        .execute();
+      await trx
+        .insertInto(table)
+        .values(
+          exSlots.map((slot) => ({
+            ...slot,
+            schedulableId,
+          })),
+        )
+        .execute();
+    });
+    return true;
   }
 }

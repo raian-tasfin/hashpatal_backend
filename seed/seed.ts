@@ -10,14 +10,15 @@ import { UserService } from 'src/user/user.service';
 import data from './seed-data.json';
 import { ConfigModule } from '@nestjs/config';
 import { PasswordModule } from '@org/shared/password';
-import { DatabaseModule } from '@org/shared/db';
+import { DatabaseModule, RegularRoutine, WeekDayType } from '@org/shared/db';
 // import { UserRolesModule } from 'src/user-roles/user-roles.module';
 // import { UserRolesService } from 'src/user-roles/user-roles.service';
 import { RoleType } from '@org/shared/db';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { DoctorService } from 'src/doctor/doctor.service';
-import { ScheduleSercvice } from 'src/schedule/schedule.service';
+import { ScheduleService } from 'src/schedule/schedule.service';
 import { ScheduleModule } from 'src/schedule/schedule.module';
+import { RegularSlotInput } from '@org/shared/slots';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
@@ -110,7 +111,7 @@ async function create_doctor_profiles(app: INestApplicationContext) {
 }
 
 async function create_doctor_schedule(app: INestApplicationContext) {
-  const scheduleService = app.get(ScheduleSercvice);
+  const scheduleService = app.get(ScheduleService);
   logger.log('Creating doctor schedules...');
   for (const profileData of data.doctorProfiles) {
     await scheduleService.doctor_schedule_sync({
@@ -121,31 +122,38 @@ async function create_doctor_schedule(app: INestApplicationContext) {
   logger.log('Doctor schedules phase complete');
 }
 
-// async function create_doctor_regular_schedules(app: INestApplicationContext) {
-//   logger.log('Creating regular schedules for doctors...');
-//   const scheduleService = app.get(ScheduleService);
-//   for (const { email, schedule } of data.doctorProfiles) {
-//     const { minutesPerSlot } = schedule;
-//     logger.log(`Processing user: ${email}`);
-//     try {
-//       logger.log(`Adding schedule`);
-//       await scheduleService.create_doctor_schedule({ email, minutesPerSlot });
-//       logger.log(`Created schedule for ${email}.`);
-//     } catch (err) {
-//       logger.log(`Skipping user: ${email}`);
-//       logger.error(err.message);
-//     }
-//   }
-//   logger.log(`Doctor schedule creation phase complete.`);
-// }
-//
+async function create_doctor_regular_schedules(app: INestApplicationContext) {
+  logger.log('Creating regular schedules for doctors...');
+  const scheduleService = app.get(ScheduleService);
+
+  // Use map to create an array of PROMISES and return them
+  const promises = data.doctorProfiles.map(async ({ email, regularSlots }) => {
+    try {
+      await scheduleService.doctor_regular_routine_sync({
+        email,
+        slots: regularSlots.map(({ weekDay, startTime, endTime }) => ({
+          weekDay,
+          startTime,
+          endTime,
+        })) as RegularSlotInput[],
+      });
+      logger.log(`Synced slots for ${email}`);
+    } catch (err) {
+      logger.error(`Failed syncing ${email}: ${err.message}`);
+    }
+  });
+
+  await Promise.all(promises);
+  logger.log('Regular slot creation phase done');
+}
+
 // async function add_doctor_regular_slots(app: INestApplicationContext) {
 //   logger.log('Adding regular slots for doctors...');
 //   const scheduleService = app.get(ScheduleService);
 //   for (const { email, regularSlots } of data.doctorProfiles) {
 //     logger.log(`Processing slots for: ${email}`);
 //     try {
-//       const result = await scheduleService.add_doctor_regular_slots({
+//       const result = await scheduleService.doctor_regular_routine_sync({
 //         email,
 //         regularSlots: regularSlots as any,
 //       });
@@ -159,7 +167,7 @@ async function create_doctor_schedule(app: INestApplicationContext) {
 //   }
 //   logger.log(`Regular slots addition phase complete.`);
 // }
-//
+
 // async function add_doctor_override_slots(app: INestApplicationContext) {
 //   logger.log('Adding override slots for doctors...');
 //   const scheduleService = app.get(ScheduleService);
@@ -190,7 +198,7 @@ async function bootstrap() {
   await assign_roles(app);
   await create_doctor_profiles(app);
   await create_doctor_schedule(app);
-  // await create_doctor_regular_schedules(app);
+  await create_doctor_regular_schedules(app);
   // await add_doctor_regular_slots(app);
   // await add_doctor_override_slots(app);
   logger.log('Finished seeding database.');

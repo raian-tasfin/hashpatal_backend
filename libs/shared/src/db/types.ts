@@ -58,7 +58,6 @@ export interface OverrideRoutine {
   id: Generated<number>;
   schedulableId: number;
   startTime: string;
-  weekDay: WeekdayType;
 }
 
 export interface RefreshToken {

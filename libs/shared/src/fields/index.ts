@@ -6,7 +6,6 @@ export * from './experience.field';
 export * from './integer.field';
 export * from './name.field';
 export * from './password.field';
-export * from './regular-routine-slot.field';
 export * from './roles.field';
 export * from './schedulable.field';
 export * from './string.field';

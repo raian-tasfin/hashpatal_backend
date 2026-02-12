@@ -2,8 +2,12 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { DatabaseModule } from '@org/shared/db';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ScheduleSercvice } from './schedule.service';
-import { DoctorScheduleResolver, ScheduleResolver } from './schedule.resolver';
+import { ScheduleService } from './schedule.service';
+import {
+  DoctorScheduleResolver,
+  SchedulableResolver,
+  ScheduleResolver,
+} from './schedule.resolver';
 import { UserModule } from 'src/user';
 import { DoctorModule } from 'src/doctor/doctor.module';
 
@@ -20,7 +24,12 @@ import { DoctorModule } from 'src/doctor/doctor.module';
       }),
     }),
   ],
-  providers: [ScheduleSercvice, ScheduleResolver, DoctorScheduleResolver],
+  providers: [
+    ScheduleService,
+    ScheduleResolver,
+    DoctorScheduleResolver,
+    SchedulableResolver,
+  ],
   exports: [ScheduleResolver, DoctorScheduleResolver],
 })
 export class ScheduleModule {}

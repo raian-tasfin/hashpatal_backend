@@ -73,16 +73,16 @@
         "minutesPerSlot": 15
       },
       "regularSlots": [
-        {"weekday": "SUNDAY", "startTime": "10:00", "endTime": "13:00" },
-        {"weekday": "SUNDAY", "startTime": "14:30", "endTime": "19:00" },
-        {"weekday": "MONDAY", "startTime": "10:00", "endTime": "13:00" },
-        {"weekday": "MONDAY", "startTime": "14:30", "endTime": "19:00" },
-        {"weekday": "TUESDAY", "startTime": "10:00", "endTime": "13:00" },
-        {"weekday": "TUESDAY", "startTime": "14:30", "endTime": "19:00" },
-        {"weekday": "WEDNESDAY", "startTime": "10:00", "endTime": "13:00" },
-        {"weekday": "WEDNESDAY", "startTime": "14:30", "endTime": "19:00" },
-        {"weekday": "THURSDAY", "startTime": "10:00", "endTime": "13:00" },
-        {"weekday": "THURSDAY", "startTime": "14:30", "endTime": "19:00" }
+        {"weekDay": "SUNDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekDay": "SUNDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekDay": "MONDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekDay": "MONDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekDay": "TUESDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekDay": "TUESDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekDay": "WEDNESDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekDay": "WEDNESDAY", "startTime": "14:30", "endTime": "19:00" },
+        {"weekDay": "THURSDAY", "startTime": "10:00", "endTime": "13:00" },
+        {"weekDay": "THURSDAY", "startTime": "14:30", "endTime": "19:00" }
       ],
       "overrideSlots": [
         { "date": "2026-06-01", "startTime": "08:00", "endTime": "10:00" },
