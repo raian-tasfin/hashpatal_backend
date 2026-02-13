@@ -42,6 +42,10 @@ type AcademicRecordOutput {
   year: String!
 }
 
+type BlockedDayOutput {
+  date: String!
+}
+
 type OverrideRoutineOutput {
   date: String!
   startTime: String!
@@ -68,6 +72,7 @@ type SchedulableOutput {
   minutesPerSlot: Int!
   regular_routine: [RegularRoutineOutput!]
   override_routine: [OverrideRoutineOutput!]
+  blocked_days: [BlockedDayOutput!]
 }
 
 type Query {
@@ -89,6 +94,7 @@ type Mutation {
   doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
   doctor_schedule_regular_slots_sync(data: DoctorRegularRoutineSyncInput!): Boolean!
   doctor_schedule_override_slots_sync(data: DoctorOverrideRoutineSyncInput!): Boolean!
+  doctor_blocked_days_add: Boolean!
 }
 
 input RegisterInput {

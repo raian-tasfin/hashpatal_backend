@@ -121,13 +121,19 @@ export const overrideRoutine = pgTable('override_routine', {
     .references(() => schedulable.id, { onDelete: 'cascade' }),
 });
 
-export const blockedDays = pgTable('blocked_days', {
-  id: serial('id').primaryKey(),
-  date: date('date').notNull(),
-  schedulableId: integer('schedulableId')
-    .notNull()
-    .references(() => schedulable.id, { onDelete: 'cascade' }),
-});
+export const blockedDays = pgTable(
+  'blocked_days',
+  {
+    id: serial('id').primaryKey(),
+    date: date('date').notNull(),
+    schedulableId: integer('schedulableId')
+      .notNull()
+      .references(() => schedulable.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    unique('blocked_days_schedulable_date_unique').on(t.schedulableId, t.date),
+  ],
+);
 
 export const appointment = pgTable('appointment', {
   id: serial('id').primaryKey(),

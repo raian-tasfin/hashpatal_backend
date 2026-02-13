@@ -6,12 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
-  DoctorOverrideRoutineSyncInput,
-  DoctorScheduleSyncInput,
-} from './input';
-import { UserService } from 'src/user';
-import { DoctorService } from 'src/doctor/doctor.service';
-import {
+  BlockedDays,
   KyselyDatabaseService,
   OverrideRoutine,
   RegularRoutine,
@@ -19,8 +14,15 @@ import {
   Schedulable,
   SchedulableType,
 } from '@org/shared/db';
-import { DoctorRegularRoutineSyncInput } from './input/doctor-regular-routine-sync.input';
 import { ISlot } from '@org/shared/slots';
+import { DoctorService } from 'src/doctor/doctor.service';
+import { UserService } from 'src/user';
+import {
+  DoctorBlockedDaysAddInput,
+  DoctorOverrideRoutineSyncInput,
+  DoctorRegularRoutineSyncInput,
+  DoctorScheduleSyncInput,
+} from './input';
 
 @Injectable()
 export class ScheduleService {
@@ -84,9 +86,19 @@ export class ScheduleService {
     return this._sync_slots('override_routine', schedule, slots);
   }
 
-  //   async doctor_blocked_days_add(data: DoctorBlockedDaysAddInput) {
-  //     const {email, days} = data;
-  //   }
+  async doctor_blocked_days_add(
+    data: DoctorBlockedDaysAddInput,
+  ): Promise<boolean> {
+    const { email, dates } = data;
+    const { id: schedulableId } =
+      await this._get_doctor_schedule_or_throw(email);
+    await this._db
+      .insertInto('blocked_days')
+      .values(dates.map((date) => ({ date, schedulableId })))
+      .onConflict((x) => x.doNothing())
+      .execute();
+    return true;
+  }
 
   /**
    * Queries
@@ -117,6 +129,14 @@ export class ScheduleService {
   ): Promise<OverrideRoutine[]> {
     return await this._db
       .selectFrom('override_routine')
+      .selectAll()
+      .where('schedulableId', '=', scheduleId)
+      .execute();
+  }
+
+  async get_doctor_blocked_days(scheduleId: number): Promise<BlockedDays[]> {
+    return await this._db
+      .selectFrom('blocked_days')
       .selectAll()
       .where('schedulableId', '=', scheduleId)
       .execute();

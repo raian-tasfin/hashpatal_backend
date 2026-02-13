@@ -88,6 +88,9 @@
         { "date": "2026-06-01", "startTime": "20:00", "endTime": "22:00" },
         { "date": "2026-06-02", "startTime": "20:00", "endTime": "22:00" },
         { "date": "2026-06-03", "startTime": "20:00", "endTime": "22:00" }
+      ],
+      "blockedDays": [
+        { "date": "2026-06-01" }
       ]
     }
   ]

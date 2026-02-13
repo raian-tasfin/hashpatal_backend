@@ -19,6 +19,7 @@ import { DoctorService } from 'src/doctor/doctor.service';
 import { ScheduleService } from 'src/schedule/schedule.service';
 import { ScheduleModule } from 'src/schedule/schedule.module';
 import { OverrideSlotInput, RegularSlotInput } from '@org/shared/slots';
+import { DoctorBlockedDaysAddInput } from 'src/schedule/input';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
@@ -172,6 +173,25 @@ async function create_doctor_override_schedule(app: INestApplicationContext) {
   logger.log('Override slot creation phase done');
 }
 
+async function add_blockdays_for_doctors(app: INestApplicationContext) {
+  logger.log('Adding blockdays for doctors...');
+  const scheduleService = app.get(ScheduleService);
+  const promises = data.doctorProfiles.map(async ({ email, blockedDays }) => {
+    try {
+      const dates = blockedDays.map((d) => d.date);
+      await scheduleService.doctor_blocked_days_add({
+        email,
+        dates,
+      });
+      logger.log(`Synced blocked days for ${email}`);
+    } catch (err) {
+      logger.error(`Failed syncing ${email}: ${err.message}`);
+    }
+  });
+  await Promise.all(promises);
+  logger.log('Blocked day sync phase done');
+}
+
 // async function add_doctor_regular_slots(app: INestApplicationContext) {
 //   logger.log('Adding regular slots for doctors...');
 //   const scheduleService = app.get(ScheduleService);
@@ -225,6 +245,7 @@ async function bootstrap() {
   await create_doctor_schedule(app);
   await create_doctor_regular_schedules(app);
   await create_doctor_override_schedule(app);
+  await add_blockdays_for_doctors(app);
   logger.log('Finished seeding database.');
   await app.close();
 }

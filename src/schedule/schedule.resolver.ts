@@ -8,11 +8,13 @@ import {
 import { ScheduleService } from './schedule.service';
 import { Inject, Logger } from '@nestjs/common';
 import {
+  DoctorBlockedDaysAddInput,
   DoctorOverrideRoutineSyncInput,
   DoctorRegularRoutineSyncInput,
   DoctorScheduleSyncInput,
 } from './input';
 import {
+  BlockedDayOutput,
   OverrideRoutineOutput,
   RegularRoutineOutput,
   SchedulableOutput,
@@ -48,6 +50,13 @@ export class ScheduleResolver {
     @Args('data') data: DoctorOverrideRoutineSyncInput,
   ): Promise<boolean> {
     return this._scheduleService.doctor_override_routine_sync(data);
+  }
+
+  @Mutation(() => Boolean)
+  async doctor_blocked_days_add(
+    data: DoctorBlockedDaysAddInput,
+  ): Promise<boolean> {
+    return this._scheduleService.doctor_blocked_days_add(data);
   }
 }
 
@@ -91,5 +100,11 @@ export class SchedulableResolver {
     const res = await this._scheduleService.get_doctor_override_slots(id);
     this.logger.log(res);
     return res.map((r) => OverrideRoutineOutput.from_model(r));
+  }
+
+  @ResolveField(() => [BlockedDayOutput], { nullable: true })
+  async blocked_days(@Parent() { id }: SchedulableOutput) {
+    const res = await this._scheduleService.get_doctor_blocked_days(id);
+    return res.map((r) => BlockedDayOutput.from_model(r));
   }
 }
