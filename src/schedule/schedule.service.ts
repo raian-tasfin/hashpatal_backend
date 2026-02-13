@@ -237,4 +237,17 @@ export class ScheduleService {
     });
     return true;
   }
+
+  private _explode_dates(startDate: string, endDate: string): string[] {
+    const dates: string[] = [];
+    const last = new Date(endDate);
+    for (
+      let curr = new Date(startDate);
+      curr <= last;
+      curr.setUTCDate(curr.getUTCDate() + 1)
+    ) {
+      dates.push(curr.toISOString().split('T')[0]);
+    }
+    return dates;
+  }
 }
