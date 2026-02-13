@@ -9,6 +9,7 @@ import { ScheduleService } from './schedule.service';
 import { Inject, Logger } from '@nestjs/common';
 import {
   DoctorBlockedDaysAddInput,
+  DoctorBlockedDaysRemoveInput,
   DoctorOverrideRoutineSyncInput,
   DoctorRegularRoutineSyncInput,
   DoctorScheduleSyncInput,
@@ -54,9 +55,16 @@ export class ScheduleResolver {
 
   @Mutation(() => Boolean)
   async doctor_blocked_days_add(
-    data: DoctorBlockedDaysAddInput,
+    @Args('data') data: DoctorBlockedDaysAddInput,
   ): Promise<boolean> {
     return this._scheduleService.doctor_blocked_days_add(data);
+  }
+
+  @Mutation(() => Boolean)
+  async doctor_blocked_days_remove(
+    @Args('data') data: DoctorBlockedDaysRemoveInput,
+  ): Promise<boolean> {
+    return this._scheduleService.doctor_blocked_days_remove(data);
   }
 }
 

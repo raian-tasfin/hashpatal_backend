@@ -19,6 +19,7 @@ import { DoctorService } from 'src/doctor/doctor.service';
 import { UserService } from 'src/user';
 import {
   DoctorBlockedDaysAddInput,
+  DoctorBlockedDaysRemoveInput,
   DoctorOverrideRoutineSyncInput,
   DoctorRegularRoutineSyncInput,
   DoctorScheduleSyncInput,
@@ -96,6 +97,25 @@ export class ScheduleService {
       .insertInto('blocked_days')
       .values(dates.map((date) => ({ date, schedulableId })))
       .onConflict((x) => x.doNothing())
+      .execute();
+    return true;
+  }
+
+  async doctor_blocked_days_remove(
+    data: DoctorBlockedDaysRemoveInput,
+  ): Promise<boolean> {
+    const { email, dates } = data;
+    const { id: schedulableId } =
+      await this._get_doctor_schedule_or_throw(email);
+    if (dates.length === 0) return true;
+    await this._db
+      .deleteFrom('blocked_days')
+      .where('schedulableId', '=', schedulableId)
+      .where(
+        'date',
+        'in',
+        dates.map((d) => new Date(d)),
+      )
       .execute();
     return true;
   }

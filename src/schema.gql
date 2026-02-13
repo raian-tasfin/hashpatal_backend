@@ -94,7 +94,8 @@ type Mutation {
   doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
   doctor_schedule_regular_slots_sync(data: DoctorRegularRoutineSyncInput!): Boolean!
   doctor_schedule_override_slots_sync(data: DoctorOverrideRoutineSyncInput!): Boolean!
-  doctor_blocked_days_add: Boolean!
+  doctor_blocked_days_add(data: DoctorBlockedDaysAddInput!): Boolean!
+  doctor_blocked_days_remove(data: DoctorBlockedDaysRemoveInput!): Boolean!
 }
 
 input RegisterInput {
@@ -147,4 +148,14 @@ input OverrideSlotInput {
   startTime: String!
   endTime: String!
   date: String!
+}
+
+input DoctorBlockedDaysAddInput {
+  email: String!
+  dates: [String!]!
+}
+
+input DoctorBlockedDaysRemoveInput {
+  email: String!
+  dates: [String!]!
 }
