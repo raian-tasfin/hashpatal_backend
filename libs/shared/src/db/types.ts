@@ -85,6 +85,7 @@ export interface RegularRoutine {
 export interface Schedulable {
   entityId: number;
   id: Generated<number>;
+  maxBookingDays: number;
   minutesPerSlot: number;
   type: SchedulableType;
 }

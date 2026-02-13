@@ -36,35 +36,35 @@ export class ScheduleResolver {
   async doctor_schedule_sync(
     @Args('data') data: DoctorScheduleSyncInput,
   ): Promise<boolean> {
-    return this._scheduleService.doctor_schedule_sync(data);
+    return await this._scheduleService.doctor_schedule_sync(data);
   }
 
   @Mutation(() => Boolean)
   async doctor_schedule_regular_slots_sync(
     @Args('data') data: DoctorRegularRoutineSyncInput,
   ): Promise<boolean> {
-    return this._scheduleService.doctor_regular_routine_sync(data);
+    return await this._scheduleService.doctor_regular_routine_sync(data);
   }
 
   @Mutation(() => Boolean)
   async doctor_schedule_override_slots_sync(
     @Args('data') data: DoctorOverrideRoutineSyncInput,
   ): Promise<boolean> {
-    return this._scheduleService.doctor_override_routine_sync(data);
+    return await this._scheduleService.doctor_override_routine_sync(data);
   }
 
   @Mutation(() => Boolean)
   async doctor_blocked_days_add(
     @Args('data') data: DoctorBlockedDaysAddInput,
   ): Promise<boolean> {
-    return this._scheduleService.doctor_blocked_days_add(data);
+    return await this._scheduleService.doctor_blocked_days_add(data);
   }
 
   @Mutation(() => Boolean)
   async doctor_blocked_days_remove(
     @Args('data') data: DoctorBlockedDaysRemoveInput,
   ): Promise<boolean> {
-    return this._scheduleService.doctor_blocked_days_remove(data);
+    return await this._scheduleService.doctor_blocked_days_remove(data);
   }
 }
 
@@ -84,7 +84,7 @@ export class DoctorScheduleResolver {
     { id }: DoctorProfileOutput,
   ): Promise<SchedulableOutput | null> {
     const res = await this._scheduleService.get_doctor_schedule(id);
-    return res ? res : null;
+    return res ? SchedulableOutput.from_model(res) : null;
   }
 }
 

@@ -96,6 +96,7 @@ export const schedulable = pgTable('schedulable', {
   entityId: integer('entityId').notNull(),
   schedulableType: schedulableTypeEnum('type').notNull(),
   minutesPerSlot: integer('minutesPerSlot').notNull(),
+  maxBookingDays: integer('maxBookingDays').notNull(),
 });
 
 /* overlaps and stuff are to be handled service layer. instead of

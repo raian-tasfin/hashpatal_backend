@@ -11,6 +11,9 @@ export class SchedulableOutput {
   @IntegerField()
   minutesPerSlot: number;
 
+  @IntegerField()
+  maxBookingDays: number;
+
   static from_model(model: Schedulable): SchedulableOutput {
     return plainToInstance(SchedulableOutput, model);
   }

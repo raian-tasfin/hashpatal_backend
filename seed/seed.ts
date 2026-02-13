@@ -118,6 +118,7 @@ async function create_doctor_schedule(app: INestApplicationContext) {
     await scheduleService.doctor_schedule_sync({
       email: profileData.email,
       minutesPerSlot: profileData.schedule.minutesPerSlot,
+      maxBookingDays: profileData.schedule.maxBookingDays,
     });
   }
   logger.log('Doctor schedules phase complete');

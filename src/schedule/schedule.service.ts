@@ -39,7 +39,7 @@ export class ScheduleService {
    * Mutations
    */
   async doctor_schedule_sync(data: DoctorScheduleSyncInput): Promise<boolean> {
-    const { email, minutesPerSlot } = data;
+    const { email, minutesPerSlot, maxBookingDays } = data;
     const user = await this.userService.find_by_email({ email });
     if (!user) throw new NotFoundException(`User "${email}" not found`);
     const roles = await this.userService._find_roles(user.id);
@@ -61,7 +61,8 @@ export class ScheduleService {
         .insertInto('schedulable')
         .values({
           entityId: doctor.id,
-          minutesPerSlot: minutesPerSlot,
+          minutesPerSlot,
+          maxBookingDays,
           type: SchedulableType.DOCTOR,
         })
         .returningAll()

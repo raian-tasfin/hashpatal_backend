@@ -70,6 +70,7 @@ enum WeekDayType {
 
 type SchedulableOutput {
   minutesPerSlot: Int!
+  maxBookingDays: Int!
   regular_routine: [RegularRoutineOutput!]
   override_routine: [OverrideRoutineOutput!]
   blocked_days: [BlockedDayOutput!]
@@ -126,6 +127,7 @@ input SyncRolesInput {
 input DoctorScheduleSyncInput {
   email: String!
   minutesPerSlot: Int!
+  maxBookingDays: Int!
 }
 
 input DoctorRegularRoutineSyncInput {

@@ -70,7 +70,8 @@
         }
       ],
       "schedule": {
-        "minutesPerSlot": 15
+        "minutesPerSlot": 15,
+        "maxBookingDays": 90
       },
       "regularSlots": [
         {"weekDay": "SUNDAY", "startTime": "10:00", "endTime": "13:00" },

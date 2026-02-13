@@ -8,4 +8,7 @@ export class DoctorScheduleSyncInput {
 
   @IntegerField()
   minutesPerSlot: number;
+
+  @IntegerField()
+  maxBookingDays: number;
 }
