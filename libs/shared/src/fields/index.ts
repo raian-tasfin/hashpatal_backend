@@ -8,6 +8,7 @@ export * from './name.field';
 export * from './password.field';
 export * from './roles.field';
 export * from './schedulable.field';
+export * from './shift.field';
 export * from './string.field';
 export * from './time.field';
 export * from './token.field';

@@ -129,16 +129,22 @@ export const blockedDays = pgTable(
   (t) => [unique('blocked_days_unique').on(t.scheduleId, t.date)],
 );
 
-export const availableSlots = pgTable('available_slots', {
-  id: serial('id').primaryKey(),
-  date: date('date').notNull(),
-  scheduleId: integer('scheduleId')
-    .notNull()
-    .references(() => schedule.id, { onDelete: 'cascade' }),
-  shift: shiftEnum('shift').notNull(),
-  startTime: time('startTime').notNull(),
-  endTime: time('endTime').notNull(),
-});
+export const availableSlots = pgTable(
+  'available_slots',
+  {
+    id: serial('id').primaryKey(),
+    date: date('date').notNull(),
+    scheduleId: integer('scheduleId')
+      .notNull()
+      .references(() => schedule.id, { onDelete: 'cascade' }),
+    shift: shiftEnum('shift').notNull(),
+    startTime: time('startTime').notNull(),
+    endTime: time('endTime').notNull(),
+  },
+  (t) => [
+    unique('available_slots_unique').on(t.scheduleId, t.date, t.startTime),
+  ],
+);
 
 export const appointment = pgTable('appointment', {
   id: serial('id').primaryKey(),

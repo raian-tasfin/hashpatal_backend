@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Inject,
   Injectable,
   Logger,
@@ -15,6 +16,7 @@ import {
   RoleType,
   SchedulableType,
   Schedule,
+  ShiftType,
   WeekDayType,
 } from '@org/shared/db';
 import { ISlot } from '@org/shared/slots';
@@ -28,7 +30,7 @@ import {
   DoctorScheduleSyncInput,
 } from './input';
 import { format_date } from '@org/shared/fields';
-import { sql } from 'kysely';
+import { sql, Transaction } from 'kysely';
 import { addDays, eachDayOfInterval, startOfToday } from 'date-fns';
 import { DB } from '@org/shared/db/types';
 
@@ -49,6 +51,7 @@ type DateIndexedSlotCollection = Exclude<
   WeekIndexedSlotCollection
 >;
 type HasDateScheduleId = DateIndexedSlotCollection | 'blocked_days';
+type QueryBuilder = KyselyDatabaseService | Transaction<DB>;
 
 @Injectable()
 export class ScheduleService {
@@ -63,72 +66,78 @@ export class ScheduleService {
   /**
    * Mutations
    */
-  async doctor_schedule_sync(data: DoctorScheduleSyncInput): Promise<boolean> {
+  async doctor_schedule_sync(
+    data: DoctorScheduleSyncInput,
+    trx: QueryBuilder = this._db,
+  ): Promise<boolean> {
     const { email, minutesPerSlot, maxBookingDays } = data;
     const user = await this.userService.find_by_email({ email });
     if (!user) throw new NotFoundException(`User "${email}" not found`);
     const roles = await this.userService._find_roles(user.id);
     if (!roles.includes(RoleType.DOCTOR)) {
-      throw new UnauthorizedException(`"${email}" not DOCTOR.`);
+      throw new UnauthorizedException(`"${email}" is not a DOCTOR.`);
     }
     const doctor = await this.doctorService.get_profile(user.id);
-    if (!doctor) {
-      throw new NotFoundException(`Doctor "${email}"'s profile not found`);
-    }
-    await this._db.transaction().execute(async (trx) => {
-      if (doctor.scheduleId) {
-        await trx
-          .deleteFrom('schedule')
-          .where('id', '=', doctor.scheduleId)
-          .execute();
-      }
-      const { id } = await trx
-        .insertInto('schedule')
-        .values({
-          entityId: doctor.id,
-          minutesPerSlot,
-          maxBookingDays,
-          type: SchedulableType.DOCTOR,
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-      await trx
-        .updateTable('doctor_profile')
-        .set({ scheduleId: id })
-        .where('id', '=', doctor.id)
-        .execute();
-    });
+    if (!doctor)
+      throw new NotFoundException(`Doctor profile not found for "${email}"`);
+    await trx
+      .insertInto('schedule')
+      .values({
+        entityId: doctor.id,
+        minutesPerSlot,
+        maxBookingDays,
+        type: SchedulableType.DOCTOR,
+      })
+      .onConflict((oc) =>
+        oc
+          .columns(['entityId', 'type'])
+          .doUpdateSet({ minutesPerSlot, maxBookingDays }),
+      )
+      .returningAll()
+      .executeTakeFirstOrThrow();
     return true;
   }
 
-  async doctor_regular_routine_sync(data: DoctorRegularRoutineSyncInput) {
+  async doctor_regular_routine_sync(
+    data: DoctorRegularRoutineSyncInput,
+    trx: QueryBuilder = this._db,
+  ) {
     const { email, slots } = data;
-    const schedule = await this._get_doctor_schedule_or_throw(email);
-    return this._sync_slots('regular_routine', schedule, slots);
+    const schedule = await this._get_doctor_schedule_or_throw(email, trx);
+    return this._sync_slots('regular_routine', schedule, slots, trx);
   }
 
-  async doctor_override_routine_sync(data: DoctorOverrideRoutineSyncInput) {
+  async doctor_override_routine_sync(
+    data: DoctorOverrideRoutineSyncInput,
+    trx: QueryBuilder = this._db,
+  ) {
     const { email, slots } = data;
-    const schedule = await this._get_doctor_schedule_or_throw(email);
-    return this._sync_slots('override_routine', schedule, slots);
+    const schedule = await this._get_doctor_schedule_or_throw(email, trx);
+    return this._sync_slots('override_routine', schedule, slots, trx);
   }
 
   async doctor_blocked_days_add(
     data: DoctorBlockedDaysAddInput,
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
     const { email, dates } = data;
-    const { id: schedulableId } =
-      await this._get_doctor_schedule_or_throw(email);
-    return this._blocked_days_add(schedulableId, dates);
+    const { id: schedulableId } = await this._get_doctor_schedule_or_throw(
+      email,
+      trx,
+    );
+    return this._blocked_days_add(schedulableId, dates, trx);
   }
 
   async doctor_blocked_days_remove(
     data: DoctorBlockedDaysRemoveInput,
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
     const { email, dates } = data;
-    const { id: schedulableId } =
-      await this._get_doctor_schedule_or_throw(email);
-    return this._blocked_days_remove(schedulableId, dates);
+    const { id: schedulableId } = await this._get_doctor_schedule_or_throw(
+      email,
+      trx,
+    );
+    return this._blocked_days_remove(schedulableId, dates, trx);
   }
 
   /**
@@ -136,8 +145,9 @@ export class ScheduleService {
    */
   async get_doctor_schedule(
     doctorProfileId: number,
+    trx: QueryBuilder = this._db,
   ): Promise<Schedule | undefined> {
-    return await this._db
+    return await trx
       .selectFrom('schedule')
       .selectAll()
       .where('entityId', '=', doctorProfileId)
@@ -145,24 +155,33 @@ export class ScheduleService {
       .executeTakeFirst();
   }
 
-  async get_regular_slots(scheduleId: number): Promise<RegularRoutine[]> {
-    return await this._db
+  async get_regular_slots(
+    scheduleId: number,
+    trx: QueryBuilder = this._db,
+  ): Promise<RegularRoutine[]> {
+    return await trx
       .selectFrom('regular_routine')
       .selectAll()
       .where('scheduleId', '=', scheduleId)
       .execute();
   }
 
-  async get_override_slots(scheduleId: number): Promise<OverrideRoutine[]> {
-    return await this._db
+  async get_override_slots(
+    scheduleId: number,
+    trx: QueryBuilder = this._db,
+  ): Promise<OverrideRoutine[]> {
+    return await trx
       .selectFrom('override_routine')
       .selectAll()
       .where('scheduleId', '=', scheduleId)
       .execute();
   }
 
-  async get_blocked_days(scheduleId: number): Promise<BlockedDays[]> {
-    return await this._db
+  async get_blocked_days(
+    scheduleId: number,
+    trx: QueryBuilder = this._db,
+  ): Promise<BlockedDays[]> {
+    return await trx
       .selectFrom('blocked_days')
       .selectAll()
       .where('scheduleId', '=', scheduleId)
@@ -171,18 +190,15 @@ export class ScheduleService {
 
   async get_available_show_slots(
     scheduleId: number,
+    trx: QueryBuilder = this._db,
   ): Promise<OverrideRoutine[]> {
-    const { maxBookingDays } = await this._db
-      .selectFrom('schedule')
-      .select('maxBookingDays')
-      .where('id', '=', scheduleId)
-      .executeTakeFirstOrThrow();
+    const { maxBookingDays } = await this._get_schedule(scheduleId, trx);
     const start = startOfToday();
     const end = addDays(start, maxBookingDays - 1);
     const dates = eachDayOfInterval({ start, end }).map(format_date);
     const nestedResults = await Promise.all(
       dates.map((date) =>
-        this._get_available_show_slots_date(date, scheduleId),
+        this._get_available_show_slots_date(date, scheduleId, trx),
       ),
     );
     return nestedResults.flat();
@@ -223,12 +239,13 @@ export class ScheduleService {
 
   private async _get_doctor_schedule_or_throw(
     email: string,
+    trx: QueryBuilder = this._db,
   ): Promise<Schedule> {
     const user = await this.userService.find_by_email({ email });
     if (!user) throw new NotFoundException(`User ${email} not found.`);
     const doctor = await this.doctorService.get_profile(user.id);
     if (!doctor) throw new NotFoundException(`No doctor profile for ${email}`);
-    const schedule = await this.get_doctor_schedule(doctor.id);
+    const schedule = await this.get_doctor_schedule(doctor.id, trx);
     if (!schedule) {
       throw new NotFoundException(`No doctor schedule for ${email}`);
     }
@@ -236,34 +253,36 @@ export class ScheduleService {
   }
 
   private async _sync_slots<T extends ISlot>(
-    table: 'regular_routine' | 'override_routine',
+    table: any,
     schedule: Schedule,
     slots: T[],
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
     const { id: scheduleId } = schedule;
-    await this._db.transaction().execute(async (trx) => {
-      await trx
-        .deleteFrom(table)
-        .where('scheduleId', '=', scheduleId)
-        .execute();
-      await trx
+    const executeWork = async (db: QueryBuilder) => {
+      await db.deleteFrom(table).where('scheduleId', '=', scheduleId).execute();
+      await db
         .insertInto(table)
-        .values(
-          slots.map((slot) => ({
-            ...slot,
-            scheduleId,
-          })),
-        )
+        .values(slots.map((s) => ({ ...s, scheduleId })))
         .execute();
-    });
-    return true;
+    };
+    if ('transaction' in trx) {
+      return await trx.transaction().execute(async (newTrx) => {
+        await executeWork(newTrx);
+        return true;
+      });
+    } else {
+      await executeWork(trx);
+      return true;
+    }
   }
 
   private async _blocked_days_add(
     scheduleId: number,
     dates: string[],
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
-    await this._db
+    await trx
       .insertInto('blocked_days')
       .values(dates.map((date) => ({ date, scheduleId })))
       .onConflict((x) => x.doNothing())
@@ -274,9 +293,10 @@ export class ScheduleService {
   private async _blocked_days_remove(
     scheduleId: number,
     dates: string[],
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
     if (dates.length === 0) return true;
-    await this._db
+    await trx
       .deleteFrom('blocked_days')
       .where('scheduleId', '=', scheduleId)
       .where(
@@ -292,8 +312,9 @@ export class ScheduleService {
     table: HasDateScheduleId,
     date: string,
     scheduleId: number,
+    trx: QueryBuilder = this._db,
   ): Promise<boolean> {
-    const res = await this._db
+    const res = await trx
       .selectFrom(table)
       .select(sql`1`.as('ok'))
       .where('date', '=', date as any)
@@ -308,12 +329,13 @@ export class ScheduleService {
     dest: SlotCollection,
     indexValue: string,
     scheduleId: number,
+    trx: QueryBuilder = this._db,
   ) {
     const srcKey = SlotCollectionKey[src];
     const destKey = SlotCollectionKey[dest];
     const lookupValue = this._to_date_week(indexValue, srcKey);
     const storageValue = this._to_date_week(indexValue, destKey);
-    await this._db
+    await trx
       .insertInto(dest as any)
       .columns([destKey as any, 'shift', 'startTime', 'endTime', 'scheduleId'])
       .expression((eb) =>
@@ -329,39 +351,52 @@ export class ScheduleService {
           .where('scheduleId', '=', scheduleId)
           .where(srcKey as any, '=', lookupValue as any),
       )
+      .onConflict((oc) => oc.doNothing())
       .execute();
   }
 
-  private async _ensure_override_routine(date: string, scheduleId: number) {
-    if (await this._date_has_record('override_routine', date, scheduleId))
+  private async _ensure_override_routine(
+    date: string,
+    scheduleId: number,
+    trx: QueryBuilder = this._db,
+  ) {
+    if (await this._date_has_record('override_routine', date, scheduleId, trx))
       return;
     await this._copy_slots(
       'regular_routine',
       'override_routine',
       date,
       scheduleId,
+      trx,
     );
   }
 
-  private async _ensure_available_list(date: string, scheduleId: number) {
-    if (await this._date_has_record('blocked_days', date, scheduleId)) return;
-    if (await this._date_has_record('available_slots', date, scheduleId))
+  private async _ensure_available_list(
+    date: string,
+    scheduleId: number,
+    trx: QueryBuilder = this._db,
+  ) {
+    if (await this._date_has_record('blocked_days', date, scheduleId, trx))
       return;
-    await this._ensure_override_routine(date, scheduleId);
+    if (await this._date_has_record('available_slots', date, scheduleId, trx))
+      return;
+    await this._ensure_override_routine(date, scheduleId, trx);
     await this._copy_slots(
       'override_routine',
       'available_slots',
       date,
       scheduleId,
+      trx,
     );
   }
 
   private async _get_available_show_slots_date(
     date: string,
     scheduleId: number,
+    trx: QueryBuilder = this._db,
   ): Promise<OverrideRoutine[]> {
-    await this._ensure_available_list(date, scheduleId);
-    const shiftRows = await this._db
+    await this._ensure_available_list(date, scheduleId, trx);
+    const shiftRows = await trx
       .selectFrom('available_slots')
       .select('shift')
       .distinct()
@@ -370,7 +405,7 @@ export class ScheduleService {
       .execute();
     const shiftValues = shiftRows.map((row) => row.shift);
     if (shiftValues.length === 0) return [];
-    const showSlots = await this._db
+    const showSlots = await trx
       .selectFrom('override_routine')
       .selectAll()
       .where('date', '=', date as any)
@@ -378,5 +413,82 @@ export class ScheduleService {
       .where('shift', 'in', shiftValues)
       .execute();
     return showSlots;
+  }
+
+  async _get_available_slots(
+    scheduleId: number,
+    date: string,
+    shift: ShiftType,
+    trx: QueryBuilder = this._db,
+  ) {
+    return await trx
+      .selectFrom('available_slots')
+      .selectAll()
+      .where('scheduleId', '=', scheduleId)
+      .where('date', '=', date as any)
+      .where('shift', '=', shift)
+      .orderBy('startTime', 'asc')
+      .execute();
+  }
+
+  async _get_schedule(scheduleId: number, trx: QueryBuilder = this._db) {
+    return await trx
+      .selectFrom('schedule')
+      .selectAll()
+      .where('id', '=', scheduleId)
+      .executeTakeFirstOrThrow();
+  }
+
+  async _remove_available_slot(slotId: number, trx: QueryBuilder = this._db) {
+    await trx.deleteFrom('available_slots').where('id', '=', slotId).execute();
+  }
+
+  async _make_appointment(
+    scheduleId: number,
+    patientId: number,
+    date: string,
+    shift: ShiftType,
+  ): Promise<boolean> {
+    return await this._db.transaction().execute(async (trx) => {
+      const slots = await (
+        this._get_available_slots(scheduleId, date, shift, trx) as any
+      )
+        .forUpdate()
+        .execute();
+      const { minutesPerSlot } = await this._get_schedule(scheduleId, trx);
+      for (const { startTime, endTime, id: slotId } of slots) {
+        const startM = this._hhmm_to_minutes(startTime);
+        const endM = this._hhmm_to_minutes(endTime);
+        if (endM - startM < minutesPerSlot) {
+          await this._remove_available_slot(slotId, trx);
+          continue;
+        }
+        const appntEndTimeM = startM + minutesPerSlot;
+        const remainingLen = endM - appntEndTimeM;
+        if (remainingLen < minutesPerSlot) {
+          await this._remove_available_slot(slotId, trx);
+        } else {
+          await trx
+            .updateTable('available_slots')
+            .set({ startTime: this._minutes_to_hhmm(appntEndTimeM) })
+            .where('id', '=', slotId)
+            .execute();
+        }
+        await trx
+          .insertInto('appointment')
+          .values({
+            scheduleId,
+            patientId,
+            date,
+            shift,
+            startTime,
+            endTime: this._minutes_to_hhmm(appntEndTimeM),
+            status: 'SCHEDULED',
+          })
+          .execute();
+        return true;
+      }
+      throw new ConflictException(`No slots found`);
+    });
   }
 }
