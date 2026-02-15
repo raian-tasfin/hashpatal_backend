@@ -1,10 +1,10 @@
 import { ObjectType } from '@nestjs/graphql';
-import { Schedulable } from '@org/shared/db';
+import { Schedule } from '@org/shared/db';
 import { IntegerField } from '@org/shared/fields';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
-export class SchedulableOutput {
+export class ScheduleOutput {
   id: number;
   entityId: number;
 
@@ -14,7 +14,7 @@ export class SchedulableOutput {
   @IntegerField()
   maxBookingDays: number;
 
-  static from_model(model: Schedulable): SchedulableOutput {
-    return plainToInstance(SchedulableOutput, model);
+  static from_model(model: Schedule): ScheduleOutput {
+    return plainToInstance(ScheduleOutput, model);
   }
 }

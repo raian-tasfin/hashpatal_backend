@@ -7,6 +7,6 @@ export class DoctorRegularRoutineSyncInput {
   @EmailField()
   email: string;
 
-  @RegularSlotField()
+  @RegularSlotField({ isArray: true })
   slots: RegularSlotInput[];
 }

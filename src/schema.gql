@@ -25,7 +25,7 @@ enum RoleType {
 type DoctorProfileOutput {
   experience: [DoctorExperienceOutput!]
   academic_record: [AcademicRecordOutput!]
-  schedule: SchedulableOutput
+  schedule: ScheduleOutput
 }
 
 type DoctorExperienceOutput {
@@ -48,12 +48,19 @@ type BlockedDayOutput {
 
 type OverrideRoutineOutput {
   date: String!
+  shift: ShiftType!
   startTime: String!
   endTime: String!
 }
 
+enum ShiftType {
+  MORNING
+  EVENING
+}
+
 type RegularRoutineOutput {
   weekDay: WeekDayType!
+  shift: ShiftType!
   startTime: String!
   endTime: String!
 }
@@ -68,12 +75,13 @@ enum WeekDayType {
   FRIDAY
 }
 
-type SchedulableOutput {
+type ScheduleOutput {
   minutesPerSlot: Int!
   maxBookingDays: Int!
   regular_routine: [RegularRoutineOutput!]
   override_routine: [OverrideRoutineOutput!]
   blocked_days: [BlockedDayOutput!]
+  available_slots: [OverrideRoutineOutput!]
 }
 
 type Query {
@@ -132,10 +140,11 @@ input DoctorScheduleSyncInput {
 
 input DoctorRegularRoutineSyncInput {
   email: String!
-  slots: RegularSlotInput!
+  slots: [RegularSlotInput!]!
 }
 
 input RegularSlotInput {
+  shift: ShiftType!
   startTime: String!
   endTime: String!
   weekDay: WeekDayType!
@@ -147,6 +156,7 @@ input DoctorOverrideRoutineSyncInput {
 }
 
 input OverrideSlotInput {
+  shift: ShiftType!
   startTime: String!
   endTime: String!
   date: String!

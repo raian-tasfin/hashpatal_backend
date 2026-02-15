@@ -1,6 +1,7 @@
 import { ObjectType } from '@nestjs/graphql';
-import { RegularRoutine, WeekDayType } from '@org/shared/db';
+import { RegularRoutine, ShiftType, WeekDayType } from '@org/shared/db';
 import { TimeField, WeekDayField } from '@org/shared/fields';
+import { ShiftField } from '@org/shared/slots';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
@@ -9,6 +10,9 @@ export class RegularRoutineOutput {
 
   @WeekDayField()
   weekDay: WeekDayType;
+
+  @ShiftField()
+  shift: ShiftType;
 
   @TimeField()
   startTime: string;

@@ -1,6 +1,7 @@
 import { ObjectType } from '@nestjs/graphql';
-import { OverrideRoutine } from '@org/shared/db';
+import { OverrideRoutine, ShiftType } from '@org/shared/db';
 import { TimeField, DateField } from '@org/shared/fields';
+import { ShiftField } from '@org/shared/slots';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
@@ -9,6 +10,9 @@ export class OverrideRoutineOutput {
 
   @DateField()
   date: string;
+
+  @ShiftField()
+  shift: ShiftType;
 
   @TimeField()
   startTime: string;

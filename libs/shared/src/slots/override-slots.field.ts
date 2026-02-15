@@ -9,6 +9,6 @@ export function OverrideSlotField(options?: OrgFieldOptions) {
   return generate_field({
     type: OverrideSlotInput,
     objectType: true,
-    constraints: [SlotsNoOverlapConstraint],
+    collectionConstraints: [SlotsNoOverlapConstraint],
   })(options);
 }

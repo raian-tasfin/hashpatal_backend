@@ -127,14 +127,13 @@ async function create_doctor_schedule(app: INestApplicationContext) {
 async function create_doctor_regular_schedules(app: INestApplicationContext) {
   logger.log('Creating regular schedules for doctors...');
   const scheduleService = app.get(ScheduleService);
-
-  // Use map to create an array of PROMISES and return them
   const promises = data.doctorProfiles.map(async ({ email, regularSlots }) => {
     try {
       await scheduleService.doctor_regular_routine_sync({
         email,
-        slots: regularSlots.map(({ weekDay, startTime, endTime }) => ({
+        slots: regularSlots.map(({ weekDay, shift, startTime, endTime }) => ({
           weekDay,
+          shift,
           startTime,
           endTime,
         })) as RegularSlotInput[],
@@ -152,14 +151,13 @@ async function create_doctor_regular_schedules(app: INestApplicationContext) {
 async function create_doctor_override_schedule(app: INestApplicationContext) {
   logger.log('Creating override for doctors...');
   const scheduleService = app.get(ScheduleService);
-
-  // Use map to create an array of PROMISES and return them
   const promises = data.doctorProfiles.map(async ({ email, overrideSlots }) => {
     try {
       await scheduleService.doctor_override_routine_sync({
         email,
-        slots: overrideSlots.map(({ date, startTime, endTime }) => ({
+        slots: overrideSlots.map(({ date, shift, startTime, endTime }) => ({
           date,
+          shift,
           startTime,
           endTime,
         })) as OverrideSlotInput[],

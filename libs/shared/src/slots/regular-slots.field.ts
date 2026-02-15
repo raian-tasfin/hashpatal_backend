@@ -9,6 +9,6 @@ export function RegularSlotField(options?: OrgFieldOptions) {
   return generate_field({
     type: RegularSlotInput,
     objectType: true,
-    constraints: [SlotsNoOverlapConstraint],
+    collectionConstraints: [SlotsNoOverlapConstraint],
   })(options);
 }

@@ -6,13 +6,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
+  Appointment,
+  AvailableSlots,
   BlockedDays,
   KyselyDatabaseService,
   OverrideRoutine,
   RegularRoutine,
   RoleType,
-  Schedulable,
   SchedulableType,
+  Schedule,
+  WeekDayType,
 } from '@org/shared/db';
 import { ISlot } from '@org/shared/slots';
 import { DoctorService } from 'src/doctor/doctor.service';
@@ -24,6 +27,28 @@ import {
   DoctorRegularRoutineSyncInput,
   DoctorScheduleSyncInput,
 } from './input';
+import { format_date } from '@org/shared/fields';
+import { sql } from 'kysely';
+import { addDays, eachDayOfInterval, startOfToday } from 'date-fns';
+import { DB } from '@org/shared/db/types';
+
+const SlotCollectionKey = {
+  regular_routine: 'weekDay',
+  override_routine: 'date',
+  available_slots: 'date',
+  appointment: 'date',
+} as const;
+type SlotCollection = keyof typeof SlotCollectionKey;
+type WeekIndexedSlotCollection = {
+  [K in SlotCollection]: (typeof SlotCollectionKey)[K] extends 'weekDay'
+    ? K
+    : never;
+}[SlotCollection];
+type DateIndexedSlotCollection = Exclude<
+  SlotCollection,
+  WeekIndexedSlotCollection
+>;
+type HasDateScheduleId = DateIndexedSlotCollection | 'blocked_days';
 
 @Injectable()
 export class ScheduleService {
@@ -51,14 +76,14 @@ export class ScheduleService {
       throw new NotFoundException(`Doctor "${email}"'s profile not found`);
     }
     await this._db.transaction().execute(async (trx) => {
-      if (doctor.schedulableId) {
+      if (doctor.scheduleId) {
         await trx
-          .deleteFrom('schedulable')
-          .where('id', '=', doctor.schedulableId)
+          .deleteFrom('schedule')
+          .where('id', '=', doctor.scheduleId)
           .execute();
       }
       const { id } = await trx
-        .insertInto('schedulable')
+        .insertInto('schedule')
         .values({
           entityId: doctor.id,
           minutesPerSlot,
@@ -69,7 +94,7 @@ export class ScheduleService {
         .executeTakeFirstOrThrow();
       await trx
         .updateTable('doctor_profile')
-        .set({ schedulableId: id })
+        .set({ scheduleId: id })
         .where('id', '=', doctor.id)
         .execute();
     });
@@ -94,12 +119,7 @@ export class ScheduleService {
     const { email, dates } = data;
     const { id: schedulableId } =
       await this._get_doctor_schedule_or_throw(email);
-    await this._db
-      .insertInto('blocked_days')
-      .values(dates.map((date) => ({ date, schedulableId })))
-      .onConflict((x) => x.doNothing())
-      .execute();
-    return true;
+    return this._blocked_days_add(schedulableId, dates);
   }
 
   async doctor_blocked_days_remove(
@@ -108,17 +128,7 @@ export class ScheduleService {
     const { email, dates } = data;
     const { id: schedulableId } =
       await this._get_doctor_schedule_or_throw(email);
-    if (dates.length === 0) return true;
-    await this._db
-      .deleteFrom('blocked_days')
-      .where('schedulableId', '=', schedulableId)
-      .where(
-        'date',
-        'in',
-        dates.map((d) => new Date(d)),
-      )
-      .execute();
-    return true;
+    return this._blocked_days_remove(schedulableId, dates);
   }
 
   /**
@@ -126,41 +136,56 @@ export class ScheduleService {
    */
   async get_doctor_schedule(
     doctorProfileId: number,
-  ): Promise<Schedulable | undefined> {
+  ): Promise<Schedule | undefined> {
     return await this._db
-      .selectFrom('schedulable')
+      .selectFrom('schedule')
       .selectAll()
       .where('entityId', '=', doctorProfileId)
       .where('type', '=', SchedulableType.DOCTOR)
       .executeTakeFirst();
   }
 
-  async get_doctor_regular_slots(
-    scheduleId: number,
-  ): Promise<RegularRoutine[]> {
+  async get_regular_slots(scheduleId: number): Promise<RegularRoutine[]> {
     return await this._db
       .selectFrom('regular_routine')
       .selectAll()
-      .where('schedulableId', '=', scheduleId)
+      .where('scheduleId', '=', scheduleId)
       .execute();
   }
 
-  async get_doctor_override_slots(
-    scheduleId: number,
-  ): Promise<OverrideRoutine[]> {
+  async get_override_slots(scheduleId: number): Promise<OverrideRoutine[]> {
     return await this._db
       .selectFrom('override_routine')
       .selectAll()
-      .where('schedulableId', '=', scheduleId)
+      .where('scheduleId', '=', scheduleId)
       .execute();
   }
 
-  async get_doctor_blocked_days(scheduleId: number): Promise<BlockedDays[]> {
+  async get_blocked_days(scheduleId: number): Promise<BlockedDays[]> {
     return await this._db
       .selectFrom('blocked_days')
       .selectAll()
-      .where('schedulableId', '=', scheduleId)
+      .where('scheduleId', '=', scheduleId)
       .execute();
+  }
+
+  async get_available_show_slots(
+    scheduleId: number,
+  ): Promise<OverrideRoutine[]> {
+    const { maxBookingDays } = await this._db
+      .selectFrom('schedule')
+      .select('maxBookingDays')
+      .where('id', '=', scheduleId)
+      .executeTakeFirstOrThrow();
+    const start = startOfToday();
+    const end = addDays(start, maxBookingDays - 1);
+    const dates = eachDayOfInterval({ start, end }).map(format_date);
+    const nestedResults = await Promise.all(
+      dates.map((date) =>
+        this._get_available_show_slots_date(date, scheduleId),
+      ),
+    );
+    return nestedResults.flat();
   }
 
   /**
@@ -179,29 +204,26 @@ export class ScheduleService {
     return `${hh}:${mm}`;
   }
 
-  private _explode_slots<T extends ISlot>(
-    data: T[],
-    minutesPerSlot: number,
-  ): T[] {
-    const exploded: T[] = [];
-    for (const range of data) {
-      let current = this._hhmm_to_minutes(range.startTime);
-      const end = this._hhmm_to_minutes(range.endTime);
-      while (current + minutesPerSlot <= end) {
-        exploded.push({
-          ...range,
-          startTime: this._minutes_to_hhmm(current),
-          endTime: this._minutes_to_hhmm(current + minutesPerSlot),
-        });
-        current += minutesPerSlot;
+  private _to_date_week(
+    inStr: string,
+    to: 'weekDay' | 'date',
+  ): string | WeekDayType {
+    if (to === 'weekDay') {
+      if (Object.values(WeekDayType).includes(inStr as WeekDayType)) {
+        return inStr as WeekDayType;
       }
+      const [year, month, day] = inStr.split('-').map(Number);
+      const dateObj = new Date(year, month - 1, day);
+      return new Intl.DateTimeFormat('en-US', { weekday: 'long' })
+        .format(dateObj)
+        .toUpperCase() as WeekDayType;
     }
-    return exploded;
+    return inStr;
   }
 
   private async _get_doctor_schedule_or_throw(
     email: string,
-  ): Promise<Schedulable> {
+  ): Promise<Schedule> {
     const user = await this.userService.find_by_email({ email });
     if (!user) throw new NotFoundException(`User ${email} not found.`);
     const doctor = await this.doctorService.get_profile(user.id);
@@ -215,22 +237,21 @@ export class ScheduleService {
 
   private async _sync_slots<T extends ISlot>(
     table: 'regular_routine' | 'override_routine',
-    schedule: Schedulable,
+    schedule: Schedule,
     slots: T[],
   ): Promise<boolean> {
-    const { id: schedulableId, minutesPerSlot } = schedule;
-    const exSlots = this._explode_slots(slots, minutesPerSlot);
+    const { id: scheduleId } = schedule;
     await this._db.transaction().execute(async (trx) => {
       await trx
         .deleteFrom(table)
-        .where('schedulableId', '=', schedulableId)
+        .where('scheduleId', '=', scheduleId)
         .execute();
       await trx
         .insertInto(table)
         .values(
-          exSlots.map((slot) => ({
+          slots.map((slot) => ({
             ...slot,
-            schedulableId,
+            scheduleId,
           })),
         )
         .execute();
@@ -238,16 +259,124 @@ export class ScheduleService {
     return true;
   }
 
-  private _explode_dates(startDate: string, endDate: string): string[] {
-    const dates: string[] = [];
-    const last = new Date(endDate);
-    for (
-      let curr = new Date(startDate);
-      curr <= last;
-      curr.setUTCDate(curr.getUTCDate() + 1)
-    ) {
-      dates.push(curr.toISOString().split('T')[0]);
-    }
-    return dates;
+  private async _blocked_days_add(
+    scheduleId: number,
+    dates: string[],
+  ): Promise<boolean> {
+    await this._db
+      .insertInto('blocked_days')
+      .values(dates.map((date) => ({ date, scheduleId })))
+      .onConflict((x) => x.doNothing())
+      .execute();
+    return true;
+  }
+
+  private async _blocked_days_remove(
+    scheduleId: number,
+    dates: string[],
+  ): Promise<boolean> {
+    if (dates.length === 0) return true;
+    await this._db
+      .deleteFrom('blocked_days')
+      .where('scheduleId', '=', scheduleId)
+      .where(
+        'date',
+        'in',
+        dates.map((d) => new Date(d)),
+      )
+      .execute();
+    return true;
+  }
+
+  private async _date_has_record(
+    table: HasDateScheduleId,
+    date: string,
+    scheduleId: number,
+  ): Promise<boolean> {
+    const res = await this._db
+      .selectFrom(table)
+      .select(sql`1`.as('ok'))
+      .where('date', '=', date as any)
+      .where('scheduleId', '=', scheduleId)
+      .limit(1)
+      .executeTakeFirst();
+    return res !== undefined && res !== null;
+  }
+
+  private async _copy_slots(
+    src: SlotCollection,
+    dest: SlotCollection,
+    indexValue: string,
+    scheduleId: number,
+  ) {
+    const srcKey = SlotCollectionKey[src];
+    const destKey = SlotCollectionKey[dest];
+    const lookupValue = this._to_date_week(indexValue, srcKey);
+    const storageValue = this._to_date_week(indexValue, destKey);
+    await this._db
+      .insertInto(dest as any)
+      .columns([destKey as any, 'shift', 'startTime', 'endTime', 'scheduleId'])
+      .expression((eb) =>
+        eb
+          .selectFrom(src as any)
+          .select([
+            eb.val(storageValue).as(destKey),
+            'shift',
+            'startTime',
+            'endTime',
+            'scheduleId',
+          ])
+          .where('scheduleId', '=', scheduleId)
+          .where(srcKey as any, '=', lookupValue as any),
+      )
+      .execute();
+  }
+
+  private async _ensure_override_routine(date: string, scheduleId: number) {
+    if (await this._date_has_record('override_routine', date, scheduleId))
+      return;
+    await this._copy_slots(
+      'regular_routine',
+      'override_routine',
+      date,
+      scheduleId,
+    );
+  }
+
+  private async _ensure_available_list(date: string, scheduleId: number) {
+    if (await this._date_has_record('blocked_days', date, scheduleId)) return;
+    if (await this._date_has_record('available_slots', date, scheduleId))
+      return;
+    await this._ensure_override_routine(date, scheduleId);
+    await this._copy_slots(
+      'override_routine',
+      'available_slots',
+      date,
+      scheduleId,
+    );
+  }
+
+  private async _get_available_show_slots_date(
+    date: string,
+    scheduleId: number,
+  ): Promise<OverrideRoutine[]> {
+    await this._ensure_available_list(date, scheduleId);
+    const shiftRows = await this._db
+      .selectFrom('available_slots')
+      .select('shift')
+      .distinct()
+      .where('date', '=', date as any)
+      .where('scheduleId', '=', scheduleId)
+      .execute();
+    const shiftValues = shiftRows.map((row) => row.shift);
+    if (shiftValues.length === 0) return [];
+    const showSlots = await this._db
+      .selectFrom('override_routine')
+      .selectAll()
+      .where('date', '=', date as any)
+      .where('scheduleId', '=', scheduleId)
+      .where('shift', 'in', shiftValues)
+      .execute();
+    return showSlots;
   }
 }

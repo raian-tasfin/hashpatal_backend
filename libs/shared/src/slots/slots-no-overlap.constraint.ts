@@ -8,12 +8,12 @@ import { ISlot } from '../slots';
 @ValidatorConstraint({ name: 'regularSlotNoOverlap', async: false })
 export class SlotsNoOverlapConstraint implements ValidatorConstraintInterface {
   validate<T extends ISlot>(slots: T[]) {
-    const sorted = slots.sort((a, b) => {
+    const sorted = [...slots].sort((a, b) => {
       if (a.key !== b.key) {
         return a.key.localeCompare(b.key);
       }
       if (a.startTime !== b.startTime) {
-        return a.endTime.localeCompare(b.startTime);
+        return a.startTime.localeCompare(b.startTime);
       }
       return a.endTime.localeCompare(b.endTime);
     });

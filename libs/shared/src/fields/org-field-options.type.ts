@@ -41,6 +41,9 @@ export interface GenerateFieldConfig {
   extraDecorators?: PropertyDecorator[];
   constraints?: (new (...args: any[]) => ValidatorConstraintInterface)[];
   formatter?: (value: any) => any;
+  collectionConstraints?: (new (
+    ...args: any[]
+  ) => ValidatorConstraintInterface)[];
 }
 
 export function generate_field({
@@ -49,6 +52,7 @@ export function generate_field({
   extraDecorators = [],
   constraints = [],
   formatter,
+  collectionConstraints = [],
 }: GenerateFieldConfig) {
   return (options?: OrgFieldOptions) => {
     const isArray = options?.isArray ?? false;
@@ -68,6 +72,11 @@ export function generate_field({
     }
     for (const constraint of constraints) {
       decorators.push(Validate(constraint, { each: isArray }));
+    }
+    if (isArray && collectionConstraints) {
+      for (const constraint of collectionConstraints) {
+        decorators.push(Validate(constraint)); // Notice: NO { each: true }
+      }
     }
     decorators.push(...extraDecorators);
     return applyDecorators(...decorators);

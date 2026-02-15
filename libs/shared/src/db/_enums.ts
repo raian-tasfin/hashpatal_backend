@@ -30,10 +30,16 @@ export enum SchedulableType {
   DOCTOR = 'DOCTOR',
 }
 
+export enum ShiftType {
+  MORNING = 'MORNING',
+  EVENING = 'EVENING',
+}
+
 registerEnumType(RoleType, { name: 'RoleType' });
 registerEnumType(WeekDayType, { name: 'WeekDayType' });
 registerEnumType(AppointmentStatusType, { name: 'AppointmentStatusType' });
 registerEnumType(SchedulableType, { name: 'SchedulableType' });
+registerEnumType(ShiftType, { name: 'ShiftType' });
 
 export function create_pg_enum<T extends Record<string, string>>(
   name: string,

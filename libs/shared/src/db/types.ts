@@ -15,6 +15,8 @@ export type RoleType = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PA
 
 export type SchedulableType = "DOCTOR";
 
+export type ShiftType = "EVENING" | "MORNING";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type WeekdayType = "FRIDAY" | "MONDAY" | "SATURDAY" | "SUNDAY" | "THURSDAY" | "TUESDAY" | "WEDNESDAY";
@@ -28,18 +30,29 @@ export interface AcademicRecord {
 }
 
 export interface Appointment {
+  date: Timestamp;
   endTime: string;
   id: Generated<number>;
-  minutesPerSlot: number;
-  schedulableId: number;
+  patientId: number;
+  scheduleId: number;
+  shift: ShiftType;
   startTime: string;
   status: AppointmentStatusType;
+}
+
+export interface AvailableSlots {
+  date: Timestamp;
+  endTime: string;
+  id: Generated<number>;
+  scheduleId: number;
+  shift: ShiftType;
+  startTime: string;
 }
 
 export interface BlockedDays {
   date: Timestamp;
   id: Generated<number>;
-  schedulableId: number;
+  scheduleId: number;
 }
 
 export interface DoctorExperience {
@@ -54,7 +67,7 @@ export interface DoctorExperience {
 
 export interface DoctorProfile {
   id: Generated<number>;
-  schedulableId: number | null;
+  scheduleId: number | null;
   userId: number;
 }
 
@@ -62,7 +75,8 @@ export interface OverrideRoutine {
   date: Timestamp;
   endTime: string;
   id: Generated<number>;
-  schedulableId: number;
+  scheduleId: number;
+  shift: ShiftType;
   startTime: string;
 }
 
@@ -77,12 +91,13 @@ export interface RefreshToken {
 export interface RegularRoutine {
   endTime: string;
   id: Generated<number>;
-  schedulableId: number;
+  scheduleId: number;
+  shift: ShiftType;
   startTime: string;
   weekDay: WeekdayType;
 }
 
-export interface Schedulable {
+export interface Schedule {
   entityId: number;
   id: Generated<number>;
   maxBookingDays: number;
@@ -108,13 +123,14 @@ export interface UserRole {
 export interface DB {
   academic_record: AcademicRecord;
   appointment: Appointment;
+  available_slots: AvailableSlots;
   blocked_days: BlockedDays;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
   override_routine: OverrideRoutine;
   refresh_token: RefreshToken;
   regular_routine: RegularRoutine;
-  schedulable: Schedulable;
+  schedule: Schedule;
   user: User;
   user_role: UserRole;
 }
