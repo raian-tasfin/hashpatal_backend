@@ -1,44 +1,46 @@
 import { Client } from '@org/sdk';
 
-export async function user_register(
-  sdk: Client,
-  user: {
+export function gen_mutation<TData, TSelect>(
+  mutationName: string,
+  defaultSelect: TSelect,
+) {
+  return async (
+    sdk: Client,
+    data: TData,
+    selectOverride: Partial<TSelect> = {},
+  ): Promise<any> => {
+    const result = await sdk.mutation({
+      [mutationName]: {
+        __args: { data },
+        ...defaultSelect,
+        ...selectOverride,
+      },
+    } as any);
+    return (result as Record<string, any>)[mutationName];
+  };
+}
+
+export const user_register = gen_mutation<
+  {
     email: string;
     name: string;
     password: string;
     birthDate: string;
   },
-  selectOverride: { uuid?: boolean; email?: boolean } = {},
-) {
-  const result = await sdk.mutation({
-    user_register: {
-      __args: {
-        data: { ...user },
-      },
-      uuid: true,
-      ...selectOverride,
-    },
-  });
-  return result.user_register;
-}
+  { uuid?: boolean; email?: boolean; name?: boolean }
+>('user_register', { uuid: true });
 
-export async function user_login(
-  sdk: Client,
-  loginData: {
+export const user_login = gen_mutation<
+  {
     email: string;
     password: string;
   },
-  selectOverride: { accessToken?: boolean; refreshToken?: boolean } = {},
-) {
-  const result = await sdk.mutation({
-    user_login: {
-      __args: {
-        data: { ...loginData },
-      },
-      accessToken: true,
-      refreshToken: true,
-      ...selectOverride,
-    },
-  });
-  return result.user_login;
-}
+  { accessToken?: boolean; refreshToken?: boolean }
+>('user_login', { accessToken: true, refreshToken: true });
+
+export const user_refresh_token = gen_mutation<
+  {
+    refreshToken: string;
+  },
+  { accessToken?: boolean; refreshToken?: boolean }
+>('user_refresh_token', { accessToken: true, refreshToken: true });

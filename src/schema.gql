@@ -19,6 +19,7 @@ type Query {
 type Mutation {
   user_register(data: RegisterInput!): UserOutput!
   user_login(data: LoginInput!): TokenPair!
+  user_refresh_token(data: RefreshLoginInput!): TokenPair!
 }
 
 input RegisterInput {
@@ -31,4 +32,8 @@ input RegisterInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input RefreshLoginInput {
+  refreshToken: String!
 }

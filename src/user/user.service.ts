@@ -106,30 +106,30 @@ export class UserService {
     return await this._issue_token(user, roles);
   }
 
-  // async refresh({ refreshToken }: RefreshLoginInput): Promise<TokenPair> {
-  //   this._logger.log(`Processing refresh request.`);
-  //   const { sub, jit } = await this._decrypt_refresh_token(refreshToken);
-  //   const user = await this._db
-  //     .selectFrom('user')
-  //     .selectAll()
-  //     .where('uuid', '=', sub)
-  //     .executeTakeFirst();
-  //   if (!user) throw new UnauthorizedException('User not found');
-  //   const roles = await this._find_roles(user.id);
-  //   return await this._db.transaction().execute(async (trx) => {
-  //     const deleted = await trx
-  //       .deleteFrom('refresh_token')
-  //       .where('jit', '=', jit)
-  //       .returning('id')
-  //       .executeTakeFirst();
-  //     if (!deleted) {
-  //       this._logger.warn(`Refresh token reuse detected for JIT: ${jit}`);
-  //       throw new UnauthorizedException('Invalid refresh token');
-  //     }
-  //     return this._issue_token(user, roles, trx);
-  //   });
-  // }
-  //
+  async refresh({ refreshToken }: RefreshLoginInput): Promise<TokenPair> {
+    this._logger.log(`Processing refresh request.`);
+    const { sub, jit } = await this._decrypt_refresh_token(refreshToken);
+    const user = await this._db
+      .selectFrom('user_account')
+      .selectAll()
+      .where('uuid', '=', sub)
+      .executeTakeFirst();
+    if (!user) throw new UnauthorizedException('User not found');
+    const roles = await this._find_roles(user.id);
+    return await this._db.transaction().execute(async (trx) => {
+      const deleted = await trx
+        .deleteFrom('refresh_token')
+        .where('jit', '=', jit)
+        .returning('id')
+        .executeTakeFirst();
+      if (!deleted) {
+        this._logger.warn(`Refresh token reuse detected for JIT: ${jit}`);
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      return this._issue_token(user, roles, trx);
+    });
+  }
+
   // async logout({ refreshToken }: LogoutInput): Promise<void> {
   //   const { jit } = await this._decrypt_refresh_token(refreshToken);
   //   await this._db.deleteFrom('refresh_token').where('jit', '=', jit).execute();
@@ -205,15 +205,15 @@ export class UserService {
     return { accessToken, refreshToken };
   }
 
-  // private async _decrypt_refresh_token(refreshToken: string) {
-  //   this._logger.log(`Finding refresh token record for ${refreshToken}`);
-  //   // decrypt token
-  //   this._logger.log(`Decrypting token`);
-  //   const payload = await this._jwtService
-  //     .verifyAsync(refreshToken)
-  //     .catch(() => {
-  //       throw new UnauthorizedException('Invalid refresh token');
-  //     });
-  //   return payload;
-  // }
+  private async _decrypt_refresh_token(refreshToken: string) {
+    this._logger.log(`Finding refresh token record for ${refreshToken}`);
+    // decrypt token
+    this._logger.log(`Decrypting token`);
+    const payload = await this._jwtService
+      .verifyAsync(refreshToken)
+      .catch(() => {
+        throw new UnauthorizedException('Invalid refresh token');
+      });
+    return payload;
+  }
 }

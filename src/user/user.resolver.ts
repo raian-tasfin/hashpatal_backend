@@ -38,13 +38,13 @@ export class UserResolver {
     return this._userService.login(data);
   }
 
-  // @Mutation(() => TokenPair)
-  // async user_refresh_token(
-  //   @Args('data') data: RefreshLoginInput,
-  // ): Promise<TokenPair> {
-  //   return this._userService.refresh(data);
-  // }
-  //
+  @Mutation(() => TokenPair)
+  async user_refresh_token(
+    @Args('data') data: RefreshLoginInput,
+  ): Promise<TokenPair> {
+    return this._userService.refresh(data);
+  }
+
   // @Mutation(() => Boolean)
   // async user_logout(@Args('data') data: LogoutInput): Promise<boolean> {
   //   await this._userService.logout(data);

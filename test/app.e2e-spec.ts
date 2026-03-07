@@ -7,7 +7,7 @@ import 'reflect-metadata';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { format_date } from '@org/shared/date';
 import { apply_global_config } from '@org/shared/setup-app';
-import { user_register, user_login } from '@org/shared/api';
+import { user_register, user_login, user_refresh_token } from '@org/shared/api';
 
 const logger = new Logger();
 
@@ -22,6 +22,16 @@ const test = {
     birthDate: '2000-01-01',
   },
 };
+
+/**
+ * Expectations
+ */
+function expect_valid_token_pair(accessToken: string, refreshToken: string) {
+  expect(accessToken).toBeTypeOf('string');
+  expect(accessToken.length).toBeGreaterThan(0);
+  expect(refreshToken).toBeTypeOf('string');
+  expect(refreshToken.length).toBeGreaterThan(0);
+}
 
 /**
  * Test Suite
@@ -138,9 +148,25 @@ describe('End-to-End System Test', () => {
       email,
       password,
     });
-    expect(accessToken).toBeTypeOf('string');
-    expect(accessToken.length).toBeGreaterThan(0);
-    expect(refreshToken).toBeTypeOf('string');
-    expect(refreshToken.length).toBeGreaterThan(0);
+    expect_valid_token_pair(accessToken, refreshToken);
+  });
+
+  /**
+   * Refresh Token
+   */
+  // invalid token format
+  it('Refresh token: Failure. Invalid Token', async () => {
+    const promise = user_refresh_token(sdk, { refreshToken: 'abc' });
+    await expect(promise).rejects.toThrow('Invalid refresh token');
+  });
+
+  // success
+  it('Refresh token: Success.', async () => {
+    const { email, password } = test.user;
+    const { refreshToken } = await user_login(sdk, { email, password });
+    const res = await user_refresh_token(sdk, {
+      refreshToken,
+    });
+    expect_valid_token_pair(res.accessToken, res.refreshToken);
   });
 });
