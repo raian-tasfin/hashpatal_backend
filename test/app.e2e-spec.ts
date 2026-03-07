@@ -7,18 +7,29 @@ import 'reflect-metadata';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { format_date } from '@org/shared/date';
 import { apply_global_config } from '@org/shared/setup-app';
+import { register_user } from '@org/shared/api';
 
 const logger = new Logger();
 
+/**
+ * Test Data
+ */
 const test = {
   user: {
     email: `test-${Date.now()}@mail.com`,
-    name: 'Test Porikkh',
+    name: 'Test Porikh',
     password: '1234',
     birthDate: '2000-01-01',
   },
 };
 
+/**
+ * Automated Mutations
+ */
+
+/**
+ * Test Suite
+ */
 describe('End-to-End System Test', () => {
   let app: any;
   let sdk: Client;
@@ -49,71 +60,37 @@ describe('End-to-End System Test', () => {
    */
   it('Registration: Failure. Bad email', async () => {
     const badEmail = 'bad email';
-    const promise = sdk.mutation({
-      user_register: {
-        __args: { data: { ...test.user, email: badEmail } },
-        uuid: true,
-      },
-    });
+    const promise = register_user(sdk, { ...test.user, email: badEmail });
     await expect(promise).rejects.toThrow(
       `email: Invalid email: "${badEmail}"`,
     );
   });
 
   it('Registration: Failure. Small password', async () => {
-    const promise = sdk.mutation({
-      user_register: {
-        __args: { data: { ...test.user, password: '1' } },
-        uuid: true,
-        email: true,
-      },
-    });
+    const data = { ...test.user, password: '1' };
+    const promise = register_user(sdk, data);
     await expect(promise).rejects.toThrow('Password is too short');
   });
 
   it('Registration: Failure. Wrong date format', async () => {
-    const promise = sdk.mutation({
-      user_register: {
-        __args: { data: { ...test.user, birthDate: `${new Date()}` } },
-        uuid: true,
-        email: true,
-      },
-    });
+    const data = { ...test.user, birthDate: `${new Date()}` };
+    const promise = register_user(sdk, data);
     await expect(promise).rejects.toThrow('Invalid date format');
   });
 
   it('Registration: Failure. Too young', async () => {
-    const promise = sdk.mutation({
-      user_register: {
-        __args: {
-          data: { ...test.user, birthDate: `${format_date(new Date())}` },
-        },
-        uuid: true,
-        email: true,
-      },
-    });
+    const data = { ...test.user, birthDate: `${format_date(new Date())}` };
+    const promise = register_user(sdk, data);
     await expect(promise).rejects.toThrow('You must be at least 18 years old');
   });
 
   it('Registration: Success', async () => {
-    const res = await sdk.mutation({
-      user_register: {
-        __args: { data: { ...test.user } },
-        uuid: true,
-        email: true,
-      },
-    });
+    const res = await register_user(sdk, test.user);
     expect(res.user_register?.email).toBe(test.user.email);
   });
 
   it('Registration: Fiaulre. Double registration.', async () => {
-    const promise = sdk.mutation({
-      user_register: {
-        __args: { data: { ...test.user } },
-        uuid: true,
-        email: true,
-      },
-    });
+    const promise = register_user(sdk, test.user);
     await expect(promise).rejects.toThrow(
       'A user with this email already exists.',
     );

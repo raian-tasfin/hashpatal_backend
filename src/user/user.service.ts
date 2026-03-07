@@ -69,16 +69,16 @@ export class UserService {
     }
   }
 
-  // async find_by_email({ email }: FindByEmailInput): Promise<User | undefined> {
-  //   this._logger.log(`Finding user by email ${email}`);
-  //   const user = await this._db
-  //     .selectFrom('user')
-  //     .selectAll()
-  //     .where('email', '=', email)
-  //     .executeTakeFirst();
-  //   return user;
-  // }
-  //
+  async find_by_email({ email }: FindByEmailInput): Promise<User | undefined> {
+    this._logger.log(`Finding user by email ${email}`);
+    const user = await this._db
+      .selectFrom('user_account')
+      .selectAll()
+      .where('email', '=', email)
+      .executeTakeFirst();
+    return user;
+  }
+
   // async find_by_uuid({ uuid }: FindByUuidInput): Promise<User | undefined> {
   //   this._logger.log(`Finding user by uuid ${uuid}`);
   //   const user = await this._db

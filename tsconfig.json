@@ -27,6 +27,12 @@
       ],
       "@org/shared/*": [
         "libs/shared/src/*"
+      ],
+      "@org/sdk/*": [
+        "src/generated/sdk/*"
+      ],
+      "@org/sdk": [
+        "src/generated/sdk/index"
       ]
     }
   }

@@ -1,70 +1,70 @@
-import {
-  INestApplicationContext,
-  Logger,
-  Module,
-  NotFoundException,
-} from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { UserModule } from 'src/user/user.module';
-import { UserService } from 'src/user/user.service';
-import data from './seed-data.json';
-import { ConfigModule } from '@nestjs/config';
-import { PasswordModule } from '@org/shared/password';
-import { DatabaseModule, RegularRoutine, WeekDayType } from '@org/shared/db';
-import { UserRolesModule } from 'src/user-roles/user-roles.module';
-import { UserRolesService } from 'src/user-roles/user-roles.service';
-import { RoleType } from '@org/shared/db';
+// import {
+//   INestApplicationContext,
+//   Logger,
+//   Module,
+//   NotFoundException,
+// } from '@nestjs/common';
+// import { NestFactory } from '@nestjs/core';
+// import { UserModule } from 'src/user/user.module';
+// import { UserService } from 'src/user/user.service';
+// import data from './seed-data.json';
+// import { ConfigModule } from '@nestjs/config';
+// import { PasswordModule } from '@org/shared/password';
+// import { DatabaseModule, RegularRoutine, WeekDayType } from '@org/shared/db';
+// // import { UserRolesModule } from 'src/user-roles/user-roles.module';
+// // import { UserRolesService } from 'src/user-roles/user-roles.service';
+// import { RoleType } from '@org/shared/db';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { DoctorService } from 'src/doctor/doctor.service';
 // import { ScheduleService } from 'src/schedule/schedule.service';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
-import { OverrideSlotInput, RegularSlotInput } from '@org/shared/slots';
-import { DoctorBlockedDaysAddInput } from 'src/schedule/input';
-// import { DoctorModule } from 'src/doctor/doctor.module';
-// import { ScheduleModule } from 'src/schedule/schedule.module';
-// import { ScheduleService } from 'src/schedule/schedule.service';
-// import { DoctorService } from 'src/doctor/doctor.service';
-
-const logger = new Logger('seed');
-
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      expandVariables: true,
-    }),
-    PasswordModule,
-    DatabaseModule,
-    UserModule,
-    //     ScheduleModule,
-    //     UserRolesModule,
-    //     ScheduleModule,
-    //     DoctorModule,
-  ],
-})
-class SeedModule {}
-
-async function register_users(app: INestApplicationContext) {
-  const userService = app.get(UserService);
-  logger.log('Registering users...');
-  for (const { email, password, name, birthDate } of data.users) {
-    logger.log(`Registring user: ${email}`);
-    try {
-      const user = await userService.register({
-        email,
-        password,
-        name,
-        birthDate,
-      });
-      if (!user) throw Error(`Failed creating user ${email}`);
-    } catch (err) {
-      logger.log(`Skipping user: ${email}`);
-      logger.error(err.message);
-    }
-  }
-  logger.log(`User registration phase complete.`);
-}
-
+// import { OverrideSlotInput, RegularSlotInput } from '@org/shared/slots';
+// import { DoctorBlockedDaysAddInput } from 'src/schedule/input';
+// // import { DoctorModule } from 'src/doctor/doctor.module';
+// // import { ScheduleModule } from 'src/schedule/schedule.module';
+// // import { ScheduleService } from 'src/schedule/schedule.service';
+// // import { DoctorService } from 'src/doctor/doctor.service';
+//
+// const logger = new Logger('seed');
+//
+// @Module({
+//   imports: [
+//     ConfigModule.forRoot({
+//       isGlobal: true,
+//       expandVariables: true,
+//     }),
+//     PasswordModule,
+//     DatabaseModule,
+//     UserModule,
+//     ScheduleModule,
+//     //     UserRolesModule,
+//     //     ScheduleModule,
+//     DoctorModule,
+//   ],
+// })
+// class SeedModule {}
+//
+// async function register_users(app: INestApplicationContext) {
+//   const userService = app.get(UserService);
+//   logger.log('Registering users...');
+//   for (const { email, password, name, birthDate } of data.users) {
+//     logger.log(`Registring user: ${email}`);
+//     try {
+//       const user = await userService.register({
+//         email,
+//         password,
+//         name,
+//         birthDate,
+//       });
+//       if (!user) throw Error(`Failed creating user ${email}`);
+//     } catch (err) {
+//       logger.log(`Skipping user: ${email}`);
+//       logger.error(err.message);
+//     }
+//   }
+//   logger.log(`User registration phase complete.`);
+// }
+//
 // // async function assign_roles(app: INestApplicationContext) {
 // //   const userService = app.get(UserService);
 // //   logger.log('Assigning roles to users...');
@@ -233,23 +233,23 @@ async function register_users(app: INestApplicationContext) {
 // //   }
 // //   logger.log(`Override slots addition phase complete.`);
 // // }
-
-async function bootstrap() {
-  logger.log('Seeding database...');
-  const app = await NestFactory.createApplicationContext(SeedModule);
-
-  await register_users(app);
-  // await assign_roles(app);
-  // await create_doctor_profiles(app);
-  // await create_doctor_schedule(app);
-  // await create_doctor_regular_schedules(app);
-  // await create_doctor_override_schedule(app);
-  // await add_blockdays_for_doctors(app);
-  logger.log('Finished seeding database.');
-  await app.close();
-}
-
-bootstrap().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+//
+// async function bootstrap() {
+//   logger.log('Seeding database...');
+//   const app = await NestFactory.createApplicationContext(SeedModule);
+//
+//   await register_users(app);
+//   // await assign_roles(app);
+//   // await create_doctor_profiles(app);
+//   // await create_doctor_schedule(app);
+//   // await create_doctor_regular_schedules(app);
+//   // await create_doctor_override_schedule(app);
+//   // await add_blockdays_for_doctors(app);
+//   logger.log('Finished seeding database.');
+//   await app.close();
+// }
+//
+// bootstrap().catch((err) => {
+//   console.error(err);
+//   process.exit(1);
+// });
