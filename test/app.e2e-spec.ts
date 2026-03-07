@@ -7,7 +7,7 @@ import 'reflect-metadata';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { format_date } from '@org/shared/date';
 import { apply_global_config } from '@org/shared/setup-app';
-import { register_user } from '@org/shared/api';
+import { user_register, user_login } from '@org/shared/api';
 
 const logger = new Logger();
 
@@ -22,10 +22,6 @@ const test = {
     birthDate: '2000-01-01',
   },
 };
-
-/**
- * Automated Mutations
- */
 
 /**
  * Test Suite
@@ -60,7 +56,7 @@ describe('End-to-End System Test', () => {
    */
   it('Registration: Failure. Bad email', async () => {
     const badEmail = 'bad email';
-    const promise = register_user(sdk, { ...test.user, email: badEmail });
+    const promise = user_register(sdk, { ...test.user, email: badEmail });
     await expect(promise).rejects.toThrow(
       `email: Invalid email: "${badEmail}"`,
     );
@@ -68,31 +64,83 @@ describe('End-to-End System Test', () => {
 
   it('Registration: Failure. Small password', async () => {
     const data = { ...test.user, password: '1' };
-    const promise = register_user(sdk, data);
+    const promise = user_register(sdk, data);
     await expect(promise).rejects.toThrow('Password is too short');
   });
 
   it('Registration: Failure. Wrong date format', async () => {
     const data = { ...test.user, birthDate: `${new Date()}` };
-    const promise = register_user(sdk, data);
+    const promise = user_register(sdk, data);
     await expect(promise).rejects.toThrow('Invalid date format');
   });
 
   it('Registration: Failure. Too young', async () => {
     const data = { ...test.user, birthDate: `${format_date(new Date())}` };
-    const promise = register_user(sdk, data);
+    const promise = user_register(sdk, data);
     await expect(promise).rejects.toThrow('You must be at least 18 years old');
   });
 
   it('Registration: Success', async () => {
-    const res = await register_user(sdk, test.user);
-    expect(res.user_register?.email).toBe(test.user.email);
+    const { email } = await user_register(sdk, test.user, { email: true });
+    expect(email).toBe(test.user.email);
   });
 
   it('Registration: Fiaulre. Double registration.', async () => {
-    const promise = register_user(sdk, test.user);
+    const promise = user_register(sdk, test.user);
     await expect(promise).rejects.toThrow(
       'A user with this email already exists.',
     );
+  });
+
+  /**
+   * Login
+   */
+  // invalid email format
+  it('Login: Failure. Invalid email', async () => {
+    const badEmail = 'bad email';
+    const login = {
+      email: badEmail,
+      password: test.user.password,
+    };
+    const promise = user_login(sdk, login);
+    await expect(promise).rejects.toThrow(
+      `email: Invalid email: "${badEmail}"`,
+    );
+  });
+
+  // invalid password format
+  it('Login: Failure. Password too short', async () => {
+    const data = { email: test.user.email, password: '1' };
+    const promise = user_login(sdk, data);
+    await expect(promise).rejects.toThrow('Password is too short');
+  });
+
+  // email not found
+  it('Login: Failure. Email not found', async () => {
+    let { email, password } = test.user;
+    email = 'nonexistent-' + email;
+    const promise = user_login(sdk, { email, password });
+    await expect(promise).rejects.toThrow(`User ${email} not found.`);
+  });
+
+  // invalid password for given email
+  it('Login: Failure. Invalid password', async () => {
+    const { email } = test.user;
+    const password = 'noto test users password';
+    const promise = user_login(sdk, { email, password });
+    await expect(promise).rejects.toThrow(`Invalid password`);
+  });
+
+  // success
+  it('Login: Success.', async () => {
+    const { email, password } = test.user;
+    const { accessToken, refreshToken } = await user_login(sdk, {
+      email,
+      password,
+    });
+    expect(accessToken).toBeTypeOf('string');
+    expect(accessToken.length).toBeGreaterThan(0);
+    expect(refreshToken).toBeTypeOf('string');
+    expect(refreshToken.length).toBeGreaterThan(0);
   });
 });

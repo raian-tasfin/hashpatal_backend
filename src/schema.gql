@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TokenPair {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type UserOutput {
   uuid: String!
   email: String!
@@ -13,6 +18,7 @@ type Query {
 
 type Mutation {
   user_register(data: RegisterInput!): UserOutput!
+  user_login(data: LoginInput!): TokenPair!
 }
 
 input RegisterInput {
@@ -20,4 +26,9 @@ input RegisterInput {
   name: String!
   password: String!
   birthDate: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }

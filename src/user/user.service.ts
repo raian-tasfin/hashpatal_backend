@@ -79,33 +79,33 @@ export class UserService {
     return user;
   }
 
-  // async find_by_uuid({ uuid }: FindByUuidInput): Promise<User | undefined> {
-  //   this._logger.log(`Finding user by uuid ${uuid}`);
-  //   const user = await this._db
-  //     .selectFrom('user')
-  //     .selectAll()
-  //     .where('uuid', '=', uuid)
-  //     .executeTakeFirst();
-  //   return user;
-  // }
-  //
-  // async login({ email, password }: LoginInput) {
-  //   this._logger.log(`Logging in user ${email}`);
-  //   this._logger.log(`Finding user ${email}`);
-  //   const user = await this.find_by_email({ email });
-  //   if (!user) {
-  //     throw new NotFoundException(`User ${email} not found.`);
-  //   }
-  //   if (!(await this._passwordService.match(password, user.passwordHash))) {
-  //     this._logger.warn(`Invalid password for email ${email}`);
-  //     throw new UnauthorizedException('Invalid password');
-  //   }
-  //   this._logger.log(`Getting user roles for ${email}`);
-  //   const roles = await this._find_roles(user.id);
-  //   this._logger.log(`Issuing new token for ${email}`);
-  //   return await this._issue_token(user, roles);
-  // }
-  //
+  async find_by_uuid({ uuid }: FindByUuidInput): Promise<User | undefined> {
+    this._logger.log(`Finding user by uuid ${uuid}`);
+    const user = await this._db
+      .selectFrom('user_account')
+      .selectAll()
+      .where('uuid', '=', uuid)
+      .executeTakeFirst();
+    return user;
+  }
+
+  async login({ email, password }: LoginInput) {
+    this._logger.log(`Logging in user ${email}`);
+    this._logger.log(`Finding user ${email}`);
+    const user = await this.find_by_email({ email });
+    if (!user) {
+      throw new NotFoundException(`User ${email} not found.`);
+    }
+    if (!(await this._passwordService.match(password, user.password_hash))) {
+      this._logger.warn(`Invalid password for email ${email}`);
+      throw new UnauthorizedException('Invalid password');
+    }
+    this._logger.log(`Getting user roles for ${email}`);
+    const roles = await this._find_roles(user.id);
+    this._logger.log(`Issuing new token for ${email}`);
+    return await this._issue_token(user, roles);
+  }
+
   // async refresh({ refreshToken }: RefreshLoginInput): Promise<TokenPair> {
   //   this._logger.log(`Processing refresh request.`);
   //   const { sub, jit } = await this._decrypt_refresh_token(refreshToken);
@@ -153,58 +153,58 @@ export class UserService {
   //   });
   //   this._logger.log(`Successfully synced roles for ${email}`);
   // }
-  // /**
-  //  * Utilities
-  //  */
-  // async _find_roles(userId: number): Promise<RoleType[]> {
-  //   const roles = await this._db
-  //     .selectFrom('user_role')
-  //     .select('role')
-  //     .where('userId', '=', userId)
-  //     .execute();
-  //   return roles.map((r) => r.role as RoleType);
-  // }
-  //
-  // private async _issue_token(
-  //   user: User,
-  //   roles: RoleType[],
-  //   db: Kysely<DB> = this._db,
-  // ): Promise<TokenPair> {
-  //   this._logger.log(`Issuing token for ${user.email}`);
-  //   this._logger.log(`Creating jit.`);
-  //   const jit = uuidv4();
-  //   this._logger.log(`JIT created.`);
-  //
-  //   const sub = user.uuid;
-  //   const payload = { sub, jit, roles };
-  //
-  //   // sign tokens
-  //   this._logger.log(`Signing tokens for (${sub}, ${roles})`);
-  //   const [accessToken, refreshToken] = await Promise.all([
-  //     this._jwtService.signAsync(payload, {
-  //       expiresIn: this._ACCESS_TOKEN_TIME,
-  //     }),
-  //     this._jwtService.signAsync(payload, {
-  //       expiresIn: this._REFERSH_TOKEN_TIME,
-  //     }),
-  //   ]);
-  //   this._logger.log(`Both tokens signed`);
-  //
-  //   // values for RefreshToken table in schema
-  //   const userId = user.id;
-  //   const expiresAt = addDays(new Date(), 7);
-  //   const tokenHash = await this._passwordService.hash(refreshToken);
-  //   this._logger.log(`Updating refresh token table`);
-  //   await db
-  //     .insertInto('refresh_token')
-  //     .values({ jit, expiresAt, tokenHash, userId })
-  //     .returningAll()
-  //     .execute();
-  //   this._logger.log(`Updated refresh token table`);
-  //   this._logger.log(`Returning token pair`);
-  //   return { accessToken, refreshToken };
-  // }
-  //
+  /**
+   * Utilities
+   */
+  async _find_roles(userId: number): Promise<RoleType[]> {
+    const roles = await this._db
+      .selectFrom('user_role')
+      .select('role')
+      .where('user_id', '=', userId)
+      .execute();
+    return roles.map((r) => r.role as RoleType);
+  }
+
+  private async _issue_token(
+    user: User,
+    roles: RoleType[],
+    db: Kysely<DB> = this._db,
+  ): Promise<TokenPair> {
+    this._logger.log(`Issuing token for ${user.email}`);
+    this._logger.log(`Creating jit.`);
+    const jit = uuidv4();
+    this._logger.log(`JIT created.`);
+
+    const sub = user.uuid;
+    const payload = { sub, jit, roles };
+
+    // sign tokens
+    this._logger.log(`Signing tokens for (${sub}, ${roles})`);
+    const [accessToken, refreshToken] = await Promise.all([
+      this._jwtService.signAsync(payload, {
+        expiresIn: this._ACCESS_TOKEN_TIME,
+      }),
+      this._jwtService.signAsync(payload, {
+        expiresIn: this._REFERSH_TOKEN_TIME,
+      }),
+    ]);
+    this._logger.log(`Both tokens signed`);
+
+    // values for RefreshToken table in schema
+    const user_id = user.id;
+    const expires_at = addDays(new Date(), 7);
+    const token_hash = await this._passwordService.hash(refreshToken);
+    this._logger.log(`Updating refresh token table`);
+    await db
+      .insertInto('refresh_token')
+      .values({ jit, expires_at, token_hash, user_id })
+      .returningAll()
+      .execute();
+    this._logger.log(`Updated refresh token table`);
+    this._logger.log(`Returning token pair`);
+    return { accessToken, refreshToken };
+  }
+
   // private async _decrypt_refresh_token(refreshToken: string) {
   //   this._logger.log(`Finding refresh token record for ${refreshToken}`);
   //   // decrypt token

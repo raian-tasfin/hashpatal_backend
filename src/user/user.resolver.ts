@@ -33,11 +33,11 @@ export class UserResolver {
     return UserOutput.from_model(await this._userService.register(data));
   }
 
-  // @Mutation(() => TokenPair)
-  // async user_login(@Args('data') data: LoginInput): Promise<TokenPair> {
-  //   return this._userService.login(data);
-  // }
-  //
+  @Mutation(() => TokenPair)
+  async user_login(@Args('data') data: LoginInput): Promise<TokenPair> {
+    return this._userService.login(data);
+  }
+
   // @Mutation(() => TokenPair)
   // async user_refresh_token(
   //   @Args('data') data: RefreshLoginInput,

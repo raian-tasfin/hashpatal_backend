@@ -1,6 +1,6 @@
 import { Client } from '@org/sdk';
 
-export async function register_user(
+export async function user_register(
   sdk: Client,
   user: {
     email: string;
@@ -10,7 +10,7 @@ export async function register_user(
   },
   selectOverride: { uuid?: boolean; email?: boolean } = {},
 ) {
-  return sdk.mutation({
+  const result = await sdk.mutation({
     user_register: {
       __args: {
         data: { ...user },
@@ -19,4 +19,26 @@ export async function register_user(
       ...selectOverride,
     },
   });
+  return result.user_register;
+}
+
+export async function user_login(
+  sdk: Client,
+  loginData: {
+    email: string;
+    password: string;
+  },
+  selectOverride: { accessToken?: boolean; refreshToken?: boolean } = {},
+) {
+  const result = await sdk.mutation({
+    user_login: {
+      __args: {
+        data: { ...loginData },
+      },
+      accessToken: true,
+      refreshToken: true,
+      ...selectOverride,
+    },
+  });
+  return result.user_login;
 }
