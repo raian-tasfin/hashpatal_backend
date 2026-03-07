@@ -1,10 +1,6 @@
 import { InputType } from '@nestjs/graphql';
-import {
-  BirthdateField,
-  EmailField,
-  NameField,
-  PasswordField,
-} from '@org/shared/fields';
+import { BirthdateField } from '@org/shared/date';
+import { EmailField, NameField, PasswordField } from '@org/shared/fields';
 
 @InputType()
 export class RegisterInput {

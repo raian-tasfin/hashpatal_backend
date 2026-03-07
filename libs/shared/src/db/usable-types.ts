@@ -10,7 +10,7 @@ import {
   RefreshToken as RefreshTokenTable,
   RegularRoutine as RegularRoutineTable,
   Schedule as ScheduleTable,
-  User as UserTable,
+  UserAccount as UserTable,
   UserRole as UserRoleTable,
 } from './types';
 

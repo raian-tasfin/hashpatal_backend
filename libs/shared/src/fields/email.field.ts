@@ -8,6 +8,9 @@ export function EmailField(options?: OrgFieldOptions) {
   return generate_field({
     type: String,
     formatter,
-    extraDecorators: [IsString({ each }), IsEmail({}, { each })],
+    extraDecorators: [
+      IsString({ each }),
+      IsEmail({}, { each, message: 'Invalid email: "$value"' }),
+    ],
   })(options);
 }

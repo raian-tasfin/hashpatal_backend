@@ -1,5 +1,6 @@
 import { InputType } from '@nestjs/graphql';
-import { DateField, EmailField } from '@org/shared/fields';
+import { DateField } from '@org/shared/date';
+import { EmailField } from '@org/shared/fields';
 
 @InputType()
 export class DoctorMakeAppointment {
@@ -7,5 +8,5 @@ export class DoctorMakeAppointment {
   email: string;
 
   @DateField()
-  dates: string[];
+  dates: string;
 }

@@ -12,8 +12,8 @@ import { AppController } from './app.controller';
 import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { UserModule } from './user';
-import { DoctorModule } from './doctor/doctor.module';
-import { ScheduleModule } from './schedule/schedule.module';
+// import { DoctorModule } from './doctor/doctor.module';
+// import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -27,8 +27,8 @@ import { ScheduleModule } from './schedule/schedule.module';
     }),
     AuthModule,
     UserModule,
-    DoctorModule,
-    ScheduleModule,
+    //     DoctorModule,
+    //     ScheduleModule,
   ],
   controllers: [AppController],
   providers: [

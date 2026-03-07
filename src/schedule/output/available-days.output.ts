@@ -1,5 +1,5 @@
 import { ObjectType } from '@nestjs/graphql';
-import { DateField } from '@org/shared/fields';
+import { DateField } from '@org/shared/date';
 
 @ObjectType()
 export class AvailableDayOutput {

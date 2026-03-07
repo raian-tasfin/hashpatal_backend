@@ -1,6 +1,6 @@
 import { InputType } from '@nestjs/graphql';
 import { BaseSlot } from './base-slot.input';
-import { DateField } from '../fields';
+import { DateField } from '../date';
 
 @InputType()
 export class OverrideSlotInput extends BaseSlot {

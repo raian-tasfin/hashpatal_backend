@@ -23,7 +23,7 @@ export type WeekdayType = "FRIDAY" | "MONDAY" | "SATURDAY" | "SUNDAY" | "THURSDA
 
 export interface AcademicRecord {
   degree: string;
-  doctorProfileId: number;
+  doctor_profile_id: number;
   id: Generated<number>;
   institute: string;
   year: Timestamp;
@@ -31,93 +31,93 @@ export interface AcademicRecord {
 
 export interface Appointment {
   date: Timestamp;
-  endTime: string;
+  end_time: string;
   id: Generated<number>;
-  patientId: number;
-  scheduleId: number;
+  patient_id: number;
+  schedule_id: number;
   shift: ShiftType;
-  startTime: string;
+  start_time: string;
   status: AppointmentStatusType;
 }
 
 export interface AvailableSlots {
   date: Timestamp;
-  endTime: string;
+  end_time: string;
   id: Generated<number>;
-  scheduleId: number;
+  schedule_id: number;
   shift: ShiftType;
-  startTime: string;
+  start_time: string;
 }
 
 export interface BlockedDays {
   date: Timestamp;
   id: Generated<number>;
-  scheduleId: number;
+  schedule_id: number;
 }
 
 export interface DoctorExperience {
-  doctorProfileId: number;
-  endYear: Timestamp | null;
+  doctor_profile_id: number;
+  end_year: Timestamp | null;
   id: Generated<number>;
   location: string | null;
   organization: string;
-  startYear: Timestamp;
+  start_year: Timestamp;
   title: string;
 }
 
 export interface DoctorProfile {
   id: Generated<number>;
   scheduleId: number | null;
-  userId: number;
+  user_id: number;
 }
 
 export interface OverrideRoutine {
   date: Timestamp;
-  endTime: string;
+  end_time: string;
   id: Generated<number>;
-  scheduleId: number;
+  schedule_id: number;
   shift: ShiftType;
-  startTime: string;
+  start_time: string;
 }
 
 export interface RefreshToken {
-  expiresAt: Timestamp;
+  expires_at: Timestamp;
   id: Generated<number>;
   jit: string;
-  tokenHash: string;
-  userId: number;
+  token_hash: string;
+  user_id: number;
 }
 
 export interface RegularRoutine {
-  endTime: string;
+  end_time: string;
   id: Generated<number>;
-  scheduleId: number;
+  schedule_id: number;
   shift: ShiftType;
-  startTime: string;
-  weekDay: WeekdayType;
+  start_time: string;
+  week_day: WeekdayType;
 }
 
 export interface Schedule {
-  entityId: number;
+  entity_id: number;
   id: Generated<number>;
-  maxBookingDays: number;
-  minutesPerSlot: number;
+  max_booking_days: number;
+  minutes_per_slot: number;
   type: SchedulableType;
 }
 
-export interface User {
-  birthDate: Timestamp;
+export interface UserAccount {
+  birth_date: Timestamp;
   email: string;
   id: Generated<number>;
   name: string;
-  passwordHash: string;
+  password_hash: string;
   uuid: Generated<string>;
 }
 
 export interface UserRole {
   id: Generated<number>;
   role: RoleType;
-  userId: number;
+  user_id: number;
 }
 
 export interface DB {
@@ -131,6 +131,6 @@ export interface DB {
   refresh_token: RefreshToken;
   regular_routine: RegularRoutine;
   schedule: Schedule;
-  user: User;
+  user_account: UserAccount;
   user_role: UserRole;
 }

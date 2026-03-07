@@ -12,6 +12,10 @@ import {
 
 export type OrgFieldOptions = FieldOptions & {
   isArray?: boolean;
+  constraints?: (new (...args: any[]) => ValidatorConstraintInterface)[];
+  collectionConstraints?: (new (
+    ...args: any[]
+  ) => ValidatorConstraintInterface)[];
 };
 
 export const field = (T: any, options?: OrgFieldOptions) => {
@@ -56,6 +60,13 @@ export function generate_field({
 }: GenerateFieldConfig) {
   return (options?: OrgFieldOptions) => {
     const isArray = options?.isArray ?? false;
+
+    const allConstraints = [...constraints, ...(options?.constraints ?? [])];
+    const allCollectionConstraints = [
+      ...collectionConstraints,
+      ...(options?.collectionConstraints ?? []),
+    ];
+
     const decorators: PropertyDecorator[] = [
       field(type, options),
       nullable(options),
@@ -70,11 +81,11 @@ export function generate_field({
       decorators.push(Type(() => type));
       decorators.push(ValidateNested({ each: isArray }));
     }
-    for (const constraint of constraints) {
+    for (const constraint of allConstraints) {
       decorators.push(Validate(constraint, { each: isArray }));
     }
-    if (isArray && collectionConstraints) {
-      for (const constraint of collectionConstraints) {
+    if (isArray && allCollectionConstraints) {
+      for (const constraint of allCollectionConstraints) {
         decorators.push(Validate(constraint)); // Notice: NO { each: true }
       }
     }

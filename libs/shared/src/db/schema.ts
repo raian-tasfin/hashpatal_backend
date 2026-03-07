@@ -35,13 +35,13 @@ export const shiftEnum = create_pg_enum('shift_type', ShiftType);
 /**
  * Users
  */
-export const user = pgTable('user', {
+export const user = pgTable('user_account', {
   id: serial('id').primaryKey(),
   uuid: uuid('uuid').defaultRandom().notNull().unique(),
-  passwordHash: text('passwordHash').notNull(),
+  passwordHash: text('password_hash').notNull(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
-  birthDate: date('birthDate').notNull(),
+  birthDate: date('birth_date').notNull(),
 });
 
 export const userRole = pgTable(
@@ -49,7 +49,7 @@ export const userRole = pgTable(
   {
     id: serial('id').primaryKey(),
     role: roleEnum('role').notNull(),
-    userId: integer('userId')
+    userId: integer('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
   },
@@ -63,9 +63,9 @@ export const userRole = pgTable(
 export const refreshToken = pgTable('refresh_token', {
   id: serial('id').primaryKey(),
   jit: uuid('jit').notNull().unique(),
-  tokenHash: text('tokenHash').notNull().unique(),
-  expiresAt: timestamp('expiresAt').notNull(),
-  userId: integer('userId')
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: timestamp('expires_at').notNull(),
+  userId: integer('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
 });
@@ -77,10 +77,10 @@ export const schedule = pgTable(
   'schedule',
   {
     id: serial('id').primaryKey(),
-    entityId: integer('entityId').notNull(),
+    entityId: integer('entity_id').notNull(),
     schedulableType: schedulableTypeEnum('type').notNull(),
-    minutesPerSlot: integer('minutesPerSlot').notNull(),
-    maxBookingDays: integer('maxBookingDays').notNull(),
+    minutesPerSlot: integer('minutes_per_slot').notNull(),
+    maxBookingDays: integer('max_booking_days').notNull(),
   },
   (t) => [unique('schedule_unique').on(t.entityId, t.schedulableType)],
 );
@@ -89,11 +89,11 @@ export const regularRoutine = pgTable(
   'regular_routine',
   {
     id: serial('id').primaryKey(),
-    weekDay: weekDayEnum('weekDay').notNull(),
+    weekDay: weekDayEnum('week_day').notNull(),
     shift: shiftEnum('shift').notNull(),
-    startTime: time('startTime').notNull(),
-    endTime: time('endTime').notNull(),
-    scheduleId: integer('scheduleId')
+    startTime: time('start_time').notNull(),
+    endTime: time('end_time').notNull(),
+    scheduleId: integer('schedule_id')
       .notNull()
       .references(() => schedule.id, { onDelete: 'cascade' }),
   },
@@ -108,9 +108,9 @@ export const overrideRoutine = pgTable(
     id: serial('id').primaryKey(),
     date: date('date').notNull(),
     shift: shiftEnum('shift').notNull(),
-    startTime: time('startTime').notNull(),
-    endTime: time('endTime').notNull(),
-    scheduleId: integer('scheduleId')
+    startTime: time('start_time').notNull(),
+    endTime: time('end_time').notNull(),
+    scheduleId: integer('schedule_id')
       .notNull()
       .references(() => schedule.id, { onDelete: 'cascade' }),
   },
@@ -122,7 +122,7 @@ export const blockedDays = pgTable(
   {
     id: serial('id').primaryKey(),
     date: date('date').notNull(),
-    scheduleId: integer('scheduleId')
+    scheduleId: integer('schedule_id')
       .notNull()
       .references(() => schedule.id, { onDelete: 'cascade' }),
   },
@@ -134,12 +134,12 @@ export const availableSlots = pgTable(
   {
     id: serial('id').primaryKey(),
     date: date('date').notNull(),
-    scheduleId: integer('scheduleId')
+    scheduleId: integer('schedule_id')
       .notNull()
       .references(() => schedule.id, { onDelete: 'cascade' }),
     shift: shiftEnum('shift').notNull(),
-    startTime: time('startTime').notNull(),
-    endTime: time('endTime').notNull(),
+    startTime: time('start_time').notNull(),
+    endTime: time('end_time').notNull(),
   },
   (t) => [
     unique('available_slots_unique').on(t.scheduleId, t.date, t.startTime),
@@ -148,16 +148,16 @@ export const availableSlots = pgTable(
 
 export const appointment = pgTable('appointment', {
   id: serial('id').primaryKey(),
-  scheduleId: integer('scheduleId')
+  scheduleId: integer('schedule_id')
     .notNull()
     .references(() => schedule.id, { onDelete: 'cascade' }),
-  patientId: integer('patientId')
+  patientId: integer('patient_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   date: date('date').notNull(),
   shift: shiftEnum('shift').notNull(),
-  startTime: time('startTime').notNull(),
-  endTime: time('endTime').notNull(),
+  startTime: time('start_time').notNull(),
+  endTime: time('end_time').notNull(),
   status: appointmentStatusEnum('status').notNull(),
 });
 
@@ -167,7 +167,7 @@ export const appointment = pgTable('appointment', {
 
 export const doctorProfile = pgTable('doctor_profile', {
   id: serial('id').primaryKey(),
-  userId: integer('userId')
+  userId: integer('user_id')
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: 'cascade' }),
@@ -178,11 +178,11 @@ export const doctorProfile = pgTable('doctor_profile', {
 
 export const doctorExperience = pgTable('doctor_experience', {
   id: serial('id').primaryKey(),
-  doctorProfileId: integer('doctorProfileId')
+  doctorProfileId: integer('doctor_profile_id')
     .notNull()
     .references(() => doctorProfile.id, { onDelete: 'cascade' }),
-  startYear: date('startYear').notNull(),
-  endYear: date('endYear'),
+  startYear: date('start_year').notNull(),
+  endYear: date('end_year'),
   title: text('title').notNull(),
   organization: text('organization').notNull(),
   location: text('location'),
@@ -190,7 +190,7 @@ export const doctorExperience = pgTable('doctor_experience', {
 
 export const academicRecord = pgTable('academic_record', {
   id: serial('id').primaryKey(),
-  doctorProfileId: integer('doctorProfileId')
+  doctorProfileId: integer('doctor_profile_id')
     .notNull()
     .references(() => doctorProfile.id, { onDelete: 'cascade' }),
   degree: text('degree').notNull(),

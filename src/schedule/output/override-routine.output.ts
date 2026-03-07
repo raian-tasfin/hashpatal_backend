@@ -1,6 +1,7 @@
 import { ObjectType } from '@nestjs/graphql';
+import { DateField } from '@org/shared/date';
 import { OverrideRoutine, ShiftType } from '@org/shared/db';
-import { TimeField, DateField } from '@org/shared/fields';
+import { TimeField } from '@org/shared/fields';
 import { ShiftField } from '@org/shared/slots';
 import { plainToInstance } from 'class-transformer';
 

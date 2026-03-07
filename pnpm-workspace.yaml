@@ -2,6 +2,7 @@ onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@compodoc/compodoc'
   - '@nestjs/core'
+  - '@swc/core'
   - bcrypt
   - couchbase
   - esbuild

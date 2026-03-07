@@ -1,6 +1,7 @@
 import { ObjectType } from '@nestjs/graphql';
+import { DateField } from '@org/shared/date';
 import { DoctorExperience, DoctorProfile } from '@org/shared/db';
-import { DateField, StringField } from '@org/shared/fields';
+import { StringField } from '@org/shared/fields';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()

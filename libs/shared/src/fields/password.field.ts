@@ -5,6 +5,9 @@ export function PasswordField(options?: OrgFieldOptions) {
   const each = options?.isArray ?? false;
   return generate_field({
     type: String,
-    extraDecorators: [IsString({ each }), MinLength(4, { each })],
+    extraDecorators: [
+      IsString({ each }),
+      MinLength(4, { each, message: 'Password is too short' }),
+    ],
   })(options);
 }
