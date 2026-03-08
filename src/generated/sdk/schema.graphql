@@ -6,78 +6,6 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
-  user_roles: [RoleType!]!
-  doctor_profile: DoctorProfileOutput
-}
-
-enum RoleType {
-  ADMIN
-  DOCTOR
-  LAB_NURSE
-  LAB_TECHNICIAN
-  PATIENT
-}
-
-type DoctorProfileOutput {
-  experience: [DoctorExperienceOutput!]
-  academic_record: [AcademicRecordOutput!]
-  schedule: ScheduleOutput
-}
-
-type DoctorExperienceOutput {
-  startYear: String!
-  endYear: String!
-  location: String!
-  organization: String!
-  title: String!
-}
-
-type AcademicRecordOutput {
-  degree: String!
-  institute: String!
-  year: String!
-}
-
-type BlockedDayOutput {
-  date: String!
-}
-
-type OverrideRoutineOutput {
-  date: String!
-  shift: ShiftType!
-  startTime: String!
-  endTime: String!
-}
-
-enum ShiftType {
-  MORNING
-  EVENING
-}
-
-type RegularRoutineOutput {
-  weekDay: WeekDayType!
-  shift: ShiftType!
-  startTime: String!
-  endTime: String!
-}
-
-enum WeekDayType {
-  SATURDAY
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-}
-
-type ScheduleOutput {
-  minutesPerSlot: Int!
-  maxBookingDays: Int!
-  regular_routine: [RegularRoutineOutput!]
-  override_routine: [OverrideRoutineOutput!]
-  blocked_days: [BlockedDayOutput!]
-  available_slots: [OverrideRoutineOutput!]
 }
 
 type Query {
@@ -95,12 +23,6 @@ type Mutation {
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
-  doctor_sync_profile: Boolean!
-  doctor_schedule_sync(data: DoctorScheduleSyncInput!): Boolean!
-  doctor_schedule_regular_slots_sync(data: DoctorRegularRoutineSyncInput!): Boolean!
-  doctor_schedule_override_slots_sync(data: DoctorOverrideRoutineSyncInput!): Boolean!
-  doctor_blocked_days_add(data: DoctorBlockedDaysAddInput!): Boolean!
-  doctor_blocked_days_remove(data: DoctorBlockedDaysRemoveInput!): Boolean!
 }
 
 input RegisterInput {
@@ -124,46 +46,14 @@ input LogoutInput {
 }
 
 input SyncRolesInput {
-  email: String!
+  uuid: String!
   roles: [RoleType!]!
 }
 
-input DoctorScheduleSyncInput {
-  email: String!
-  minutesPerSlot: Int!
-  maxBookingDays: Int!
-}
-
-input DoctorRegularRoutineSyncInput {
-  email: String!
-  slots: [RegularSlotInput!]!
-}
-
-input RegularSlotInput {
-  shift: ShiftType!
-  startTime: String!
-  endTime: String!
-  weekDay: WeekDayType!
-}
-
-input DoctorOverrideRoutineSyncInput {
-  email: String!
-  slots: [OverrideSlotInput!]!
-}
-
-input OverrideSlotInput {
-  shift: ShiftType!
-  startTime: String!
-  endTime: String!
-  date: String!
-}
-
-input DoctorBlockedDaysAddInput {
-  email: String!
-  dates: [String!]!
-}
-
-input DoctorBlockedDaysRemoveInput {
-  email: String!
-  dates: [String!]!
+enum RoleType {
+  ADMIN
+  DOCTOR
+  LAB_NURSE
+  LAB_TECHNICIAN
+  PATIENT
 }

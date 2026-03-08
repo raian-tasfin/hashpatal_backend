@@ -45,31 +45,31 @@ export class UserResolver {
     return this._userService.refresh(data);
   }
 
-  // @Mutation(() => Boolean)
-  // async user_logout(@Args('data') data: LogoutInput): Promise<boolean> {
-  //   await this._userService.logout(data);
-  //   return true;
-  // }
-  //
-  // @Mutation(() => Boolean)
-  // async user_sync_roles(@Args('data') data: SyncRolesInput): Promise<boolean> {
-  //   await this._userService.sync_roles(data);
-  //   return true;
-  // }
-  //
-  // /**
-  //  * Queries
-  //  */
-  // @Query(() => UserOutput)
-  // async user_find(
-  //   @Args('data') data: FindByEmailInput,
-  // ): Promise<UserOutput | undefined> {
-  //   const user = await this._userService.find_by_email(data);
-  //   return user ? UserOutput.from_model(user) : undefined;
-  // }
-  //
-  // @ResolveField(() => [RoleType])
-  // async user_roles(@Parent() user: UserOutput): Promise<RoleType[]> {
-  //   return (this._userService as any)._find_roles(user.id);
-  // }
+  @Mutation(() => Boolean)
+  async user_logout(@Args('data') data: LogoutInput): Promise<boolean> {
+    await this._userService.logout(data);
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async user_sync_roles(@Args('data') data: SyncRolesInput): Promise<boolean> {
+    await this._userService.sync_roles(data);
+    return true;
+  }
+
+  /**
+   * Queries
+   */
+  @Query(() => UserOutput, { nullable: true })
+  async user_find(
+    @Args('data') data: FindByEmailInput,
+  ): Promise<UserOutput | null> {
+    const user = await this._userService.find_by_email(data);
+    return user ? UserOutput.from_model(user) : null;
+  }
+
+  @ResolveField(() => [RoleType])
+  async user_roles(@Parent() user: UserOutput): Promise<RoleType[]> {
+    return (this._userService as any)._find_roles(user.id);
+  }
 }

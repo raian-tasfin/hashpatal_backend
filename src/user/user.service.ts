@@ -130,29 +130,32 @@ export class UserService {
     });
   }
 
-  // async logout({ refreshToken }: LogoutInput): Promise<void> {
-  //   const { jit } = await this._decrypt_refresh_token(refreshToken);
-  //   await this._db.deleteFrom('refresh_token').where('jit', '=', jit).execute();
-  // }
-  //
-  // async sync_roles({ email, roles }: SyncRolesInput): Promise<void> {
-  //   this._logger.log(`Syncing roles for user ${email}: ${roles.join(', ')}`);
-  //   const user = await this.find_by_email({ email });
-  //   if (!user) {
-  //     throw new NotFoundException(`User with email ${email} not found.`);
-  //   }
-  //   await this._db.transaction().execute(async (trx) => {
-  //     await trx.deleteFrom('user_role').where('userId', '=', user.id).execute();
-  //     if (roles.length > 0) {
-  //       const roleRecords = roles.map((role) => ({
-  //         userId: user.id,
-  //         role: role,
-  //       }));
-  //       await trx.insertInto('user_role').values(roleRecords).execute();
-  //     }
-  //   });
-  //   this._logger.log(`Successfully synced roles for ${email}`);
-  // }
+  async logout({ refreshToken }: LogoutInput): Promise<void> {
+    const { jit } = await this._decrypt_refresh_token(refreshToken);
+    await this._db.deleteFrom('refresh_token').where('jit', '=', jit).execute();
+  }
+
+  async sync_roles({ uuid, roles }: SyncRolesInput): Promise<void> {
+    this._logger.log(`Syncing roles for user ${uuid}: ${roles.join(', ')}`);
+    const user = await this.find_by_uuid({ uuid });
+    if (!user) {
+      throw new NotFoundException(`User with UUID ${uuid} not found.`);
+    }
+    await this._db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom('user_role')
+        .where('user_id', '=', user.id)
+        .execute();
+      if (roles.length > 0) {
+        const roleRecords = roles.map((role) => ({
+          user_id: user.id,
+          role: role,
+        }));
+        await trx.insertInto('user_role').values(roleRecords).execute();
+      }
+    });
+    this._logger.log(`Successfully synced roles for ${uuid}`);
+  }
   /**
    * Utilities
    */

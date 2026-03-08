@@ -7,7 +7,14 @@ import 'reflect-metadata';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { format_date } from '@org/shared/date';
 import { apply_global_config } from '@org/shared/setup-app';
-import { user_register, user_login, user_refresh_token } from '@org/shared/api';
+import {
+  user_register,
+  user_login,
+  user_refresh_token,
+  user_logout,
+  user_sync_roles,
+  user_find,
+} from '@org/shared/api';
 
 const logger = new Logger();
 
@@ -169,4 +176,70 @@ describe('End-to-End System Test', () => {
     });
     expect_valid_token_pair(res.accessToken, res.refreshToken);
   });
+
+  /**
+   * Loguot
+   */
+  // invalid token
+  it('Logout: Failure. Invalid Token', async () => {
+    const promise = user_logout(sdk, { refreshToken: 'abc' });
+    await expect(promise).rejects.toThrow('Invalid refresh token');
+  });
+
+  // success
+  it('Logout: Success.', async () => {
+    const { email, password } = test.user;
+    const { refreshToken } = await user_login(sdk, { email, password });
+    const res = await user_logout(sdk, { refreshToken });
+    expect(res).toBe(true);
+  });
+
+  /**
+   * Find By Email
+   */
+  it('Find User: Failure. Not Found', async () => {
+    const res = await user_find(sdk, { email: 'nonexistence@mail.com' });
+    expect(res).toBe(null);
+  });
+
+  it('Find user: Success.', async () => {
+    const email = 'patient@mail.com';
+    const res = await user_find(sdk, { email });
+    expect(res).toBeDefined();
+    expect(res).toHaveProperty('email', email);
+  });
+
+  /**
+   * Sync Roles
+   */
+  it('Sync Roles: Invalid UUID', async () => {
+    const promise = user_sync_roles(sdk, {
+      uuid: '1',
+      roles: ['PATIENT', 'DOCTOR'],
+    });
+    expect(promise).rejects.toThrow('uuid must be a UUID');
+  });
+
+  it('Sync Roles: Success', async () => {
+    const { uuid } = await user_find(sdk, { email: 'patient@mail.com' });
+    const res = await user_sync_roles(sdk, {
+      uuid,
+      roles: ['PATIENT', 'DOCTOR'],
+    });
+    expect(res).toBe(true);
+  });
+
+  /**
+   * Find Roles
+   */
+  it('Find user roles: Success.', async () => {
+    const email = 'patient@mail.com';
+    const res = await user_find(sdk, { email }, { user_roles: true });
+    expect(res).toBeDefined();
+    expect(res).toHaveProperty('user_roles');
+  });
+
+  /**
+   * Suync Doctor Profile
+   */
 });

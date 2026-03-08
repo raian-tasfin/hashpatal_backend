@@ -10,16 +10,32 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
+  user_roles: [RoleType!]!
+}
+
+enum RoleType {
+  ADMIN
+  DOCTOR
+  LAB_NURSE
+  LAB_TECHNICIAN
+  PATIENT
 }
 
 type Query {
   sayHello: String!
+  user_find(data: FindByEmailInput!): UserOutput
+}
+
+input FindByEmailInput {
+  email: String!
 }
 
 type Mutation {
   user_register(data: RegisterInput!): UserOutput!
   user_login(data: LoginInput!): TokenPair!
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
+  user_logout(data: LogoutInput!): Boolean!
+  user_sync_roles(data: SyncRolesInput!): Boolean!
 }
 
 input RegisterInput {
@@ -36,4 +52,13 @@ input LoginInput {
 
 input RefreshLoginInput {
   refreshToken: String!
+}
+
+input LogoutInput {
+  refreshToken: String!
+}
+
+input SyncRolesInput {
+  uuid: String!
+  roles: [RoleType!]!
 }

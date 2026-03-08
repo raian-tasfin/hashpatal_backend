@@ -14,7 +14,7 @@ import { DatabaseModule, RegularRoutine, WeekDayType } from '@org/shared/db';
 // import { UserRolesModule } from 'src/user-roles/user-roles.module';
 // import { UserRolesService } from 'src/user-roles/user-roles.service';
 import { RoleType } from '@org/shared/db';
-// import { DoctorModule } from 'src/doctor/doctor.module';
+import { DoctorModule } from 'src/doctor/doctor.module';
 // import { DoctorService } from 'src/doctor/doctor.service';
 // import { ScheduleService } from 'src/schedule/schedule.service';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
@@ -23,7 +23,7 @@ import { DoctorBlockedDaysAddInput } from 'src/schedule/input';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
-// import { DoctorService } from 'src/doctor/doctor.service';
+import { DoctorService } from 'src/doctor/doctor.service';
 
 const logger = new Logger('seed');
 
@@ -39,7 +39,7 @@ const logger = new Logger('seed');
     //     ScheduleModule,
     //     UserRolesModule,
     //     ScheduleModule,
-    //     DoctorModule,
+    DoctorModule,
   ],
 })
 class SeedModule {}
@@ -65,52 +65,56 @@ async function register_users(app: INestApplicationContext) {
   logger.log(`User registration phase complete.`);
 }
 
-// // async function assign_roles(app: INestApplicationContext) {
-// //   const userService = app.get(UserService);
-// //   logger.log('Assigning roles to users...');
-// //   for (const { email, roles } of data.users) {
-// //     logger.log(`Processing user: ${email}`);
-// //     try {
-// //       logger.log(`Finding user: ${email}...`);
-// //       const user = await userService.find_by_email({ email });
-// //       if (!user) {
-// //         logger.warn(`${email} not found`);
-// //         throw new NotFoundException(`${email} not found`);
-// //       }
-// //       await userService.sync_roles({
-// //         email: user?.email,
-// //         roles: roles as RoleType[],
-// //       });
-// //       logger.log(`Updated roles for ${email} to ${roles}`);
-// //     } catch (err) {
-// //       logger.log(`Skipping user: ${email}`);
-// //       logger.error(err.message);
-// //     }
-// //   }
-// //   logger.log(`Role assignment phase complete.`);
-// // }
-// //
-// // async function create_doctor_profiles(app: INestApplicationContext) {
-// //   const userService = app.get(UserService);
-// //   const doctorService = app.get(DoctorService);
-// //   logger.log('Creating doctor profiles...');
-// //   for (const profileData of data.doctorProfiles) {
-// //     const { email, academic, experience } = profileData;
-// //     logger.log(`Processing user: ${email}`);
-// //     try {
-// //       const user = await userService.find_by_email({ email });
-// //       if (!user) {
-// //         throw new Error(`User ${email} not found in database.`);
-// //       }
-// //       await doctorService.sync_profile({ email, academic, experience });
-// //       logger.log(`Successfully synced doctor profile for ${email}.`);
-// //     } catch (err) {
-// //       logger.error(`Skipping user ${email}: ${err.message}`);
-// //     }
-// //   }
-// //   logger.log(`Doctor profile creation phase complete.`);
-// // }
-// //
+async function assign_roles(app: INestApplicationContext) {
+  const userService = app.get(UserService);
+  logger.log('Assigning roles to users...');
+  for (const { email, roles } of data.users) {
+    logger.log(`Processing user: ${email}`);
+    try {
+      logger.log(`Finding user: ${email}...`);
+      const user = await userService.find_by_email({ email });
+      if (!user) {
+        logger.warn(`${email} not found`);
+        throw new NotFoundException(`${email} not found`);
+      }
+      await userService.sync_roles({
+        uuid: user?.uuid,
+        roles: roles as RoleType[],
+      });
+      logger.log(`Updated roles for ${email} to ${roles}`);
+    } catch (err) {
+      logger.log(`Skipping user: ${email}`);
+      logger.error(err.message);
+    }
+  }
+  logger.log(`Role assignment phase complete.`);
+}
+
+async function create_doctor_profiles(app: INestApplicationContext) {
+  const userService = app.get(UserService);
+  const doctorService = app.get(DoctorService);
+  logger.log('Creating doctor profiles...');
+  for (const profileData of data.doctorProfiles) {
+    const { email, academic, experience } = profileData;
+    logger.log(`Processing user: ${email}`);
+    try {
+      const user = await userService.find_by_email({ email });
+      if (!user) {
+        throw new Error(`User ${email} not found in database.`);
+      }
+      await doctorService.sync_profile({
+        uuid: user.uuid,
+        academic,
+        experience,
+      });
+      logger.log(`Successfully synced doctor profile for ${email}.`);
+    } catch (err) {
+      logger.error(`Skipping user ${email}: ${err.message}`);
+    }
+  }
+  logger.log(`Doctor profile creation phase complete.`);
+}
+
 // // async function create_doctor_schedule(app: INestApplicationContext) {
 // //   const scheduleService = app.get(ScheduleService);
 // //   logger.log('Creating doctor schedules...');
@@ -239,8 +243,8 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(SeedModule);
 
   await register_users(app);
-  // await assign_roles(app);
-  // await create_doctor_profiles(app);
+  await assign_roles(app);
+  await create_doctor_profiles(app);
   // await create_doctor_schedule(app);
   // await create_doctor_regular_schedules(app);
   // await create_doctor_override_schedule(app);
