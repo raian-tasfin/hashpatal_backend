@@ -26,10 +26,10 @@ export class DoctorUserResolver {
   /**
    * Queries
    */
-  //   @ResolveField(() => DoctorProfileOutput, { nullable: true })
-  //   async doctor_profile(@Parent() user: UserOutput) {
-  //     return await this._doctorService.get_profile(user.id);
-  //   }
+  @ResolveField(() => DoctorProfileOutput, { nullable: true })
+  async doctor_profile(@Parent() user: UserOutput) {
+    return await this._doctorService.get_profile(user.id);
+  }
 }
 
 /**

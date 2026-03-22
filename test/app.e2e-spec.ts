@@ -15,6 +15,7 @@ import {
   user_sync_roles,
   user_find,
 } from '@org/shared/api';
+import { RoleType } from '@org/shared/db';
 
 const logger = new Logger();
 
@@ -215,7 +216,7 @@ describe('End-to-End System Test', () => {
   it('Sync Roles: Invalid UUID', async () => {
     const promise = user_sync_roles(sdk, {
       uuid: '1',
-      roles: ['PATIENT', 'DOCTOR'],
+      roles: ['PATIENT' as RoleType, 'DOCTOR' as RoleType],
     });
     expect(promise).rejects.toThrow('uuid must be a UUID');
   });
@@ -240,6 +241,7 @@ describe('End-to-End System Test', () => {
   });
 
   /**
-   * Suync Doctor Profile
+   * Setup: Doctor Profile
    */
+  it('Setup doctor profile: Failure', async () => {});
 });

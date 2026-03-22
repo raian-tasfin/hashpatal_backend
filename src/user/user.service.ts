@@ -12,11 +12,10 @@ import { KyselyDatabaseService, RoleType, User } from '@org/shared/db';
 import { DB } from '@org/shared/db/types';
 import { PasswordService } from '@org/shared/password';
 import { addDays } from 'date-fns';
-import { Kysely } from 'kysely';
+import { Kysely, SelectQueryBuilder } from 'kysely';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  FindByEmailInput,
-  FindByUuidInput,
+  FindUserInput,
   LoginInput,
   LogoutInput,
   RefreshLoginInput,
@@ -69,30 +68,17 @@ export class UserService {
     }
   }
 
-  async find_by_email({ email }: FindByEmailInput): Promise<User | undefined> {
-    this._logger.log(`Finding user by email ${email}`);
-    const user = await this._db
-      .selectFrom('user_account')
-      .selectAll()
-      .where('email', '=', email)
-      .executeTakeFirst();
-    return user;
-  }
-
-  async find_by_uuid({ uuid }: FindByUuidInput): Promise<User | undefined> {
-    this._logger.log(`Finding user by uuid ${uuid}`);
-    const user = await this._db
-      .selectFrom('user_account')
-      .selectAll()
-      .where('uuid', '=', uuid)
-      .executeTakeFirst();
-    return user;
+  async find(key: FindUserInput): Promise<User | undefined> {
+    this._logger.log(`Finding user.`);
+    const email = key.email ?? null;
+    const uuid = key.uuid ?? null;
+    return this._find_user_by_keys({ email, uuid }).executeTakeFirst();
   }
 
   async login({ email, password }: LoginInput) {
     this._logger.log(`Logging in user ${email}`);
     this._logger.log(`Finding user ${email}`);
-    const user = await this.find_by_email({ email });
+    const user = await this.find({ email });
     if (!user) {
       throw new NotFoundException(`User ${email} not found.`);
     }
@@ -137,7 +123,7 @@ export class UserService {
 
   async sync_roles({ uuid, roles }: SyncRolesInput): Promise<void> {
     this._logger.log(`Syncing roles for user ${uuid}: ${roles.join(', ')}`);
-    const user = await this.find_by_uuid({ uuid });
+    const user = await this.find({ uuid });
     if (!user) {
       throw new NotFoundException(`User with UUID ${uuid} not found.`);
     }
@@ -218,5 +204,17 @@ export class UserService {
         throw new UnauthorizedException('Invalid refresh token');
       });
     return payload;
+  }
+
+  private _find_user_by_keys(
+    keys: Record<string, any>,
+  ): SelectQueryBuilder<DB, 'user_account', User> {
+    let query = this._db.selectFrom('user_account').selectAll();
+    for (const [column, value] of Object.entries(keys)) {
+      if (value !== undefined && value !== null) {
+        query = query.where(column as any, '=', value);
+      }
+    }
+    return query;
   }
 }

@@ -9,10 +9,10 @@ export class DoctorExperienceOutput {
   doctorProfileId: number;
   id: number;
 
-  @DateField()
+  @DateField({ nullable: true })
   startYear: string;
 
-  @DateField()
+  @DateField({ nullable: true })
   endYear: string;
 
   @StringField()

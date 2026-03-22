@@ -11,6 +11,7 @@ type UserOutput {
   uuid: String!
   email: String!
   user_roles: [RoleType!]!
+  doctor_profile: DoctorProfileOutput
 }
 
 enum RoleType {
@@ -21,13 +22,33 @@ enum RoleType {
   PATIENT
 }
 
-type Query {
-  sayHello: String!
-  user_find(data: FindByEmailInput!): UserOutput
+type DoctorProfileOutput {
+  experience: [DoctorExperienceOutput!]
+  academic_record: [AcademicRecordOutput!]
 }
 
-input FindByEmailInput {
-  email: String!
+type DoctorExperienceOutput {
+  startYear: String
+  endYear: String
+  location: String!
+  organization: String!
+  title: String!
+}
+
+type AcademicRecordOutput {
+  degree: String!
+  institute: String!
+  year: String!
+}
+
+type Query {
+  sayHello: String!
+  user_find(data: FindUserInput!): UserOutput
+}
+
+input FindUserInput {
+  email: String
+  uuid: String
 }
 
 type Mutation {
@@ -36,6 +57,7 @@ type Mutation {
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
+  doctor_sync_profile: Boolean!
 }
 
 input RegisterInput {

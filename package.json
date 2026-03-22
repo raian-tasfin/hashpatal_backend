@@ -15,6 +15,7 @@
     "db:push": "env-cmd drizzle-kit push",
     "db:reset": "env-cmd sh -c 'psql $DB_URL -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\"' && pnpm db:push && pnpm db:gen",
     "db:gen": "env-cmd sh -c 'pnpm exec kysely-codegen --url \"$DB_URL\" --out-file libs/shared/src/db/types.ts'",
+    "db:viz": "env-cmd sh -c 'pnpm azimutt explore $DB_URL'",
     "type-check": "tsc --noEmit",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "gql:gen": "pnpm genql --schema ./src/schema.gql --output ./src/generated/sdk",

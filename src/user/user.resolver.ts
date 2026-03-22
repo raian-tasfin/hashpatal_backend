@@ -10,6 +10,7 @@ import {
 import { RoleType } from '@org/shared/db';
 import {
   FindByEmailInput,
+  FindUserInput,
   LoginInput,
   LogoutInput,
   RefreshLoginInput,
@@ -62,9 +63,9 @@ export class UserResolver {
    */
   @Query(() => UserOutput, { nullable: true })
   async user_find(
-    @Args('data') data: FindByEmailInput,
+    @Args('data') data: FindUserInput,
   ): Promise<UserOutput | null> {
-    const user = await this._userService.find_by_email(data);
+    const user = await this._userService.find(data);
     return user ? UserOutput.from_model(user) : null;
   }
 

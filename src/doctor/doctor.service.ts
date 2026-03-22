@@ -94,13 +94,13 @@ export class DoctorService {
     }
   }
 
-  //   async get_profile(userId: number): Promise<DoctorProfile | undefined> {
-  //     return await this._db
-  //                      .selectFrom('doctor_profile')
-  //                      .selectAll()
-  //                      .where('userId', '=', userId)
-  //                      .executeTakeFirst();
-  //   }
+  async get_profile(userId: number): Promise<DoctorProfile | undefined> {
+    return await this._db
+      .selectFrom('doctor_profile')
+      .selectAll()
+      .where('user_id', '=', userId)
+      .executeTakeFirst();
+  }
 
   async get_experience(doctorProfileId: number): Promise<DoctorExperience[]> {
     return await this._db

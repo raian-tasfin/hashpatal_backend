@@ -104,6 +104,6 @@ export const user_sync_roles = gen_mutation<{
  * Queries
  */
 export const user_find = gen_query<
-  { email: string },
+  { email?: string; uuid?: string },
   { uuid?: boolean; email?: boolean; id?: boolean; user_roles?: boolean }
 >('user_find', { uuid: true, email: true });

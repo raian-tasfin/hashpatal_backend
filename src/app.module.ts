@@ -12,7 +12,7 @@ import { AppController } from './app.controller';
 import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { UserModule } from './user';
-// import { DoctorModule } from './doctor/doctor.module';
+import { DoctorModule } from './doctor/doctor.module';
 // import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
@@ -27,7 +27,7 @@ import { UserModule } from './user';
     }),
     AuthModule,
     UserModule,
-    //     DoctorModule,
+    DoctorModule,
     //     ScheduleModule,
   ],
   controllers: [AppController],

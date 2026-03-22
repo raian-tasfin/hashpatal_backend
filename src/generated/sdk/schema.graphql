@@ -6,15 +6,45 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
+  user_roles: [RoleType!]!
+  doctor_profile: DoctorProfileOutput
+}
+
+enum RoleType {
+  ADMIN
+  DOCTOR
+  LAB_NURSE
+  LAB_TECHNICIAN
+  PATIENT
+}
+
+type DoctorProfileOutput {
+  experience: [DoctorExperienceOutput!]
+  academic_record: [AcademicRecordOutput!]
+}
+
+type DoctorExperienceOutput {
+  startYear: String
+  endYear: String
+  location: String!
+  organization: String!
+  title: String!
+}
+
+type AcademicRecordOutput {
+  degree: String!
+  institute: String!
+  year: String!
 }
 
 type Query {
   sayHello: String!
-  user_find(data: FindByEmailInput!): UserOutput!
+  user_find(data: FindUserInput!): UserOutput
 }
 
-input FindByEmailInput {
-  email: String!
+input FindUserInput {
+  email: String
+  uuid: String
 }
 
 type Mutation {
@@ -23,6 +53,7 @@ type Mutation {
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
+  doctor_sync_profile: Boolean!
 }
 
 input RegisterInput {
@@ -48,12 +79,4 @@ input LogoutInput {
 input SyncRolesInput {
   uuid: String!
   roles: [RoleType!]!
-}
-
-enum RoleType {
-  ADMIN
-  DOCTOR
-  LAB_NURSE
-  LAB_TECHNICIAN
-  PATIENT
 }

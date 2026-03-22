@@ -1,8 +1,8 @@
 export default {
     "scalars": [
         1,
-        6,
-        12
+        3,
+        10
     ],
     "types": {
         "TokenPair": {
@@ -24,6 +24,58 @@ export default {
             "email": [
                 1
             ],
+            "user_roles": [
+                3
+            ],
+            "doctor_profile": [
+                4
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "RoleType": {},
+        "DoctorProfileOutput": {
+            "experience": [
+                5
+            ],
+            "academic_record": [
+                6
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "DoctorExperienceOutput": {
+            "startYear": [
+                1
+            ],
+            "endYear": [
+                1
+            ],
+            "location": [
+                1
+            ],
+            "organization": [
+                1
+            ],
+            "title": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AcademicRecordOutput": {
+            "degree": [
+                1
+            ],
+            "institute": [
+                1
+            ],
+            "year": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -36,8 +88,8 @@ export default {
                 2,
                 {
                     "data": [
-                        4,
-                        "FindByEmailInput!"
+                        8,
+                        "FindUserInput!"
                     ]
                 }
             ],
@@ -45,8 +97,11 @@ export default {
                 1
             ]
         },
-        "FindByEmailInput": {
+        "FindUserInput": {
             "email": [
+                1
+            ],
+            "uuid": [
                 1
             ],
             "__typename": [
@@ -58,7 +113,7 @@ export default {
                 2,
                 {
                     "data": [
-                        7,
+                        11,
                         "RegisterInput!"
                     ]
                 }
@@ -67,7 +122,7 @@ export default {
                 0,
                 {
                     "data": [
-                        8,
+                        12,
                         "LoginInput!"
                     ]
                 }
@@ -76,28 +131,31 @@ export default {
                 0,
                 {
                     "data": [
-                        9,
+                        13,
                         "RefreshLoginInput!"
                     ]
                 }
             ],
             "user_logout": [
-                6,
+                10,
                 {
                     "data": [
-                        10,
+                        14,
                         "LogoutInput!"
                     ]
                 }
             ],
             "user_sync_roles": [
-                6,
+                10,
                 {
                     "data": [
-                        11,
+                        15,
                         "SyncRolesInput!"
                     ]
                 }
+            ],
+            "doctor_sync_profile": [
+                10
             ],
             "__typename": [
                 1
@@ -153,12 +211,11 @@ export default {
                 1
             ],
             "roles": [
-                12
+                3
             ],
             "__typename": [
                 1
             ]
-        },
-        "RoleType": {}
+        }
     }
 }
