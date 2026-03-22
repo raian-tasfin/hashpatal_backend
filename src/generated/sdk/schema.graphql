@@ -53,7 +53,7 @@ type Mutation {
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
-  doctor_sync_profile: Boolean!
+  doctor_sync_profile(data: SyncProfileInput!): Boolean!
 }
 
 input RegisterInput {
@@ -79,4 +79,24 @@ input LogoutInput {
 input SyncRolesInput {
   uuid: String!
   roles: [RoleType!]!
+}
+
+input SyncProfileInput {
+  uuid: String!
+  experience: [ExperienceInput!]!
+  academic: [AcademicRecordInput!]!
+}
+
+input ExperienceInput {
+  title: String!
+  organization: String!
+  location: String
+  startYear: String!
+  endYear: String
+}
+
+input AcademicRecordInput {
+  degree: String!
+  institute: String!
+  year: String!
 }

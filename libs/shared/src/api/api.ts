@@ -1,5 +1,12 @@
 import { Client } from '@org/sdk';
 import { RoleType } from '@org/shared/db';
+import {
+  LoginInput,
+  LogoutInput,
+  RefreshLoginInput,
+  RegisterInput,
+  SyncRolesInput,
+} from 'src/user/input';
 
 // export function gen_mutation<TData, TSelect>(
 //   mutationName: string,
@@ -64,41 +71,32 @@ export function gen_query<TData, TSelect = any>(
 }
 
 /**
+ * Models
+ */
+
+/**
  * Mutations
  */
 export const user_register = gen_mutation<
-  {
-    email: string;
-    name: string;
-    password: string;
-    birthDate: string;
-  },
+  RegisterInput,
   { uuid?: boolean; email?: boolean; name?: boolean }
 >('user_register', { uuid: true });
 
 export const user_login = gen_mutation<
-  {
-    email: string;
-    password: string;
-  },
+  LoginInput,
   { accessToken?: boolean; refreshToken?: boolean }
 >('user_login', { accessToken: true, refreshToken: true });
 
 export const user_refresh_token = gen_mutation<
-  {
-    refreshToken: string;
-  },
+  RefreshLoginInput,
   { accessToken?: boolean; refreshToken?: boolean }
 >('user_refresh_token', { accessToken: true, refreshToken: true });
 
-export const user_logout = gen_mutation<{
-  refreshToken: string;
-}>('user_logout');
+export const user_logout = gen_mutation<LogoutInput>('user_logout');
 
-export const user_sync_roles = gen_mutation<{
-  uuid: string;
-  roles: RoleType[];
-}>('user_sync_roles');
+export const user_sync_roles = gen_mutation<SyncRolesInput>('user_sync_roles');
+
+export const doctor_sync_profile = gen_mutation<>('doctor_sync_profile');
 
 /**
  * Queries

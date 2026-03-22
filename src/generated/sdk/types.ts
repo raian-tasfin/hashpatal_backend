@@ -155,7 +155,13 @@ export default {
                 }
             ],
             "doctor_sync_profile": [
-                10
+                10,
+                {
+                    "data": [
+                        16,
+                        "SyncProfileInput!"
+                    ]
+                }
             ],
             "__typename": [
                 1
@@ -212,6 +218,54 @@ export default {
             ],
             "roles": [
                 3
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "SyncProfileInput": {
+            "uuid": [
+                1
+            ],
+            "experience": [
+                17
+            ],
+            "academic": [
+                18
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "ExperienceInput": {
+            "title": [
+                1
+            ],
+            "organization": [
+                1
+            ],
+            "location": [
+                1
+            ],
+            "startYear": [
+                1
+            ],
+            "endYear": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AcademicRecordInput": {
+            "degree": [
+                1
+            ],
+            "institute": [
+                1
+            ],
+            "year": [
+                1
             ],
             "__typename": [
                 1

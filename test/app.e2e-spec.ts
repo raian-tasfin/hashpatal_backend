@@ -4,7 +4,7 @@ import { AppModule } from '../src/app.module';
 import { Client, createClient } from '../src/generated/sdk';
 import request from 'supertest';
 import 'reflect-metadata';
-import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { format_date } from '@org/shared/date';
 import { apply_global_config } from '@org/shared/setup-app';
 import {
@@ -14,8 +14,10 @@ import {
   user_logout,
   user_sync_roles,
   user_find,
+  doctor_sync_profile,
 } from '@org/shared/api';
 import { RoleType } from '@org/shared/db';
+import { v4 as uuid4 } from 'uuid';
 
 const logger = new Logger();
 
@@ -28,6 +30,25 @@ const test = {
     name: 'Test Porikh',
     password: '1234',
     birthDate: '2000-01-01',
+  },
+  doctor_profile: {
+    uuid: null,
+    experience: [
+      {
+        title: 'Intern',
+        organization: 'Dhaka Medical College',
+        location: 'Dhaka',
+        startYear: '2010',
+        endYear: '2012',
+      },
+    ],
+    academic: [
+      {
+        degree: 'MBBS',
+        institute: 'Dhaka Medical College',
+        year: '2009',
+      },
+    ],
   },
 };
 
@@ -225,7 +246,7 @@ describe('End-to-End System Test', () => {
     const { uuid } = await user_find(sdk, { email: 'patient@mail.com' });
     const res = await user_sync_roles(sdk, {
       uuid,
-      roles: ['PATIENT', 'DOCTOR'],
+      roles: ['PATIENT' as RoleType, 'DOCTOR' as RoleType],
     });
     expect(res).toBe(true);
   });
@@ -241,7 +262,40 @@ describe('End-to-End System Test', () => {
   });
 
   /**
-   * Setup: Doctor Profile
+   * Doctor Profile: Sync
    */
-  it('Setup doctor profile: Failure', async () => {});
+  it('Setup doctor profile: Failure. Invalid UUID format.', async () => {
+    //     const promise =
+
+    const promise = doctor_sync_profile(sdk, {
+      uuid: 'invalid-uuid',
+      experience: [],
+      academic: [],
+    });
+    expect(promise).rejects.toThrow('uuid must be a UUID');
+  });
+
+  it('Setup doctor profile: Failure. UUID not found.', async () => {
+    const uuid = uuid4();
+    const err = `User with UUID ${uuid} not found`;
+    const promise = doctor_sync_profile(sdk, {
+      uuid,
+      experience: [],
+      academic: [],
+    });
+    expect(promise).rejects.toThrow(err);
+  });
+
+  it('Setup doctor profile: Success.', async () => {
+    const { uuid } = await user_find(sdk, { email: test.user.email });
+    await user_sync_roles(sdk, {
+      uuid,
+      roles: ['PATIENT' as RoleType, 'DOCTOR' as RoleType],
+    });
+    const res = await doctor_sync_profile(sdk, {
+      ...test.doctor_profile,
+      uuid,
+    });
+    expect(res).toBe(true);
+  });
 });

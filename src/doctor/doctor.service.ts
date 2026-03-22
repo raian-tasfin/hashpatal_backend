@@ -14,7 +14,7 @@ import {
   RoleType,
 } from '@org/shared/db';
 import { UserService } from 'src/user/user.service';
-import { UpdateProfileInput } from './input';
+import { SyncProfileInput } from './input';
 
 @Injectable()
 export class DoctorService {
@@ -25,12 +25,12 @@ export class DoctorService {
     @Inject(UserService) private readonly userService: UserService,
   ) {}
 
-  async sync_profile(data: UpdateProfileInput) {
+  async sync_profile(data: SyncProfileInput) {
     const { uuid, academic, experience } = data;
     this.logger.log(`Syncing doctor profile for user: ${uuid}`);
     try {
       this.logger.log(`Finding user ${uuid}`);
-      const user = await this.userService.find_by_uuid({ uuid });
+      const user = await this.userService.find({ uuid });
       if (!user) {
         const msg = `User with UUID ${uuid} not found`;
         this.logger.warn(msg);

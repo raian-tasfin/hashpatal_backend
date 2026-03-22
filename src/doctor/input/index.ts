@@ -1,1 +1,1 @@
-export * from './update-profile.input';
+export * from './sync-profile.input';

@@ -118,7 +118,7 @@ export interface MutationGenqlSelection{
     user_refresh_token?: (TokenPairGenqlSelection & { __args: {data: RefreshLoginInput} })
     user_logout?: { __args: {data: LogoutInput} }
     user_sync_roles?: { __args: {data: SyncRolesInput} }
-    doctor_sync_profile?: boolean | number
+    doctor_sync_profile?: { __args: {data: SyncProfileInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -132,6 +132,12 @@ export interface RefreshLoginInput {refreshToken: Scalars['String']}
 export interface LogoutInput {refreshToken: Scalars['String']}
 
 export interface SyncRolesInput {uuid: Scalars['String'],roles: RoleType[]}
+
+export interface SyncProfileInput {uuid: Scalars['String'],experience: ExperienceInput[],academic: AcademicRecordInput[]}
+
+export interface ExperienceInput {title: Scalars['String'],organization: Scalars['String'],location?: (Scalars['String'] | null),startYear: Scalars['String'],endYear?: (Scalars['String'] | null)}
+
+export interface AcademicRecordInput {degree: Scalars['String'],institute: Scalars['String'],year: Scalars['String']}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']

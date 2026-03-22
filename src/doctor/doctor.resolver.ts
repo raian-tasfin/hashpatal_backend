@@ -1,6 +1,12 @@
 import { Inject } from '@nestjs/common';
-import { Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { UpdateProfileInput } from './input';
+import {
+  Args,
+  Mutation,
+  Parent,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import { SyncProfileInput } from './input';
 import {
   AcademicRecordOutput,
   DoctorExperienceOutput,
@@ -18,7 +24,7 @@ export class DoctorUserResolver {
    * Mutations
    */
   @Mutation(() => Boolean)
-  async doctor_sync_profile(data: UpdateProfileInput) {
+  async doctor_sync_profile(@Args('data') data: SyncProfileInput) {
     await this._doctorService.sync_profile(data);
     return true;
   }
