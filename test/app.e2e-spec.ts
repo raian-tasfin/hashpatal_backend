@@ -298,4 +298,8 @@ describe('End-to-End System Test', () => {
     });
     expect(res).toBe(true);
   });
+
+  /**
+   * Query Doctor Profile/s
+   */
 });

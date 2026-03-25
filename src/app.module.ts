@@ -13,6 +13,7 @@ import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { UserModule } from './user';
 import { DoctorModule } from './doctor/doctor.module';
+import { DepartmentModule } from './department/department.module';
 // import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { DoctorModule } from './doctor/doctor.module';
     AuthModule,
     UserModule,
     DoctorModule,
+    DepartmentModule,
     //     ScheduleModule,
   ],
   controllers: [AppController],

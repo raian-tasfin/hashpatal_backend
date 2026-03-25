@@ -20,10 +20,12 @@ import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 import { OverrideSlotInput, RegularSlotInput } from '@org/shared/slots';
 import { DoctorBlockedDaysAddInput } from 'src/schedule/input';
+import { DepartmentModule } from 'src/department/department.module';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
 import { DoctorService } from 'src/doctor/doctor.service';
+import { DepartmentService } from 'src/department/department.service';
 
 const logger = new Logger('seed');
 
@@ -40,6 +42,7 @@ const logger = new Logger('seed');
     //     UserRolesModule,
     //     ScheduleModule,
     DoctorModule,
+    DepartmentModule,
   ],
 })
 class SeedModule {}
@@ -72,7 +75,7 @@ async function assign_roles(app: INestApplicationContext) {
     logger.log(`Processing user: ${email}`);
     try {
       logger.log(`Finding user: ${email}...`);
-      const user = await userService.find_by_email({ email });
+      const user = await userService.find({ email });
       if (!user) {
         logger.warn(`${email} not found`);
         throw new NotFoundException(`${email} not found`);
@@ -98,7 +101,7 @@ async function create_doctor_profiles(app: INestApplicationContext) {
     const { email, academic, experience } = profileData;
     logger.log(`Processing user: ${email}`);
     try {
-      const user = await userService.find_by_email({ email });
+      const user = await userService.find({ email });
       if (!user) {
         throw new Error(`User ${email} not found in database.`);
       }
@@ -113,6 +116,22 @@ async function create_doctor_profiles(app: INestApplicationContext) {
     }
   }
   logger.log(`Doctor profile creation phase complete.`);
+}
+
+async function add_departments(app: INestApplicationContext) {
+  const departmentService = app.get(DepartmentService);
+  logger.log('Adding departments...');
+  for (const { name } of data.departments) {
+    logger.log(`Adding department: ${name}`);
+    try {
+      const res = await departmentService.add({ name });
+      if (!res) throw Error(`Failed adding department "${name}"`);
+    } catch (err) {
+      logger.log(`Skipping department: "${name}"`);
+      logger.error(err.message);
+    }
+  }
+  logger.log(`Department population phase complete.`);
 }
 
 // // async function create_doctor_schedule(app: INestApplicationContext) {
@@ -245,6 +264,7 @@ async function bootstrap() {
   await register_users(app);
   await assign_roles(app);
   await create_doctor_profiles(app);
+  await add_departments(app);
   // await create_doctor_schedule(app);
   // await create_doctor_regular_schedules(app);
   // await create_doctor_override_schedule(app);

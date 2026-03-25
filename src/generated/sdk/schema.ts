@@ -19,6 +19,7 @@ export interface UserOutput {
     email: Scalars['String']
     user_roles: RoleType[]
     doctor_profile: (DoctorProfileOutput | null)
+    department_fetch_all: (DepartmentOutput[] | null)
     __typename: 'UserOutput'
 }
 
@@ -46,6 +47,12 @@ export interface AcademicRecordOutput {
     __typename: 'AcademicRecordOutput'
 }
 
+export interface DepartmentOutput {
+    uuid: Scalars['String']
+    name: Scalars['String']
+    __typename: 'DepartmentOutput'
+}
+
 export interface Query {
     sayHello: Scalars['String']
     user_find: (UserOutput | null)
@@ -59,6 +66,7 @@ export interface Mutation {
     user_logout: Scalars['Boolean']
     user_sync_roles: Scalars['Boolean']
     doctor_sync_profile: Scalars['Boolean']
+    department_add: Scalars['Boolean']
     __typename: 'Mutation'
 }
 
@@ -74,6 +82,7 @@ export interface UserOutputGenqlSelection{
     email?: boolean | number
     user_roles?: boolean | number
     doctor_profile?: DoctorProfileOutputGenqlSelection
+    department_fetch_all?: DepartmentOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -103,6 +112,13 @@ export interface AcademicRecordOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface DepartmentOutputGenqlSelection{
+    uuid?: boolean | number
+    name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
@@ -119,6 +135,7 @@ export interface MutationGenqlSelection{
     user_logout?: { __args: {data: LogoutInput} }
     user_sync_roles?: { __args: {data: SyncRolesInput} }
     doctor_sync_profile?: { __args: {data: SyncProfileInput} }
+    department_add?: { __args: {data: AddDepartmentInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -138,6 +155,8 @@ export interface SyncProfileInput {uuid: Scalars['String'],experience: Experienc
 export interface ExperienceInput {title: Scalars['String'],organization: Scalars['String'],location?: (Scalars['String'] | null),startYear: Scalars['String'],endYear?: (Scalars['String'] | null)}
 
 export interface AcademicRecordInput {degree: Scalars['String'],institute: Scalars['String'],year: Scalars['String']}
+
+export interface AddDepartmentInput {name: Scalars['String']}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']
@@ -176,6 +195,14 @@ export interface AcademicRecordInput {degree: Scalars['String'],institute: Scala
     export const isAcademicRecordOutput = (obj?: { __typename?: any } | null): obj is AcademicRecordOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAcademicRecordOutput"')
       return AcademicRecordOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DepartmentOutput_possibleTypes: string[] = ['DepartmentOutput']
+    export const isDepartmentOutput = (obj?: { __typename?: any } | null): obj is DepartmentOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDepartmentOutput"')
+      return DepartmentOutput_possibleTypes.includes(obj.__typename)
     }
     
 

@@ -12,12 +12,14 @@ import {
   Schedule as ScheduleTable,
   UserAccount as UserTable,
   UserRole as UserRoleTable,
+  Department as DepartmentTable,
 } from './types';
 
 export type AcademicRecord = Selectable<AcademicRecordTable>;
 export type Appointment = Selectable<AppointmentTable>;
 export type AvailableSlots = Selectable<AvailableSlotsTable>;
 export type BlockedDays = Selectable<BlockedDaysTable>;
+export type Department = Selectable<DepartmentTable>;
 export type DoctorExperience = Selectable<DoctorExperienceTable>;
 export type DoctorProfile = Selectable<DoctorProfileTable>;
 export type OverrideRoutine = Selectable<OverrideRoutineTable>;

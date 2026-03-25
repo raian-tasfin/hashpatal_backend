@@ -41,9 +41,15 @@ type AcademicRecordOutput {
   year: String!
 }
 
+type DepartmentOutput {
+  uuid: String!
+  name: String!
+}
+
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
+  department_fetch_all: [DepartmentOutput!]
 }
 
 input FindUserInput {
@@ -58,6 +64,7 @@ type Mutation {
   user_logout(data: LogoutInput!): Boolean!
   user_sync_roles(data: SyncRolesInput!): Boolean!
   doctor_sync_profile(data: SyncProfileInput!): Boolean!
+  department_add(data: AddDepartmentInput!): Boolean!
 }
 
 input RegisterInput {
@@ -103,4 +110,8 @@ input AcademicRecordInput {
   degree: String!
   institute: String!
   year: String!
+}
+
+input AddDepartmentInput {
+  name: String!
 }

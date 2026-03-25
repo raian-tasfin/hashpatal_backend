@@ -6,18 +6,19 @@ import {
   pgTable,
   serial,
   text,
-  timestamp,
   time,
+  timestamp,
   unique,
   uuid,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import {
+  AppointmentStatusType,
   create_pg_enum,
   RoleType,
-  WeekDayType,
-  AppointmentStatusType,
   SchedulableType,
   ShiftType,
+  WeekDayType,
 } from './_enums';
 
 /**
@@ -197,3 +198,30 @@ export const academicRecord = pgTable('academic_record', {
   institute: text('institute').notNull(),
   year: date('year').notNull(),
 });
+
+/**
+ * Department
+ */
+export const department = pgTable('department', {
+  id: serial('id').primaryKey(),
+  uuid: uuid('uuid').defaultRandom().notNull().unique(),
+  name: text('name').notNull().unique(),
+});
+
+export const doctorDepartment = pgTable(
+  'doctor_department',
+  {
+    doctorProfileId: integer('doctor_profile_id')
+      .notNull()
+      .references(() => doctorProfile.id, { onDelete: 'cascade' }),
+    departmentId: integer('department_id')
+      .notNull()
+      .references(() => department.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    primaryKey({
+      name: 'doctor_department_pk',
+      columns: [t.doctorProfileId, t.departmentId],
+    }),
+  ],
+);

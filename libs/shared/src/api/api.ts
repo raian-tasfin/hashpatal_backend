@@ -1,5 +1,6 @@
 import { Client } from '@org/sdk';
 import { RoleType } from '@org/shared/db';
+import { SyncProfileInput } from 'src/doctor/input';
 import {
   LoginInput,
   LogoutInput,
@@ -96,7 +97,9 @@ export const user_logout = gen_mutation<LogoutInput>('user_logout');
 
 export const user_sync_roles = gen_mutation<SyncRolesInput>('user_sync_roles');
 
-export const doctor_sync_profile = gen_mutation<>('doctor_sync_profile');
+export const doctor_sync_profile = gen_mutation<SyncProfileInput>(
+  'doctor_sync_profile',
+);
 
 /**
  * Queries
