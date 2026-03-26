@@ -15,6 +15,7 @@ import {
 } from '@org/shared/db';
 import { UserService } from 'src/user/user.service';
 import { SyncProfileInput } from './input';
+import { DepartmentService } from 'src/department/department.service';
 
 @Injectable()
 export class DoctorService {
@@ -22,28 +23,45 @@ export class DoctorService {
 
   constructor(
     @Inject(KyselyDatabaseService) private readonly _db: KyselyDatabaseService,
-    @Inject(UserService) private readonly userService: UserService,
+    @Inject(UserService) private readonly _userService: UserService,
+    @Inject(DepartmentService)
+    private readonly _departmentService: DepartmentService,
   ) {}
 
   async sync_profile(data: SyncProfileInput) {
-    const { uuid, academic, experience } = data;
+    const { uuid, departmentUuid, experience, academic } = data;
     this.logger.log(`Syncing doctor profile for user: ${uuid}`);
     try {
       this.logger.log(`Finding user ${uuid}`);
-      const user = await this.userService.find({ uuid });
+      const user = await this._userService.find({ uuid });
       if (!user) {
         const msg = `User with UUID ${uuid} not found`;
         this.logger.warn(msg);
         throw new NotFoundException(msg);
       }
+
+      const get_department_id = async (uuid: string | undefined | null) => {
+        if (!uuid) return null;
+        this.logger.log(`Finding department '${uuid}'`);
+        const department = await this._departmentService.find({ uuid });
+        if (!department) {
+          const msg = `Department with UUID ${departmentUuid} not found`;
+          this.logger.warn(msg);
+          return null;
+        }
+        return department.id;
+      };
+      const department_id = await get_department_id(departmentUuid);
+
       this.logger.log(`Fetching user roles ${uuid}.`);
-      const roles = await this.userService._find_roles(user.id);
+      const roles = await this._userService._find_roles(user.id);
       const isDoctor = roles.some((r) => r === RoleType.DOCTOR);
       if (!isDoctor) {
         const msg = `User ${uuid} does not have role DOCTOR`;
         this.logger.warn(msg);
         throw new ForbiddenException(msg);
       }
+
       await this._db.transaction().execute(async (trx) => {
         await trx
           .deleteFrom('doctor_profile')
@@ -51,7 +69,7 @@ export class DoctorService {
           .execute();
         const res = await trx
           .insertInto('doctor_profile')
-          .values({ user_id: user.id })
+          .values({ user_id: user.id, department_id })
           .returning('id')
           .execute();
         const doctor_profile_id = res[0].id;

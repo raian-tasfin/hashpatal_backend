@@ -19,7 +19,6 @@ export interface UserOutput {
     email: Scalars['String']
     user_roles: RoleType[]
     doctor_profile: (DoctorProfileOutput | null)
-    department_fetch_all: (DepartmentOutput[] | null)
     __typename: 'UserOutput'
 }
 
@@ -56,6 +55,7 @@ export interface DepartmentOutput {
 export interface Query {
     sayHello: Scalars['String']
     user_find: (UserOutput | null)
+    department_fetch_all: (DepartmentOutput[] | null)
     __typename: 'Query'
 }
 
@@ -82,7 +82,6 @@ export interface UserOutputGenqlSelection{
     email?: boolean | number
     user_roles?: boolean | number
     doctor_profile?: DoctorProfileOutputGenqlSelection
-    department_fetch_all?: DepartmentOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -122,6 +121,7 @@ export interface DepartmentOutputGenqlSelection{
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
+    department_fetch_all?: DepartmentOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -150,7 +150,7 @@ export interface LogoutInput {refreshToken: Scalars['String']}
 
 export interface SyncRolesInput {uuid: Scalars['String'],roles: RoleType[]}
 
-export interface SyncProfileInput {uuid: Scalars['String'],experience: ExperienceInput[],academic: AcademicRecordInput[]}
+export interface SyncProfileInput {uuid: Scalars['String'],departmentUuid?: (Scalars['String'] | null),experience: ExperienceInput[],academic: AcademicRecordInput[]}
 
 export interface ExperienceInput {title: Scalars['String'],organization: Scalars['String'],location?: (Scalars['String'] | null),startYear: Scalars['String'],endYear?: (Scalars['String'] | null)}
 

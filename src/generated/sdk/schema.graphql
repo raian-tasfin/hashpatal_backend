@@ -8,7 +8,6 @@ type UserOutput {
   email: String!
   user_roles: [RoleType!]!
   doctor_profile: DoctorProfileOutput
-  department_fetch_all: [DepartmentOutput!]
 }
 
 enum RoleType {
@@ -46,6 +45,7 @@ type DepartmentOutput {
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
+  department_fetch_all: [DepartmentOutput!]
 }
 
 input FindUserInput {
@@ -90,6 +90,7 @@ input SyncRolesInput {
 
 input SyncProfileInput {
   uuid: String!
+  departmentUuid: String
   experience: [ExperienceInput!]!
   academic: [AcademicRecordInput!]!
 }

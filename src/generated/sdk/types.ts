@@ -1,154 +1,309 @@
 export default {
-  scalars: [1, 3, 11],
-  types: {
-    TokenPair: {
-      accessToken: [1],
-      refreshToken: [1],
-      __typename: [1],
-    },
-    String: {},
-    UserOutput: {
-      uuid: [1],
-      email: [1],
-      user_roles: [3],
-      doctor_profile: [4],
-      department_fetch_all: [7],
-      __typename: [1],
-    },
-    RoleType: {},
-    DoctorProfileOutput: {
-      experience: [5],
-      academic_record: [6],
-      __typename: [1],
-    },
-    DoctorExperienceOutput: {
-      startYear: [1],
-      endYear: [1],
-      location: [1],
-      organization: [1],
-      title: [1],
-      __typename: [1],
-    },
-    AcademicRecordOutput: {
-      degree: [1],
-      institute: [1],
-      year: [1],
-      __typename: [1],
-    },
-    DepartmentOutput: {
-      uuid: [1],
-      name: [1],
-      __typename: [1],
-    },
-    Query: {
-      sayHello: [1],
-      user_find: [
-        2,
-        {
-          data: [9, 'FindUserInput!'],
+    "scalars": [
+        1,
+        3,
+        11
+    ],
+    "types": {
+        "TokenPair": {
+            "accessToken": [
+                1
+            ],
+            "refreshToken": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      __typename: [1],
-    },
-    FindUserInput: {
-      email: [1],
-      uuid: [1],
-      __typename: [1],
-    },
-    Mutation: {
-      user_register: [
-        2,
-        {
-          data: [12, 'RegisterInput!'],
+        "String": {},
+        "UserOutput": {
+            "uuid": [
+                1
+            ],
+            "email": [
+                1
+            ],
+            "user_roles": [
+                3
+            ],
+            "doctor_profile": [
+                4
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      user_login: [
-        0,
-        {
-          data: [13, 'LoginInput!'],
+        "RoleType": {},
+        "DoctorProfileOutput": {
+            "experience": [
+                5
+            ],
+            "academic_record": [
+                6
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      user_refresh_token: [
-        0,
-        {
-          data: [14, 'RefreshLoginInput!'],
+        "DoctorExperienceOutput": {
+            "startYear": [
+                1
+            ],
+            "endYear": [
+                1
+            ],
+            "location": [
+                1
+            ],
+            "organization": [
+                1
+            ],
+            "title": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      user_logout: [
-        11,
-        {
-          data: [15, 'LogoutInput!'],
+        "AcademicRecordOutput": {
+            "degree": [
+                1
+            ],
+            "institute": [
+                1
+            ],
+            "year": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      user_sync_roles: [
-        11,
-        {
-          data: [16, 'SyncRolesInput!'],
+        "DepartmentOutput": {
+            "uuid": [
+                1
+            ],
+            "name": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      doctor_sync_profile: [
-        11,
-        {
-          data: [17, 'SyncProfileInput!'],
+        "Query": {
+            "sayHello": [
+                1
+            ],
+            "user_find": [
+                2,
+                {
+                    "data": [
+                        9,
+                        "FindUserInput!"
+                    ]
+                }
+            ],
+            "department_fetch_all": [
+                7
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      department_add: [
-        11,
-        {
-          data: [20, 'AddDepartmentInput!'],
+        "FindUserInput": {
+            "email": [
+                1
+            ],
+            "uuid": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
         },
-      ],
-      __typename: [1],
-    },
-    Boolean: {},
-    RegisterInput: {
-      email: [1],
-      name: [1],
-      password: [1],
-      birthDate: [1],
-      __typename: [1],
-    },
-    LoginInput: {
-      email: [1],
-      password: [1],
-      __typename: [1],
-    },
-    RefreshLoginInput: {
-      refreshToken: [1],
-      __typename: [1],
-    },
-    LogoutInput: {
-      refreshToken: [1],
-      __typename: [1],
-    },
-    SyncRolesInput: {
-      uuid: [1],
-      roles: [3],
-      __typename: [1],
-    },
-    SyncProfileInput: {
-      uuid: [1],
-      experience: [18],
-      academic: [19],
-      __typename: [1],
-    },
-    ExperienceInput: {
-      title: [1],
-      organization: [1],
-      location: [1],
-      startYear: [1],
-      endYear: [1],
-      __typename: [1],
-    },
-    AcademicRecordInput: {
-      degree: [1],
-      institute: [1],
-      year: [1],
-      __typename: [1],
-    },
-    AddDepartmentInput: {
-      name: [1],
-      __typename: [1],
-    },
-  },
-};
+        "Mutation": {
+            "user_register": [
+                2,
+                {
+                    "data": [
+                        12,
+                        "RegisterInput!"
+                    ]
+                }
+            ],
+            "user_login": [
+                0,
+                {
+                    "data": [
+                        13,
+                        "LoginInput!"
+                    ]
+                }
+            ],
+            "user_refresh_token": [
+                0,
+                {
+                    "data": [
+                        14,
+                        "RefreshLoginInput!"
+                    ]
+                }
+            ],
+            "user_logout": [
+                11,
+                {
+                    "data": [
+                        15,
+                        "LogoutInput!"
+                    ]
+                }
+            ],
+            "user_sync_roles": [
+                11,
+                {
+                    "data": [
+                        16,
+                        "SyncRolesInput!"
+                    ]
+                }
+            ],
+            "doctor_sync_profile": [
+                11,
+                {
+                    "data": [
+                        17,
+                        "SyncProfileInput!"
+                    ]
+                }
+            ],
+            "department_add": [
+                11,
+                {
+                    "data": [
+                        20,
+                        "AddDepartmentInput!"
+                    ]
+                }
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "Boolean": {},
+        "RegisterInput": {
+            "email": [
+                1
+            ],
+            "name": [
+                1
+            ],
+            "password": [
+                1
+            ],
+            "birthDate": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "LoginInput": {
+            "email": [
+                1
+            ],
+            "password": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "RefreshLoginInput": {
+            "refreshToken": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "LogoutInput": {
+            "refreshToken": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "SyncRolesInput": {
+            "uuid": [
+                1
+            ],
+            "roles": [
+                3
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "SyncProfileInput": {
+            "uuid": [
+                1
+            ],
+            "departmentUuid": [
+                1
+            ],
+            "experience": [
+                18
+            ],
+            "academic": [
+                19
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "ExperienceInput": {
+            "title": [
+                1
+            ],
+            "organization": [
+                1
+            ],
+            "location": [
+                1
+            ],
+            "startYear": [
+                1
+            ],
+            "endYear": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AcademicRecordInput": {
+            "degree": [
+                1
+            ],
+            "institute": [
+                1
+            ],
+            "year": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AddDepartmentInput": {
+            "name": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        }
+    }
+}

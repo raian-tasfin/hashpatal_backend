@@ -94,6 +94,7 @@ input SyncRolesInput {
 
 input SyncProfileInput {
   uuid: String!
+  departmentUuid: String
   experience: [ExperienceInput!]!
   academic: [AcademicRecordInput!]!
 }

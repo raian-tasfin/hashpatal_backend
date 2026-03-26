@@ -12,6 +12,9 @@ export class SyncProfileInput {
   @UuidField()
   uuid: string;
 
+  @UuidField({ nullable: true })
+  departmentUuid?: string;
+
   @ExperienceField({ isArray: true })
   experience: ExperienceInput[];
 
