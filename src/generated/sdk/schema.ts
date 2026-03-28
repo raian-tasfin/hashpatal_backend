@@ -5,6 +5,7 @@
 
 export type Scalars = {
     String: string,
+    Int: number,
     Boolean: boolean,
 }
 
@@ -27,6 +28,7 @@ export type RoleType = 'ADMIN' | 'DOCTOR' | 'LAB_NURSE' | 'LAB_TECHNICIAN' | 'PA
 export interface DoctorProfileOutput {
     experience: (DoctorExperienceOutput[] | null)
     academic_record: (AcademicRecordOutput[] | null)
+    schedule: (ScheduleOutput | null)
     __typename: 'DoctorProfileOutput'
 }
 
@@ -49,13 +51,21 @@ export interface AcademicRecordOutput {
 export interface DepartmentOutput {
     uuid: Scalars['String']
     name: Scalars['String']
+    doctors: (UserOutput[] | null)
     __typename: 'DepartmentOutput'
+}
+
+export interface ScheduleOutput {
+    minutesPerSlot: Scalars['Int']
+    maxBookingDays: Scalars['Int']
+    __typename: 'ScheduleOutput'
 }
 
 export interface Query {
     sayHello: Scalars['String']
     user_find: (UserOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
+    department_find: (DepartmentOutput | null)
     __typename: 'Query'
 }
 
@@ -67,8 +77,16 @@ export interface Mutation {
     user_sync_roles: Scalars['Boolean']
     doctor_sync_profile: Scalars['Boolean']
     department_add: Scalars['Boolean']
+    schedule_sync: Scalars['Boolean']
+    routine_sync: Scalars['Boolean']
     __typename: 'Mutation'
 }
+
+export type SchedulableType = 'DOCTOR'
+
+export type ShiftType = 'MORNING' | 'EVENING'
+
+export type WeekDayType = 'SATURDAY' | 'SUNDAY' | 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY'
 
 export interface TokenPairGenqlSelection{
     accessToken?: boolean | number
@@ -89,6 +107,7 @@ export interface UserOutputGenqlSelection{
 export interface DoctorProfileOutputGenqlSelection{
     experience?: DoctorExperienceOutputGenqlSelection
     academic_record?: AcademicRecordOutputGenqlSelection
+    schedule?: ScheduleOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -114,6 +133,14 @@ export interface AcademicRecordOutputGenqlSelection{
 export interface DepartmentOutputGenqlSelection{
     uuid?: boolean | number
     name?: boolean | number
+    doctors?: UserOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ScheduleOutputGenqlSelection{
+    minutesPerSlot?: boolean | number
+    maxBookingDays?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -122,11 +149,14 @@ export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
     department_fetch_all?: DepartmentOutputGenqlSelection
+    department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
 
 export interface FindUserInput {email?: (Scalars['String'] | null),uuid?: (Scalars['String'] | null)}
+
+export interface FindDepartmentInput {uuid: Scalars['String']}
 
 export interface MutationGenqlSelection{
     user_register?: (UserOutputGenqlSelection & { __args: {data: RegisterInput} })
@@ -136,6 +166,8 @@ export interface MutationGenqlSelection{
     user_sync_roles?: { __args: {data: SyncRolesInput} }
     doctor_sync_profile?: { __args: {data: SyncProfileInput} }
     department_add?: { __args: {data: AddDepartmentInput} }
+    schedule_sync?: { __args: {data: ScheduleSyncInput} }
+    routine_sync?: { __args: {data: RoutineSyncInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -157,6 +189,12 @@ export interface ExperienceInput {title: Scalars['String'],organization: Scalars
 export interface AcademicRecordInput {degree: Scalars['String'],institute: Scalars['String'],year: Scalars['String']}
 
 export interface AddDepartmentInput {name: Scalars['String']}
+
+export interface ScheduleSyncInput {entityUuid: Scalars['String'],schedulable: SchedulableType,minutes_per_slot: Scalars['Int'],max_booking_days: Scalars['Int']}
+
+export interface RoutineSyncInput {entityUuid: Scalars['String'],schedulable: SchedulableType,slots: RoutineSlotInput[]}
+
+export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String'],endTime: Scalars['String'],weekDay: WeekDayType}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']
@@ -207,6 +245,14 @@ export interface AddDepartmentInput {name: Scalars['String']}
     
 
 
+    const ScheduleOutput_possibleTypes: string[] = ['ScheduleOutput']
+    export const isScheduleOutput = (obj?: { __typename?: any } | null): obj is ScheduleOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isScheduleOutput"')
+      return ScheduleOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Query_possibleTypes: string[] = ['Query']
     export const isQuery = (obj?: { __typename?: any } | null): obj is Query => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isQuery"')
@@ -228,4 +274,23 @@ export const enumRoleType = {
    LAB_NURSE: 'LAB_NURSE' as const,
    LAB_TECHNICIAN: 'LAB_TECHNICIAN' as const,
    PATIENT: 'PATIENT' as const
+}
+
+export const enumSchedulableType = {
+   DOCTOR: 'DOCTOR' as const
+}
+
+export const enumShiftType = {
+   MORNING: 'MORNING' as const,
+   EVENING: 'EVENING' as const
+}
+
+export const enumWeekDayType = {
+   SATURDAY: 'SATURDAY' as const,
+   SUNDAY: 'SUNDAY' as const,
+   MONDAY: 'MONDAY' as const,
+   TUESDAY: 'TUESDAY' as const,
+   WEDNESDAY: 'WEDNESDAY' as const,
+   THURSDAY: 'THURSDAY' as const,
+   FRIDAY: 'FRIDAY' as const
 }

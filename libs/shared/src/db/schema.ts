@@ -86,8 +86,8 @@ export const schedule = pgTable(
   (t) => [unique('schedule_unique').on(t.entityId, t.schedulableType)],
 );
 
-export const regularRoutine = pgTable(
-  'regular_routine',
+export const routine = pgTable(
+  'routine',
   {
     id: serial('id').primaryKey(),
     weekDay: weekDayEnum('week_day').notNull(),
@@ -98,53 +98,7 @@ export const regularRoutine = pgTable(
       .notNull()
       .references(() => schedule.id, { onDelete: 'cascade' }),
   },
-  (t) => [
-    unique('regular_routine_unique').on(t.weekDay, t.shift, t.scheduleId),
-  ],
-);
-
-export const overrideRoutine = pgTable(
-  'override_routine',
-  {
-    id: serial('id').primaryKey(),
-    date: date('date').notNull(),
-    shift: shiftEnum('shift').notNull(),
-    startTime: time('start_time').notNull(),
-    endTime: time('end_time').notNull(),
-    scheduleId: integer('schedule_id')
-      .notNull()
-      .references(() => schedule.id, { onDelete: 'cascade' }),
-  },
-  (t) => [unique('override_routine_unique').on(t.date, t.shift, t.scheduleId)],
-);
-
-export const blockedDays = pgTable(
-  'blocked_days',
-  {
-    id: serial('id').primaryKey(),
-    date: date('date').notNull(),
-    scheduleId: integer('schedule_id')
-      .notNull()
-      .references(() => schedule.id, { onDelete: 'cascade' }),
-  },
-  (t) => [unique('blocked_days_unique').on(t.scheduleId, t.date)],
-);
-
-export const availableSlots = pgTable(
-  'available_slots',
-  {
-    id: serial('id').primaryKey(),
-    date: date('date').notNull(),
-    scheduleId: integer('schedule_id')
-      .notNull()
-      .references(() => schedule.id, { onDelete: 'cascade' }),
-    shift: shiftEnum('shift').notNull(),
-    startTime: time('start_time').notNull(),
-    endTime: time('end_time').notNull(),
-  },
-  (t) => [
-    unique('available_slots_unique').on(t.scheduleId, t.date, t.startTime),
-  ],
+  (t) => [unique('routine_unique').on(t.weekDay, t.shift, t.scheduleId)],
 );
 
 export const appointment = pgTable('appointment', {

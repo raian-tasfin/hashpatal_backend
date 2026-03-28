@@ -2,7 +2,11 @@ export default {
     "scalars": [
         1,
         3,
-        11
+        9,
+        14,
+        25,
+        28,
+        29
     ],
     "types": {
         "TokenPair": {
@@ -41,6 +45,9 @@ export default {
             ],
             "academic_record": [
                 6
+            ],
+            "schedule": [
+                8
             ],
             "__typename": [
                 1
@@ -87,10 +94,25 @@ export default {
             "name": [
                 1
             ],
+            "doctors": [
+                2
+            ],
             "__typename": [
                 1
             ]
         },
+        "ScheduleOutput": {
+            "minutesPerSlot": [
+                9
+            ],
+            "maxBookingDays": [
+                9
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "Int": {},
         "Query": {
             "sayHello": [
                 1
@@ -99,13 +121,22 @@ export default {
                 2,
                 {
                     "data": [
-                        9,
+                        11,
                         "FindUserInput!"
                     ]
                 }
             ],
             "department_fetch_all": [
                 7
+            ],
+            "department_find": [
+                7,
+                {
+                    "data": [
+                        12,
+                        "FindDepartmentInput!"
+                    ]
+                }
             ],
             "__typename": [
                 1
@@ -122,12 +153,20 @@ export default {
                 1
             ]
         },
+        "FindDepartmentInput": {
+            "uuid": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "Mutation": {
             "user_register": [
                 2,
                 {
                     "data": [
-                        12,
+                        15,
                         "RegisterInput!"
                     ]
                 }
@@ -136,7 +175,7 @@ export default {
                 0,
                 {
                     "data": [
-                        13,
+                        16,
                         "LoginInput!"
                     ]
                 }
@@ -145,44 +184,62 @@ export default {
                 0,
                 {
                     "data": [
-                        14,
+                        17,
                         "RefreshLoginInput!"
                     ]
                 }
             ],
             "user_logout": [
-                11,
+                14,
                 {
                     "data": [
-                        15,
+                        18,
                         "LogoutInput!"
                     ]
                 }
             ],
             "user_sync_roles": [
-                11,
+                14,
                 {
                     "data": [
-                        16,
+                        19,
                         "SyncRolesInput!"
                     ]
                 }
             ],
             "doctor_sync_profile": [
-                11,
+                14,
                 {
                     "data": [
-                        17,
+                        20,
                         "SyncProfileInput!"
                     ]
                 }
             ],
             "department_add": [
-                11,
+                14,
                 {
                     "data": [
-                        20,
+                        23,
                         "AddDepartmentInput!"
+                    ]
+                }
+            ],
+            "schedule_sync": [
+                14,
+                {
+                    "data": [
+                        24,
+                        "ScheduleSyncInput!"
+                    ]
+                }
+            ],
+            "routine_sync": [
+                14,
+                {
+                    "data": [
+                        26,
+                        "RoutineSyncInput!"
                     ]
                 }
             ],
@@ -254,10 +311,10 @@ export default {
                 1
             ],
             "experience": [
-                18
+                21
             ],
             "academic": [
-                19
+                22
             ],
             "__typename": [
                 1
@@ -304,6 +361,57 @@ export default {
             "__typename": [
                 1
             ]
-        }
+        },
+        "ScheduleSyncInput": {
+            "entityUuid": [
+                1
+            ],
+            "schedulable": [
+                25
+            ],
+            "minutes_per_slot": [
+                9
+            ],
+            "max_booking_days": [
+                9
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "SchedulableType": {},
+        "RoutineSyncInput": {
+            "entityUuid": [
+                1
+            ],
+            "schedulable": [
+                25
+            ],
+            "slots": [
+                27
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "RoutineSlotInput": {
+            "shift": [
+                28
+            ],
+            "startTime": [
+                1
+            ],
+            "endTime": [
+                1
+            ],
+            "weekDay": [
+                29
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "ShiftType": {},
+        "WeekDayType": {}
     }
 }

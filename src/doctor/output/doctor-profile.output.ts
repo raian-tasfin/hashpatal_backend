@@ -6,6 +6,8 @@ import { plainToInstance } from 'class-transformer';
 export class DoctorProfileOutput {
   id: number;
   userId: number;
+  scheduleId: number;
+  department: number;
 
   static from_model(model: DoctorProfile): DoctorProfileOutput {
     return plainToInstance(DoctorProfileOutput, model);

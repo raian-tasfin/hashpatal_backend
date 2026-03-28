@@ -4,7 +4,7 @@ import { WeekDayField } from '../fields';
 import { WeekDayType } from '../db';
 
 @InputType()
-export class RegularSlotInput extends BaseSlot {
+export class RoutineSlotInput extends BaseSlot {
   @WeekDayField()
   weekDay: WeekDayType;
 

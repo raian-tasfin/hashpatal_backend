@@ -1,13 +1,13 @@
-import { RegularSlotInput } from './regular-slot.input';
+import { RoutineSlotInput } from './regular-slot.input';
 import { SlotsNoOverlapConstraint } from './slots-no-overlap.constraint';
 import {
   generate_field,
   OrgFieldOptions,
 } from '../fields/org-field-options.type';
 
-export function RegularSlotField(options?: OrgFieldOptions) {
+export function RoutineSlotField(options?: OrgFieldOptions) {
   return generate_field({
-    type: RegularSlotInput,
+    type: RoutineSlotInput,
     objectType: true,
     collectionConstraints: [SlotsNoOverlapConstraint],
   })(options);

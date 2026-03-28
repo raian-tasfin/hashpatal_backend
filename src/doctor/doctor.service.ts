@@ -74,32 +74,36 @@ export class DoctorService {
           .returning('id')
           .execute();
         const doctor_profile_id = res[0].id;
-        await trx
-          .insertInto('academic_record')
-          .values(
-            academic.map(({ degree, institute, year }) => ({
-              doctor_profile_id,
-              degree,
-              institute,
-              year: new Date(`${year}-01-01`),
-            })),
-          )
-          .execute();
-        await trx
-          .insertInto('doctor_experience')
-          .values(
-            experience.map(
-              ({ title, organization, location, startYear, endYear }) => ({
+        if (academic.length > 0) {
+          await trx
+            .insertInto('academic_record')
+            .values(
+              academic.map(({ degree, institute, year }) => ({
                 doctor_profile_id,
-                title,
-                organization,
-                location,
-                start_year: new Date(`${startYear}-01-01`),
-                end_year: endYear ? new Date(`${endYear}-01-01`) : null,
-              }),
-            ),
-          )
-          .execute();
+                degree,
+                institute,
+                year: new Date(`${year}-01-01`),
+              })),
+            )
+            .execute();
+        }
+        if (experience.length > 0) {
+          await trx
+            .insertInto('doctor_experience')
+            .values(
+              experience.map(
+                ({ title, organization, location, startYear, endYear }) => ({
+                  doctor_profile_id,
+                  title,
+                  organization,
+                  location,
+                  start_year: new Date(`${startYear}-01-01`),
+                  end_year: endYear ? new Date(`${endYear}-01-01`) : null,
+                }),
+              ),
+            )
+            .execute();
+        }
       });
     } catch (err) {
       if (

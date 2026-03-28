@@ -40,21 +40,6 @@ export interface Appointment {
   status: AppointmentStatusType;
 }
 
-export interface AvailableSlots {
-  date: Timestamp;
-  end_time: string;
-  id: Generated<number>;
-  schedule_id: number;
-  shift: ShiftType;
-  start_time: string;
-}
-
-export interface BlockedDays {
-  date: Timestamp;
-  id: Generated<number>;
-  schedule_id: number;
-}
-
 export interface Department {
   id: Generated<number>;
   name: string;
@@ -78,15 +63,6 @@ export interface DoctorProfile {
   user_id: number;
 }
 
-export interface OverrideRoutine {
-  date: Timestamp;
-  end_time: string;
-  id: Generated<number>;
-  schedule_id: number;
-  shift: ShiftType;
-  start_time: string;
-}
-
 export interface RefreshToken {
   expires_at: Timestamp;
   id: Generated<number>;
@@ -95,7 +71,7 @@ export interface RefreshToken {
   user_id: number;
 }
 
-export interface RegularRoutine {
+export interface Routine {
   end_time: string;
   id: Generated<number>;
   schedule_id: number;
@@ -130,14 +106,11 @@ export interface UserRole {
 export interface DB {
   academic_record: AcademicRecord;
   appointment: Appointment;
-  available_slots: AvailableSlots;
-  blocked_days: BlockedDays;
   department: Department;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
-  override_routine: OverrideRoutine;
   refresh_token: RefreshToken;
-  regular_routine: RegularRoutine;
+  routine: Routine;
   schedule: Schedule;
   user_account: UserAccount;
   user_role: UserRole;

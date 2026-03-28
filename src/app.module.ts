@@ -14,7 +14,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user';
 import { DoctorModule } from './doctor/doctor.module';
 import { DepartmentModule } from './department/department.module';
-// import { ScheduleModule } from './schedule/schedule.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { DepartmentModule } from './department/department.module';
     UserModule,
     DoctorModule,
     DepartmentModule,
-    //     ScheduleModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [

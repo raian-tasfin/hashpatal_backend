@@ -21,6 +21,7 @@ enum RoleType {
 type DoctorProfileOutput {
   experience: [DoctorExperienceOutput!]
   academic_record: [AcademicRecordOutput!]
+  schedule: ScheduleOutput
 }
 
 type DoctorExperienceOutput {
@@ -40,17 +41,28 @@ type AcademicRecordOutput {
 type DepartmentOutput {
   uuid: String!
   name: String!
+  doctors: [UserOutput!]
+}
+
+type ScheduleOutput {
+  minutesPerSlot: Int!
+  maxBookingDays: Int!
 }
 
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
+  department_find(data: FindDepartmentInput!): DepartmentOutput
 }
 
 input FindUserInput {
   email: String
   uuid: String
+}
+
+input FindDepartmentInput {
+  uuid: String!
 }
 
 type Mutation {
@@ -61,6 +73,8 @@ type Mutation {
   user_sync_roles(data: SyncRolesInput!): Boolean!
   doctor_sync_profile(data: SyncProfileInput!): Boolean!
   department_add(data: AddDepartmentInput!): Boolean!
+  schedule_sync(data: ScheduleSyncInput!): Boolean!
+  routine_sync(data: RoutineSyncInput!): Boolean!
 }
 
 input RegisterInput {
@@ -111,4 +125,43 @@ input AcademicRecordInput {
 
 input AddDepartmentInput {
   name: String!
+}
+
+input ScheduleSyncInput {
+  entityUuid: String!
+  schedulable: SchedulableType!
+  minutes_per_slot: Int!
+  max_booking_days: Int!
+}
+
+enum SchedulableType {
+  DOCTOR
+}
+
+input RoutineSyncInput {
+  entityUuid: String!
+  schedulable: SchedulableType!
+  slots: [RoutineSlotInput!]!
+}
+
+input RoutineSlotInput {
+  shift: ShiftType!
+  startTime: String!
+  endTime: String!
+  weekDay: WeekDayType!
+}
+
+enum ShiftType {
+  MORNING
+  EVENING
+}
+
+enum WeekDayType {
+  SATURDAY
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
 }

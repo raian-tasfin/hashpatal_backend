@@ -6,13 +6,13 @@ import { plainToInstance } from 'class-transformer';
 @ObjectType()
 export class ScheduleOutput {
   id: number;
-  entityId: number;
+  entity_id: number;
 
   @IntegerField()
-  minutesPerSlot: number;
+  minutes_per_slot: number;
 
   @IntegerField()
-  maxBookingDays: number;
+  max_booking_days: number;
 
   static from_model(model: Schedule): ScheduleOutput {
     return plainToInstance(ScheduleOutput, model);

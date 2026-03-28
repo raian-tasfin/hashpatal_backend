@@ -112,7 +112,7 @@
         "minutesPerSlot": 15,
         "maxBookingDays": 90
       },
-      "regularSlots": [
+      "routine": [
         {
           "weekDay": "SUNDAY",
           "shift": "MORNING",
@@ -172,37 +172,6 @@
           "shift": "EVENING",
           "startTime": "14:30",
           "endTime": "19:00"
-        }
-      ],
-      "overrideSlots": [
-        {
-          "date": "2026-06-01",
-          "shift": "EVENING",
-          "startTime": "20:00",
-          "endTime": "22:00"
-        },
-        {
-          "date": "2026-06-02",
-          "shift": "EVENING",
-          "startTime": "20:00",
-          "endTime": "22:00"
-        },
-        {
-          "date": "2026-06-03",
-          "shift": "EVENING",
-          "startTime": "20:00",
-          "endTime": "22:00"
-        }
-      ],
-      "blockedDays": [
-        {
-          "date": "2026-06-01"
-        },
-        {
-          "date": "2026-06-02"
-        },
-        {
-          "date": "2026-06-03"
         }
       ]
     }
