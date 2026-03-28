@@ -7,7 +7,11 @@ import {
 } from '@nestjs/graphql';
 import { ScheduleService } from './schedule.service';
 import { Inject, Logger } from '@nestjs/common';
-import { ScheduleOutput } from './output';
+import {
+  AvailableShiftOutput,
+  AvailableSlotOutput,
+  ScheduleOutput,
+} from './output';
 import { DoctorProfileOutput } from 'src/doctor/output';
 import { RoutineSyncInput, ScheduleSyncInput } from './input';
 
@@ -88,6 +92,22 @@ export class SchedulableResolver {
     @Inject(ScheduleService)
     private readonly _scheduleService: ScheduleService,
   ) {}
+
+  @ResolveField(() => [AvailableSlotOutput])
+  async available_slots(
+    @Parent() { id }: ScheduleOutput,
+    @Args('date') date: string,
+  ): Promise<AvailableSlotOutput[]> {
+    return await this._scheduleService.get_available_slots(id, date);
+  }
+
+  @ResolveField(() => [AvailableShiftOutput])
+  async available_shifts(
+    @Parent() { id }: ScheduleOutput,
+  ): Promise<AvailableShiftOutput[]> {
+    return await this._scheduleService.get_available_shifts(id);
+  }
+
   //
   //   @ResolveField(() => [RegularRoutineOutput], { nullable: true })
   //   async regular_routine(@Parent() { id }: ScheduleOutput) {

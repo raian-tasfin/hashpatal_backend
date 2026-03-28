@@ -86,6 +86,7 @@ export interface Schedule {
   max_booking_days: number;
   minutes_per_slot: number;
   type: SchedulableType;
+  uuid: Generated<string>;
 }
 
 export interface UserAccount {

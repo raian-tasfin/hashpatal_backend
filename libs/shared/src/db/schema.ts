@@ -79,6 +79,7 @@ export const schedule = pgTable(
   {
     id: serial('id').primaryKey(),
     entityId: integer('entity_id').notNull(),
+    uuid: uuid('uuid').defaultRandom().notNull().unique(),
     schedulableType: schedulableTypeEnum('type').notNull(),
     minutesPerSlot: integer('minutes_per_slot').notNull(),
     maxBookingDays: integer('max_booking_days').notNull(),
@@ -119,7 +120,6 @@ export const appointment = pgTable('appointment', {
 /**
  * Doctor
  */
-
 export const doctorProfile = pgTable('doctor_profile', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')

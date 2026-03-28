@@ -1,12 +1,15 @@
 import { ObjectType } from '@nestjs/graphql';
 import { Schedule } from '@org/shared/db';
-import { IntegerField } from '@org/shared/fields';
+import { IntegerField, UuidField } from '@org/shared/fields';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
 export class ScheduleOutput {
   id: number;
   entity_id: number;
+
+  @UuidField()
+  uuid: string;
 
   @IntegerField()
   minutes_per_slot: number;

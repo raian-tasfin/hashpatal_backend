@@ -56,9 +56,28 @@ export interface DepartmentOutput {
 }
 
 export interface ScheduleOutput {
-    minutesPerSlot: Scalars['Int']
-    maxBookingDays: Scalars['Int']
+    uuid: Scalars['String']
+    minutes_per_slot: Scalars['Int']
+    max_booking_days: Scalars['Int']
+    available_slots: AvailableSlotOutput[]
+    available_shifts: AvailableShiftOutput[]
     __typename: 'ScheduleOutput'
+}
+
+export interface AvailableSlotOutput {
+    shift: ShiftType
+    startTime: Scalars['String']
+    endTime: Scalars['String']
+    __typename: 'AvailableSlotOutput'
+}
+
+export type ShiftType = 'MORNING' | 'EVENING'
+
+export interface AvailableShiftOutput {
+    date: Scalars['String']
+    shift: ShiftType
+    status: Scalars['Boolean']
+    __typename: 'AvailableShiftOutput'
 }
 
 export interface Query {
@@ -83,8 +102,6 @@ export interface Mutation {
 }
 
 export type SchedulableType = 'DOCTOR'
-
-export type ShiftType = 'MORNING' | 'EVENING'
 
 export type WeekDayType = 'SATURDAY' | 'SUNDAY' | 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY'
 
@@ -139,8 +156,27 @@ export interface DepartmentOutputGenqlSelection{
 }
 
 export interface ScheduleOutputGenqlSelection{
-    minutesPerSlot?: boolean | number
-    maxBookingDays?: boolean | number
+    uuid?: boolean | number
+    minutes_per_slot?: boolean | number
+    max_booking_days?: boolean | number
+    available_slots?: (AvailableSlotOutputGenqlSelection & { __args: {date: Scalars['String']} })
+    available_shifts?: AvailableShiftOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AvailableSlotOutputGenqlSelection{
+    shift?: boolean | number
+    startTime?: boolean | number
+    endTime?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AvailableShiftOutputGenqlSelection{
+    date?: boolean | number
+    shift?: boolean | number
+    status?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -253,6 +289,22 @@ export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String']
     
 
 
+    const AvailableSlotOutput_possibleTypes: string[] = ['AvailableSlotOutput']
+    export const isAvailableSlotOutput = (obj?: { __typename?: any } | null): obj is AvailableSlotOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAvailableSlotOutput"')
+      return AvailableSlotOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AvailableShiftOutput_possibleTypes: string[] = ['AvailableShiftOutput']
+    export const isAvailableShiftOutput = (obj?: { __typename?: any } | null): obj is AvailableShiftOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAvailableShiftOutput"')
+      return AvailableShiftOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Query_possibleTypes: string[] = ['Query']
     export const isQuery = (obj?: { __typename?: any } | null): obj is Query => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isQuery"')
@@ -276,13 +328,13 @@ export const enumRoleType = {
    PATIENT: 'PATIENT' as const
 }
 
-export const enumSchedulableType = {
-   DOCTOR: 'DOCTOR' as const
-}
-
 export const enumShiftType = {
    MORNING: 'MORNING' as const,
    EVENING: 'EVENING' as const
+}
+
+export const enumSchedulableType = {
+   DOCTOR: 'DOCTOR' as const
 }
 
 export const enumWeekDayType = {

@@ -10,7 +10,7 @@ import { UserService } from 'src/user/user.service';
 import data from './seed-data.json';
 import { ConfigModule } from '@nestjs/config';
 import { PasswordModule } from '@org/shared/password';
-import { DatabaseModule, SchedulableType } from '@org/shared/db';
+import { DatabaseModule, SchedulableType, ShiftType } from '@org/shared/db';
 // import { UserRolesModule } from 'src/user-roles/user-roles.module';
 // import { UserRolesService } from 'src/user-roles/user-roles.service';
 import { RoleType } from '@org/shared/db';
@@ -227,6 +227,63 @@ async function create_doctor_profiles(app: INestApplicationContext) {
   logger.log(`Doctor profiles created.`);
 }
 
+/**
+ * Create one appointment on April 1
+ */
+async function make_appointment(app: INestApplicationContext) {
+  logger.log(`Making appointments in April 1.`);
+
+  const userService = app.get(UserService);
+  const scheduleService = app.get(ScheduleService);
+  const doctorService = app.get(DoctorService);
+
+  // get patient
+  const patientEmail = 'patient@mail.com';
+  const patient = await userService.find({ email: patientEmail });
+  if (!patient) {
+    logger.error(`NO account for patient "${patientEmail}"`);
+    return;
+  }
+
+  // get schedule uuid.
+  // doctor
+  const doctorEmail = 'doctor@mail.com';
+  const doctor = await userService.find({ email: doctorEmail });
+  if (!doctor) {
+    logger.error(`NO account for doctor "${doctorEmail}"`);
+    return;
+  }
+  // doctor profile
+  const doctorProfile = await doctorService.get_profile(doctor.id);
+  if (!doctorProfile) {
+    logger.error(`No profile for ${doctorEmail}`);
+    return;
+  }
+  if (!doctorProfile.scheduleId) {
+    logger.error(`No schedule for ${doctorEmail}`);
+    return;
+  }
+  // schedule
+  const schedule = await scheduleService.get_schedule_from_id(
+    doctorProfile.scheduleId,
+  );
+  if (!schedule) {
+    logger.error(`No schedule for ${doctorEmail}`);
+    return;
+  }
+
+  // make appointment
+  while (
+    await scheduleService.make_appointment({
+      scheduleUuid: schedule.uuid,
+      patientUuid: patient.uuid,
+      date: '2026-04-01',
+      shift: ShiftType.MORNING,
+    })
+  ) {}
+  logger.log(`Appointments created.`);
+}
+
 // async function create_doctor_profiles(app: INestApplicationContext) {
 //   const userService = app.get(UserService);
 //   const doctorService = app.get(DoctorService);
@@ -360,6 +417,7 @@ async function bootstrap() {
   await assign_roles(app);
   await add_departments(app);
   await create_doctor_profiles(app);
+  await make_appointment(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);
