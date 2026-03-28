@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { KyselyDatabaseService, Department } from '@org/shared/db';
-import { AddDepartmentInput } from './input';
+import { KyselyDatabaseService, Department, User } from '@org/shared/db';
+import { AddDepartmentInput, FindDepartmentInput } from './input';
 
 @Injectable()
 export class DepartmentService {
@@ -31,8 +31,7 @@ export class DepartmentService {
     return await this._db.selectFrom('department').selectAll().execute();
   }
 
-  async find(data: { uuid: string }): Promise<Department | undefined> {
-    const { uuid } = data;
+  async find({ uuid }: FindDepartmentInput): Promise<Department | undefined> {
     this.logger.log(`Finding department '${uuid}'`);
     return await this._db
       .selectFrom('department')
@@ -41,9 +40,24 @@ export class DepartmentService {
       .executeTakeFirst();
   }
 
-  /**
-   * TODO:
-   * Merge
-   * Deactiveate
-   */
+  async find_doctors(departmentId: number): Promise<User[]> {
+    return await this._db
+      .selectFrom('user_account')
+      .innerJoin('doctor_profile', 'doctor_profile.user_id', 'user_account.id')
+      .where('doctor_profile.department_id', '=', departmentId)
+      .selectAll('user_account')
+      .execute();
+  }
+
+  async find_by_name({
+    name,
+  }: {
+    name: string;
+  }): Promise<Department | undefined> {
+    return await this._db
+      .selectFrom('department')
+      .selectAll()
+      .where('name', '=', name)
+      .executeTakeFirst();
+  }
 }

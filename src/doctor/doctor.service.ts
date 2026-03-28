@@ -12,6 +12,7 @@ import {
   DoctorProfile,
   KyselyDatabaseService,
   RoleType,
+  User,
 } from '@org/shared/db';
 import { UserService } from 'src/user/user.service';
 import { SyncProfileInput } from './input';

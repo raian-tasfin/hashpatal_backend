@@ -51,22 +51,47 @@
     }
   ],
   "departments": [
-    {"name": "Internal Medicine"},
-    {"name": "General Surgery"},
-    {"name": "Gynecology & Obstetrics"},
-    {"name": "Pediatrics"},
-    {"name": "Cardiology"},
-    {"name": "Orthopedics"},
-    {"name": "Dermatology"},
-    {"name": "Ophthalmology"},
-    {"name": "Otolaryngology (ENT)"},
-    {"name": "Gastroenterology"},
-    {"name": "Neurology"},
-    {"name": "Emergency & Casualty"}
+    {
+      "name": "Internal Medicine"
+    },
+    {
+      "name": "General Surgery"
+    },
+    {
+      "name": "Gynecology & Obstetrics"
+    },
+    {
+      "name": "Pediatrics"
+    },
+    {
+      "name": "Cardiology"
+    },
+    {
+      "name": "Orthopedics"
+    },
+    {
+      "name": "Dermatology"
+    },
+    {
+      "name": "Ophthalmology"
+    },
+    {
+      "name": "Otolaryngology (ENT)"
+    },
+    {
+      "name": "Gastroenterology"
+    },
+    {
+      "name": "Neurology"
+    },
+    {
+      "name": "Emergency & Casualty"
+    }
   ],
   "doctorProfiles": [
     {
       "email": "doctor@mail.com",
+      "department_name": "Internal Medicine",
       "experience": [
         {
           "title": "Intern",

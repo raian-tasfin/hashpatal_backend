@@ -96,19 +96,28 @@ async function assign_roles(app: INestApplicationContext) {
 async function create_doctor_profiles(app: INestApplicationContext) {
   const userService = app.get(UserService);
   const doctorService = app.get(DoctorService);
+  const departmentService = app.get(DepartmentService);
   logger.log('Creating doctor profiles...');
+
+  const department_uuid = async (name: string) => {
+    const res = await departmentService.find_by_name({ name });
+    if (!res) return res;
+    return res.uuid;
+  };
   for (const profileData of data.doctorProfiles) {
-    const { email, academic, experience } = profileData;
+    const { email, academic, experience, department_name } = profileData;
     logger.log(`Processing user: ${email}`);
     try {
       const user = await userService.find({ email });
       if (!user) {
         throw new Error(`User ${email} not found in database.`);
       }
+      const departmentUuid = await department_uuid(department_name);
       await doctorService.sync_profile({
         uuid: user.uuid,
         academic,
         experience,
+        departmentUuid,
       });
       logger.log(`Successfully synced doctor profile for ${email}.`);
     } catch (err) {

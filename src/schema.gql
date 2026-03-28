@@ -44,17 +44,23 @@ type AcademicRecordOutput {
 type DepartmentOutput {
   uuid: String!
   name: String!
+  doctors: [UserOutput!]
 }
 
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
+  department_find(data: FindDepartmentInput!): DepartmentOutput
 }
 
 input FindUserInput {
   email: String
   uuid: String
+}
+
+input FindDepartmentInput {
+  uuid: String!
 }
 
 type Mutation {

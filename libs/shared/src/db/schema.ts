@@ -175,6 +175,9 @@ export const doctorProfile = pgTable('doctor_profile', {
   scheduleId: integer('scheduleId')
     .unique()
     .references(() => schedule.id, { onDelete: 'set null' }),
+  department: integer('department_id').references(() => department.id, {
+    onDelete: 'set null',
+  }),
 });
 
 export const doctorExperience = pgTable('doctor_experience', {
@@ -207,21 +210,3 @@ export const department = pgTable('department', {
   uuid: uuid('uuid').defaultRandom().notNull().unique(),
   name: text('name').notNull().unique(),
 });
-
-export const doctorDepartment = pgTable(
-  'doctor_department',
-  {
-    doctorProfileId: integer('doctor_profile_id')
-      .notNull()
-      .references(() => doctorProfile.id, { onDelete: 'cascade' }),
-    departmentId: integer('department_id')
-      .notNull()
-      .references(() => department.id, { onDelete: 'cascade' }),
-  },
-  (t) => [
-    primaryKey({
-      name: 'doctor_department_pk',
-      columns: [t.doctorProfileId, t.departmentId],
-    }),
-  ],
-);

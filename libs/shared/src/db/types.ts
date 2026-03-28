@@ -3,40 +3,23 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
-export type AppointmentStatusType =
-  | 'CANCELLED'
-  | 'COMPLETED'
-  | 'DIDNTSHOW'
-  | 'SCHEDULED';
+export type AppointmentStatusType = "CANCELLED" | "COMPLETED" | "DIDNTSHOW" | "SCHEDULED";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
-export type RoleType =
-  | 'ADMIN'
-  | 'DOCTOR'
-  | 'LAB_NURSE'
-  | 'LAB_TECHNICIAN'
-  | 'PATIENT';
+export type RoleType = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIENT";
 
-export type SchedulableType = 'DOCTOR';
+export type SchedulableType = "DOCTOR";
 
-export type ShiftType = 'EVENING' | 'MORNING';
+export type ShiftType = "EVENING" | "MORNING";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export type WeekdayType =
-  | 'FRIDAY'
-  | 'MONDAY'
-  | 'SATURDAY'
-  | 'SUNDAY'
-  | 'THURSDAY'
-  | 'TUESDAY'
-  | 'WEDNESDAY';
+export type WeekdayType = "FRIDAY" | "MONDAY" | "SATURDAY" | "SUNDAY" | "THURSDAY" | "TUESDAY" | "WEDNESDAY";
 
 export interface AcademicRecord {
   degree: string;
@@ -78,11 +61,6 @@ export interface Department {
   uuid: Generated<string>;
 }
 
-export interface DoctorDepartment {
-  department_id: number;
-  doctor_profile_id: number;
-}
-
 export interface DoctorExperience {
   doctor_profile_id: number;
   end_year: Timestamp | null;
@@ -94,6 +72,7 @@ export interface DoctorExperience {
 }
 
 export interface DoctorProfile {
+  department_id: number | null;
   id: Generated<number>;
   scheduleId: number | null;
   user_id: number;
@@ -154,7 +133,6 @@ export interface DB {
   available_slots: AvailableSlots;
   blocked_days: BlockedDays;
   department: Department;
-  doctor_department: DoctorDepartment;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
   override_routine: OverrideRoutine;
