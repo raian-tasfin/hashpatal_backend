@@ -15,3 +15,4 @@ export * from './uuid.field';
 export * from './weekday.field';
 export * from './year.field';
 export * from './boolean.field';
+export * from './normal-string.field';

@@ -165,3 +165,12 @@ export const department = pgTable('department', {
   uuid: uuid('uuid').defaultRandom().notNull().unique(),
   name: text('name').notNull().unique(),
 });
+
+/**
+ * Complaints
+ */
+export const complaint = pgTable('complaint', {
+  id: serial('id').primaryKey(),
+  uuid: uuid('uuid').defaultRandom().notNull().unique(),
+  name: text('name').notNull().unique(),
+});

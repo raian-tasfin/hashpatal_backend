@@ -5,8 +5,8 @@
 
 export type Scalars = {
     String: string,
-    Int: number,
     Boolean: boolean,
+    Int: number,
 }
 
 export interface TokenPair {
@@ -18,6 +18,7 @@ export interface TokenPair {
 export interface UserOutput {
     uuid: Scalars['String']
     email: Scalars['String']
+    birthDate: Scalars['String']
     user_roles: RoleType[]
     doctor_profile: (DoctorProfileOutput | null)
     __typename: 'UserOutput'
@@ -55,13 +56,26 @@ export interface DepartmentOutput {
     __typename: 'DepartmentOutput'
 }
 
-export interface ScheduleOutput {
+export interface AppointmentOutput {
     uuid: Scalars['String']
-    minutes_per_slot: Scalars['Int']
-    max_booking_days: Scalars['Int']
-    available_slots: AvailableSlotOutput[]
-    available_shifts: AvailableShiftOutput[]
-    __typename: 'ScheduleOutput'
+    date: Scalars['String']
+    shift: ShiftType
+    startTime: Scalars['String']
+    endTime: Scalars['String']
+    status: AppointmentStatusType
+    patient: (PatientOutput | null)
+    __typename: 'AppointmentOutput'
+}
+
+export type ShiftType = 'MORNING' | 'EVENING'
+
+export type AppointmentStatusType = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'DIDNTSHOW'
+
+export interface AvailableShiftOutput {
+    date: Scalars['String']
+    shift: ShiftType
+    status: Scalars['Boolean']
+    __typename: 'AvailableShiftOutput'
 }
 
 export interface AvailableSlotOutput {
@@ -71,13 +85,28 @@ export interface AvailableSlotOutput {
     __typename: 'AvailableSlotOutput'
 }
 
-export type ShiftType = 'MORNING' | 'EVENING'
+export interface ScheduleOutput {
+    uuid: Scalars['String']
+    minutes_per_slot: Scalars['Int']
+    max_booking_days: Scalars['Int']
+    available_slots: AvailableSlotOutput[]
+    available_shifts: AvailableShiftOutput[]
+    __typename: 'ScheduleOutput'
+}
 
-export interface AvailableShiftOutput {
+export interface PatientOutput {
+    name: Scalars['String']
+    uuid: Scalars['String']
+    birthDate: Scalars['String']
+    age: Scalars['Int']
+    previous_appointments: (PreviousAppointmentOutput[] | null)
+    __typename: 'PatientOutput'
+}
+
+export interface PreviousAppointmentOutput {
+    uuid: Scalars['String']
     date: Scalars['String']
-    shift: ShiftType
-    status: Scalars['Boolean']
-    __typename: 'AvailableShiftOutput'
+    __typename: 'PreviousAppointmentOutput'
 }
 
 export interface Query {
@@ -85,6 +114,7 @@ export interface Query {
     user_find: (UserOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
     department_find: (DepartmentOutput | null)
+    get_appointments: AppointmentOutput[]
     __typename: 'Query'
 }
 
@@ -115,6 +145,7 @@ export interface TokenPairGenqlSelection{
 export interface UserOutputGenqlSelection{
     uuid?: boolean | number
     email?: boolean | number
+    birthDate?: boolean | number
     user_roles?: boolean | number
     doctor_profile?: DoctorProfileOutputGenqlSelection
     __typename?: boolean | number
@@ -155,20 +186,14 @@ export interface DepartmentOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
-export interface ScheduleOutputGenqlSelection{
+export interface AppointmentOutputGenqlSelection{
     uuid?: boolean | number
-    minutes_per_slot?: boolean | number
-    max_booking_days?: boolean | number
-    available_slots?: (AvailableSlotOutputGenqlSelection & { __args: {date: Scalars['String']} })
-    available_shifts?: AvailableShiftOutputGenqlSelection
-    __typename?: boolean | number
-    __scalar?: boolean | number
-}
-
-export interface AvailableSlotOutputGenqlSelection{
+    date?: boolean | number
     shift?: boolean | number
     startTime?: boolean | number
     endTime?: boolean | number
+    status?: boolean | number
+    patient?: PatientOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -181,11 +206,47 @@ export interface AvailableShiftOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface AvailableSlotOutputGenqlSelection{
+    shift?: boolean | number
+    startTime?: boolean | number
+    endTime?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ScheduleOutputGenqlSelection{
+    uuid?: boolean | number
+    minutes_per_slot?: boolean | number
+    max_booking_days?: boolean | number
+    available_slots?: (AvailableSlotOutputGenqlSelection & { __args: {date: Scalars['String']} })
+    available_shifts?: AvailableShiftOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PatientOutputGenqlSelection{
+    name?: boolean | number
+    uuid?: boolean | number
+    birthDate?: boolean | number
+    age?: boolean | number
+    previous_appointments?: PreviousAppointmentOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PreviousAppointmentOutputGenqlSelection{
+    uuid?: boolean | number
+    date?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
     department_fetch_all?: DepartmentOutputGenqlSelection
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
+    get_appointments?: (AppointmentOutputGenqlSelection & { __args: {data: GetAppointmentsInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -193,6 +254,8 @@ export interface QueryGenqlSelection{
 export interface FindUserInput {email?: (Scalars['String'] | null),uuid?: (Scalars['String'] | null)}
 
 export interface FindDepartmentInput {uuid: Scalars['String']}
+
+export interface GetAppointmentsInput {scheduleUuid?: (Scalars['String'] | null),patientUuid?: (Scalars['String'] | null),status?: (AppointmentStatusType | null),date?: (Scalars['String'] | null)}
 
 export interface MutationGenqlSelection{
     user_register?: (UserOutputGenqlSelection & { __args: {data: RegisterInput} })
@@ -281,10 +344,18 @@ export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String']
     
 
 
-    const ScheduleOutput_possibleTypes: string[] = ['ScheduleOutput']
-    export const isScheduleOutput = (obj?: { __typename?: any } | null): obj is ScheduleOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isScheduleOutput"')
-      return ScheduleOutput_possibleTypes.includes(obj.__typename)
+    const AppointmentOutput_possibleTypes: string[] = ['AppointmentOutput']
+    export const isAppointmentOutput = (obj?: { __typename?: any } | null): obj is AppointmentOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentOutput"')
+      return AppointmentOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AvailableShiftOutput_possibleTypes: string[] = ['AvailableShiftOutput']
+    export const isAvailableShiftOutput = (obj?: { __typename?: any } | null): obj is AvailableShiftOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAvailableShiftOutput"')
+      return AvailableShiftOutput_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -297,10 +368,26 @@ export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String']
     
 
 
-    const AvailableShiftOutput_possibleTypes: string[] = ['AvailableShiftOutput']
-    export const isAvailableShiftOutput = (obj?: { __typename?: any } | null): obj is AvailableShiftOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isAvailableShiftOutput"')
-      return AvailableShiftOutput_possibleTypes.includes(obj.__typename)
+    const ScheduleOutput_possibleTypes: string[] = ['ScheduleOutput']
+    export const isScheduleOutput = (obj?: { __typename?: any } | null): obj is ScheduleOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isScheduleOutput"')
+      return ScheduleOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PatientOutput_possibleTypes: string[] = ['PatientOutput']
+    export const isPatientOutput = (obj?: { __typename?: any } | null): obj is PatientOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPatientOutput"')
+      return PatientOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PreviousAppointmentOutput_possibleTypes: string[] = ['PreviousAppointmentOutput']
+    export const isPreviousAppointmentOutput = (obj?: { __typename?: any } | null): obj is PreviousAppointmentOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPreviousAppointmentOutput"')
+      return PreviousAppointmentOutput_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -331,6 +418,13 @@ export const enumRoleType = {
 export const enumShiftType = {
    MORNING: 'MORNING' as const,
    EVENING: 'EVENING' as const
+}
+
+export const enumAppointmentStatusType = {
+   SCHEDULED: 'SCHEDULED' as const,
+   COMPLETED: 'COMPLETED' as const,
+   CANCELLED: 'CANCELLED' as const,
+   DIDNTSHOW: 'DIDNTSHOW' as const
 }
 
 export const enumSchedulableType = {

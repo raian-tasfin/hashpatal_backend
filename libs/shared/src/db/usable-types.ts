@@ -10,6 +10,7 @@ import {
   UserRole as UserRoleTable,
   Department as DepartmentTable,
   Routine as RoutineTable,
+  Complaint as ComplaintTable,
 } from './types';
 
 export type AcademicRecord = Selectable<AcademicRecordTable>;
@@ -22,3 +23,4 @@ export type Schedule = Selectable<ScheduleTable>;
 export type User = Selectable<UserTable>;
 export type UserRole = Selectable<UserRoleTable>;
 export type Routine = Selectable<RoutineTable>;
+export type Complaint = Selectable<ComplaintTable>;

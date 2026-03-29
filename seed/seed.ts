@@ -18,6 +18,8 @@ import { DoctorModule } from 'src/doctor/doctor.module';
 // import { DoctorService } from 'src/doctor/doctor.service'; // import { ScheduleService } from 'src/schedule/schedule.service';
 // import { ScheduleModule } from 'src/schedule/schedule.module';
 import { DepartmentModule } from 'src/department/department.module';
+import { ConsultanceModule } from 'src/consultance/consultance.module';
+import { ConsultanceService } from 'src/consultance/consultance.service';
 // import { DoctorModule } from 'src/doctor/doctor.module';
 // import { ScheduleService } from 'src/schedule/schedule.service';
 import { DoctorService } from 'src/doctor/doctor.service';
@@ -43,6 +45,7 @@ const logger = new Logger('seed');
     ScheduleModule,
     DoctorModule,
     DepartmentModule,
+    ConsultanceModule,
   ],
 })
 class SeedModule {}
@@ -107,6 +110,22 @@ async function add_departments(app: INestApplicationContext) {
     }
   }
   logger.log(`Department population phase complete.`);
+}
+
+async function add_complaints(app: INestApplicationContext) {
+  const consultanceService = app.get(ConsultanceService);
+  logger.log('Adding chief complaints...');
+  for (const name of data.chief_complaints) {
+    logger.log(`Adding complaint: ${name}`);
+    try {
+      const res = await consultanceService.add_complaint({ name });
+      if (!res) throw Error(`Failed adding complaint "${name}"`);
+    } catch (err) {
+      logger.log(`Skipping complaint: "${name}"`);
+      logger.error(err.message);
+    }
+  }
+  logger.log(`Complaint population phase complete.`);
 }
 
 /**
@@ -418,6 +437,8 @@ async function bootstrap() {
   await add_departments(app);
   await create_doctor_profiles(app);
   await make_appointment(app);
+
+  await add_complaints(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);

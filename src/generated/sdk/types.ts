@@ -3,10 +3,11 @@ export default {
         1,
         3,
         9,
-        11,
-        13,
-        28,
-        31
+        10,
+        12,
+        15,
+        33,
+        36
     ],
     "types": {
         "TokenPair": {
@@ -28,6 +29,9 @@ export default {
             "email": [
                 1
             ],
+            "birthDate": [
+                1
+            ],
             "user_roles": [
                 3
             ],
@@ -47,7 +51,7 @@ export default {
                 6
             ],
             "schedule": [
-                8
+                14
             ],
             "__typename": [
                 1
@@ -101,36 +105,52 @@ export default {
                 1
             ]
         },
-        "ScheduleOutput": {
+        "AppointmentOutput": {
             "uuid": [
                 1
             ],
-            "minutes_per_slot": [
+            "date": [
+                1
+            ],
+            "shift": [
                 9
             ],
-            "max_booking_days": [
+            "startTime": [
+                1
+            ],
+            "endTime": [
+                1
+            ],
+            "status": [
+                10
+            ],
+            "patient": [
+                16
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "ShiftType": {},
+        "AppointmentStatusType": {},
+        "AvailableShiftOutput": {
+            "date": [
+                1
+            ],
+            "shift": [
                 9
             ],
-            "available_slots": [
-                10,
-                {
-                    "date": [
-                        1,
-                        "String!"
-                    ]
-                }
-            ],
-            "available_shifts": [
+            "status": [
                 12
             ],
             "__typename": [
                 1
             ]
         },
-        "Int": {},
+        "Boolean": {},
         "AvailableSlotOutput": {
             "shift": [
-                11
+                9
             ],
             "startTime": [
                 1
@@ -142,22 +162,64 @@ export default {
                 1
             ]
         },
-        "ShiftType": {},
-        "AvailableShiftOutput": {
-            "date": [
+        "ScheduleOutput": {
+            "uuid": [
                 1
             ],
-            "shift": [
-                11
+            "minutes_per_slot": [
+                15
             ],
-            "status": [
-                13
+            "max_booking_days": [
+                15
+            ],
+            "available_slots": [
+                13,
+                {
+                    "date": [
+                        1,
+                        "String!"
+                    ]
+                }
+            ],
+            "available_shifts": [
+                11
             ],
             "__typename": [
                 1
             ]
         },
-        "Boolean": {},
+        "Int": {},
+        "PatientOutput": {
+            "name": [
+                1
+            ],
+            "uuid": [
+                1
+            ],
+            "birthDate": [
+                1
+            ],
+            "age": [
+                15
+            ],
+            "previous_appointments": [
+                17
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "PreviousAppointmentOutput": {
+            "uuid": [
+                1
+            ],
+            "date": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "Query": {
             "sayHello": [
                 1
@@ -166,7 +228,7 @@ export default {
                 2,
                 {
                     "data": [
-                        15,
+                        19,
                         "FindUserInput!"
                     ]
                 }
@@ -178,8 +240,17 @@ export default {
                 7,
                 {
                     "data": [
-                        16,
+                        20,
                         "FindDepartmentInput!"
+                    ]
+                }
+            ],
+            "get_appointments": [
+                8,
+                {
+                    "data": [
+                        21,
+                        "GetAppointmentsInput!"
                     ]
                 }
             ],
@@ -206,12 +277,29 @@ export default {
                 1
             ]
         },
+        "GetAppointmentsInput": {
+            "scheduleUuid": [
+                1
+            ],
+            "patientUuid": [
+                1
+            ],
+            "status": [
+                10
+            ],
+            "date": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "Mutation": {
             "user_register": [
                 2,
                 {
                     "data": [
-                        18,
+                        23,
                         "RegisterInput!"
                     ]
                 }
@@ -220,7 +308,7 @@ export default {
                 0,
                 {
                     "data": [
-                        19,
+                        24,
                         "LoginInput!"
                     ]
                 }
@@ -229,61 +317,61 @@ export default {
                 0,
                 {
                     "data": [
-                        20,
+                        25,
                         "RefreshLoginInput!"
                     ]
                 }
             ],
             "user_logout": [
-                13,
+                12,
                 {
                     "data": [
-                        21,
+                        26,
                         "LogoutInput!"
                     ]
                 }
             ],
             "user_sync_roles": [
-                13,
+                12,
                 {
                     "data": [
-                        22,
+                        27,
                         "SyncRolesInput!"
                     ]
                 }
             ],
             "doctor_sync_profile": [
-                13,
+                12,
                 {
                     "data": [
-                        23,
+                        28,
                         "SyncProfileInput!"
                     ]
                 }
             ],
             "department_add": [
-                13,
+                12,
                 {
                     "data": [
-                        26,
+                        31,
                         "AddDepartmentInput!"
                     ]
                 }
             ],
             "schedule_sync": [
-                13,
+                12,
                 {
                     "data": [
-                        27,
+                        32,
                         "ScheduleSyncInput!"
                     ]
                 }
             ],
             "routine_sync": [
-                13,
+                12,
                 {
                     "data": [
-                        29,
+                        34,
                         "RoutineSyncInput!"
                     ]
                 }
@@ -355,10 +443,10 @@ export default {
                 1
             ],
             "experience": [
-                24
+                29
             ],
             "academic": [
-                25
+                30
             ],
             "__typename": [
                 1
@@ -411,13 +499,13 @@ export default {
                 1
             ],
             "schedulable": [
-                28
+                33
             ],
             "minutes_per_slot": [
-                9
+                15
             ],
             "max_booking_days": [
-                9
+                15
             ],
             "__typename": [
                 1
@@ -429,10 +517,10 @@ export default {
                 1
             ],
             "schedulable": [
-                28
+                33
             ],
             "slots": [
-                30
+                35
             ],
             "__typename": [
                 1
@@ -440,7 +528,7 @@ export default {
         },
         "RoutineSlotInput": {
             "shift": [
-                11
+                9
             ],
             "startTime": [
                 1
@@ -449,7 +537,7 @@ export default {
                 1
             ],
             "weekDay": [
-                31
+                36
             ],
             "__typename": [
                 1

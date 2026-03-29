@@ -1,6 +1,11 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { AppointmentStatusType, KyselyDatabaseService } from '@org/shared/db';
+import {
+  AppointmentStatusType,
+  Complaint,
+  KyselyDatabaseService,
+} from '@org/shared/db';
 import { UserService } from 'src/user';
+import { AddComplaintInput } from './input/add-complaint.input';
 
 @Injectable()
 export class ConsultanceService {
@@ -10,6 +15,19 @@ export class ConsultanceService {
     @Inject(UserService) private readonly _userService: UserService,
     @Inject(KyselyDatabaseService) private readonly _db: KyselyDatabaseService,
   ) {}
+
+  /**
+   * Public Mutations
+   */
+  async add_complaint({ name }: AddComplaintInput): Promise<boolean> {
+    this._logger.log(`Adding complaint'${name}'`);
+    await this._db
+      .insertInto('complaint')
+      .values({ name })
+      .onConflict((x) => x.doNothing())
+      .execute();
+    return true;
+  }
 
   /**
    * Public Queries
@@ -30,5 +48,10 @@ export class ConsultanceService {
       this._logger.error(err.msg);
       return [];
     }
+  }
+
+  async get_all_complaints(): Promise<Complaint[]> {
+    this._logger.log(`Fetching all complaints.`);
+    return await this._db.selectFrom('complaint').selectAll().execute();
   }
 }

@@ -175,5 +175,37 @@
         }
       ]
     }
+  ],
+  "chief_complaints": [
+    "Fever",
+    "Fatigue",
+    "Weight loss",
+    "Chills",
+    "Night sweats",
+    "Cough",
+    "Shortness of breath",
+    "Sore throat",
+    "Runny nose",
+    "Chest congestion",
+    "Abdominal pain",
+    "Nausea",
+    "Vomiting",
+    "Diarrhea",
+    "Constipation",
+    "Bloating",
+    "Back pain",
+    "Joint pain",
+    "Muscle ache",
+    "Neck pain",
+    "Knee pain",
+    "Headache",
+    "Dizziness",
+    "Numbness",
+    "Confusion",
+    "Seizures",
+    "Rash",
+    "Itching",
+    "Skin lesion",
+    "Dry skin"
   ]
 }
