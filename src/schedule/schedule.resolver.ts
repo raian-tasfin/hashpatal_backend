@@ -20,6 +20,8 @@ import {
   RoutineSyncInput,
   ScheduleSyncInput,
 } from './input';
+import { UserService } from 'src/user';
+import { UserOutput } from 'src/user/output';
 
 @Resolver()
 export class ScheduleResolver {
@@ -124,30 +126,4 @@ export class SchedulableResolver {
   ): Promise<AvailableShiftOutput[]> {
     return await this._scheduleService.get_available_shifts(id);
   }
-
-  //
-  //   @ResolveField(() => [RegularRoutineOutput], { nullable: true })
-  //   async regular_routine(@Parent() { id }: ScheduleOutput) {
-  //     const res = await this._scheduleService.get_regular_slots(id);
-  //     return res.map(RegularRoutineOutput.from_model);
-  //   }
-  //
-  //   @ResolveField(() => [OverrideRoutineOutput], { nullable: true })
-  //   async override_routine(@Parent() { id }: ScheduleOutput) {
-  //     const res = await this._scheduleService.get_override_slots(id);
-  //     this.logger.log(res);
-  //     return res.map(OverrideRoutineOutput.from_model);
-  //   }
-  //
-  //   @ResolveField(() => [BlockedDayOutput], { nullable: true })
-  //   async blocked_days(@Parent() { id }: ScheduleOutput) {
-  //     const res = await this._scheduleService.get_blocked_days(id);
-  //     return res.map(BlockedDayOutput.from_model);
-  //   }
-  //
-  //   @ResolveField(() => [OverrideRoutineOutput], { nullable: true })
-  //   async available_slots(@Parent() { id }: ScheduleOutput) {
-  //     const res = await this._scheduleService.get_available_show_slots(id);
-  //     return res.map(OverrideRoutineOutput.from_model);
-  //   }
 }

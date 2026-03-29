@@ -217,4 +217,12 @@ export class UserService {
     }
     return query;
   }
+
+  async _get_user_by_id(id: number) {
+    return await this._db
+      .selectFrom('user_account')
+      .selectAll()
+      .where('id', '=', id)
+      .executeTakeFirst();
+  }
 }

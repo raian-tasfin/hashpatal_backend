@@ -10,6 +10,7 @@ type TokenPair {
 type UserOutput {
   uuid: String!
   email: String!
+  birthDate: String!
   user_roles: [RoleType!]!
   doctor_profile: DoctorProfileOutput
 }
@@ -55,6 +56,7 @@ type AppointmentOutput {
   startTime: String!
   endTime: String!
   status: AppointmentStatusType!
+  patient: PatientOutput
 }
 
 enum ShiftType {
@@ -87,6 +89,19 @@ type ScheduleOutput {
   max_booking_days: Int!
   available_slots(date: String!): [AvailableSlotOutput!]!
   available_shifts: [AvailableShiftOutput!]!
+}
+
+type PatientOutput {
+  name: String!
+  uuid: String!
+  birthDate: String!
+  age: Int!
+  previous_appointments: [PreviousAppointmentOutput!]
+}
+
+type PreviousAppointmentOutput {
+  uuid: String!
+  date: String!
 }
 
 type Query {

@@ -15,6 +15,7 @@ import { UserModule } from './user';
 import { DoctorModule } from './doctor/doctor.module';
 import { DepartmentModule } from './department/department.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { ConsultanceModule } from './consultance/consultance.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     DoctorModule,
     DepartmentModule,
     ScheduleModule,
+    ConsultanceModule,
   ],
   controllers: [AppController],
   providers: [
