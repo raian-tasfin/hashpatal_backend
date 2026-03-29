@@ -17,6 +17,7 @@ import {
   AddAppointmentDiagnosisInput,
   AddMedicationInput,
   AddPrescriptionItemInput,
+  SetAppointmentStatusInput,
 } from './input';
 import { ScheduleService } from 'src/schedule/schedule.service';
 
@@ -184,6 +185,23 @@ export class ConsultanceService {
           duration_value,
           duration_unit: duration_unit as DurationUnitType,
         })
+        .execute();
+      return true;
+    } catch (err) {
+      this._logger.error(err.msg);
+      return false;
+    }
+  }
+
+  async set_appointment_status({
+    uuid,
+    status,
+  }: SetAppointmentStatusInput): Promise<boolean> {
+    try {
+      await this._db
+        .updateTable('appointment')
+        .set({ status: status as AppointmentStatusType })
+        .where('uuid', '=', uuid)
         .execute();
       return true;
     } catch (err) {

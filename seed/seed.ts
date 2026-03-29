@@ -11,6 +11,7 @@ import data from './seed-data.json';
 import { ConfigModule } from '@nestjs/config';
 import { PasswordModule } from '@org/shared/password';
 import {
+  AppointmentStatusType,
   DatabaseModule,
   DurationUnitType,
   FoodRelationType,
@@ -34,6 +35,7 @@ import { DepartmentService } from 'src/department/department.service';
 import { ScheduleService } from 'src/schedule/schedule.service';
 import { ScheduleModule } from 'src/schedule/schedule.module';
 import { RoutineSlotInput } from '@org/shared/slots';
+import { appointmentStatusEnum } from '@org/shared/db/schema';
 // import { doctorProfile } from '@org/shared/db/schema';
 
 const logger = new Logger('seed');
@@ -573,6 +575,59 @@ async function add_prescription_items_to_appointment(
   logger.log('Medications added to appointment.');
 }
 
+async function complete_appointment(app: INestApplicationContext) {
+  logger.log('Completing appointment...');
+
+  const consultanceService = app.get(ConsultanceService);
+  const scheduleService = app.get(ScheduleService);
+  const userService = app.get(UserService);
+  const doctorService = app.get(DoctorService);
+
+  // get first appointment
+  const patientEmail = 'patient@mail.com';
+  const patient = await userService.find({ email: patientEmail });
+  if (!patient) {
+    logger.error(`No account for patient "${patientEmail}"`);
+    return;
+  }
+
+  const doctorEmail = 'doctor@mail.com';
+  const doctor = await userService.find({ email: doctorEmail });
+  if (!doctor) {
+    logger.error(`No account for doctor "${doctorEmail}"`);
+    return;
+  }
+
+  const doctorProfile = await doctorService.get_profile(doctor.id);
+  if (!doctorProfile?.scheduleId) {
+    logger.error(`No schedule for "${doctorEmail}"`);
+    return;
+  }
+
+  const schedule = await scheduleService.get_schedule_from_id(
+    doctorProfile.scheduleId,
+  );
+  if (!schedule) {
+    logger.error(`No schedule found`);
+    return;
+  }
+
+  const appointments = await scheduleService.get_appointments({
+    scheduleUuid: schedule.uuid,
+    patientUuid: patient.uuid,
+  });
+  if (appointments.length === 0) {
+    logger.error(`No appointments found`);
+    return;
+  }
+  const firstAppointment = appointments[0];
+  await consultanceService.set_appointment_status({
+    status: AppointmentStatusType.COMPLETED,
+    uuid: firstAppointment.uuid,
+  });
+  logger.log('Appointment completed.');
+}
+
 // async function create_doctor_profiles(app: INestApplicationContext) {
 //   const userService = app.get(UserService);
 //   const doctorService = app.get(DoctorService);
@@ -716,6 +771,8 @@ async function bootstrap() {
 
   await add_medications(app);
   await add_prescription_items_to_appointment(app);
+
+  await complete_appointment(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);

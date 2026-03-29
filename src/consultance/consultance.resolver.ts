@@ -20,6 +20,7 @@ import {
   AddComplaintInput,
   AddMedicationInput,
   AddPrescriptionItemInput,
+  SetAppointmentStatusInput,
 } from './input';
 import { DiagnosisOutput } from './output/diagnosis.output';
 import { PrescriptionItemOutput } from './output/prescription-item.output';
@@ -27,6 +28,16 @@ import { PrescriptionItemOutput } from './output/prescription-item.output';
 @Resolver(() => AppointmentOutput)
 export class AppointmentResolver {
   constructor(private readonly _consultanceService: ConsultanceService) {}
+
+  /**
+   * Mutations
+   */
+  @Mutation(() => Boolean)
+  async set_appointment_status(
+    @Args('data') data: SetAppointmentStatusInput,
+  ): Promise<boolean> {
+    return await this._consultanceService.set_appointment_status(data);
+  }
 
   /**
    * Queries
