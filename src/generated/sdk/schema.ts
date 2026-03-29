@@ -7,6 +7,7 @@ export type Scalars = {
     String: string,
     Boolean: boolean,
     Int: number,
+    Float: number,
 }
 
 export interface TokenPair {
@@ -65,6 +66,8 @@ export interface AppointmentOutput {
     status: AppointmentStatusType
     patient: (PatientOutput | null)
     complaints: (ComplaintOutput[] | null)
+    diagnosis: (DiagnosisOutput[] | null)
+    prescription_items: (PrescriptionItemOutput[] | null)
     __typename: 'AppointmentOutput'
 }
 
@@ -116,11 +119,36 @@ export interface ComplaintOutput {
     __typename: 'ComplaintOutput'
 }
 
+export interface MedicationOutput {
+    uuid: Scalars['String']
+    name: Scalars['String']
+    generic_name: Scalars['String']
+    dose_unit: Scalars['String']
+    food_relation: FoodRelationType
+    __typename: 'MedicationOutput'
+}
+
+export type FoodRelationType = 'BEFORE_EATING' | 'AFTER_EATING' | 'IRRELEVANT'
+
 export interface DiagnosisOutput {
     uuid: Scalars['String']
     name: Scalars['String']
     __typename: 'DiagnosisOutput'
 }
+
+export interface PrescriptionItemOutput {
+    medication_uuid: Scalars['String']
+    medication_name: Scalars['String']
+    dose_quantity: Scalars['Float']
+    frequency: MedicationFrequencyType
+    duration_value: Scalars['Int']
+    duration_unit: DurationUnitType
+    __typename: 'PrescriptionItemOutput'
+}
+
+export type MedicationFrequencyType = 'ONCE_DAILY' | 'TWICE_DAILY' | 'THREE_TIMES_DAILY' | 'FOUR_TIMES_DAILY' | 'EVERY_6_HOURS' | 'EVERY_8_HOURS'
+
+export type DurationUnitType = 'DAYS' | 'WEEKS'
 
 export interface Query {
     sayHello: Scalars['String']
@@ -130,6 +158,7 @@ export interface Query {
     get_appointments: AppointmentOutput[]
     get_all_complaints: ComplaintOutput[]
     get_all_diagnosis: DiagnosisOutput[]
+    get_all_medication: MedicationOutput[]
     __typename: 'Query'
 }
 
@@ -145,6 +174,9 @@ export interface Mutation {
     routine_sync: Scalars['Boolean']
     add_complaint: Scalars['Boolean']
     add_appointment_complaint: Scalars['Boolean']
+    add_appointment_diagnosis: Scalars['Boolean']
+    add_medication: Scalars['Boolean']
+    add_prescription_item: Scalars['Boolean']
     __typename: 'Mutation'
 }
 
@@ -212,6 +244,8 @@ export interface AppointmentOutputGenqlSelection{
     status?: boolean | number
     patient?: PatientOutputGenqlSelection
     complaints?: ComplaintOutputGenqlSelection
+    diagnosis?: DiagnosisOutputGenqlSelection
+    prescription_items?: PrescriptionItemOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -266,9 +300,30 @@ export interface ComplaintOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface MedicationOutputGenqlSelection{
+    uuid?: boolean | number
+    name?: boolean | number
+    generic_name?: boolean | number
+    dose_unit?: boolean | number
+    food_relation?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface DiagnosisOutputGenqlSelection{
     uuid?: boolean | number
     name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PrescriptionItemOutputGenqlSelection{
+    medication_uuid?: boolean | number
+    medication_name?: boolean | number
+    dose_quantity?: boolean | number
+    frequency?: boolean | number
+    duration_value?: boolean | number
+    duration_unit?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -281,6 +336,7 @@ export interface QueryGenqlSelection{
     get_appointments?: (AppointmentOutputGenqlSelection & { __args: {data: GetAppointmentsInput} })
     get_all_complaints?: ComplaintOutputGenqlSelection
     get_all_diagnosis?: DiagnosisOutputGenqlSelection
+    get_all_medication?: MedicationOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -303,6 +359,9 @@ export interface MutationGenqlSelection{
     routine_sync?: { __args: {data: RoutineSyncInput} }
     add_complaint?: { __args: {data: AddComplaintInput} }
     add_appointment_complaint?: { __args: {data: AddAppointmentComplaintInput} }
+    add_appointment_diagnosis?: { __args: {data: AddAppointmentDiagnosisInput} }
+    add_medication?: { __args: {data: AddMedicationInput} }
+    add_prescription_item?: { __args: {data: AddPrescriptionItemInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -334,6 +393,12 @@ export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String']
 export interface AddComplaintInput {name: Scalars['String']}
 
 export interface AddAppointmentComplaintInput {appointment_uuid: Scalars['String'],complaint_uuid: Scalars['String'],note?: (Scalars['String'] | null),days?: (Scalars['Int'] | null)}
+
+export interface AddAppointmentDiagnosisInput {appointment_uuid: Scalars['String'],diagnosis_uuid: Scalars['String']}
+
+export interface AddMedicationInput {name: Scalars['String'],generic_name: Scalars['String'],dose_unit: Scalars['String'],food_relation: FoodRelationType}
+
+export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],medication_uuid: Scalars['String'],dose_quantity: Scalars['Float'],frequency: MedicationFrequencyType,duration_value: Scalars['Int'],duration_unit: DurationUnitType}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']
@@ -440,10 +505,26 @@ export interface AddAppointmentComplaintInput {appointment_uuid: Scalars['String
     
 
 
+    const MedicationOutput_possibleTypes: string[] = ['MedicationOutput']
+    export const isMedicationOutput = (obj?: { __typename?: any } | null): obj is MedicationOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMedicationOutput"')
+      return MedicationOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const DiagnosisOutput_possibleTypes: string[] = ['DiagnosisOutput']
     export const isDiagnosisOutput = (obj?: { __typename?: any } | null): obj is DiagnosisOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isDiagnosisOutput"')
       return DiagnosisOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PrescriptionItemOutput_possibleTypes: string[] = ['PrescriptionItemOutput']
+    export const isPrescriptionItemOutput = (obj?: { __typename?: any } | null): obj is PrescriptionItemOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPrescriptionItemOutput"')
+      return PrescriptionItemOutput_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -481,6 +562,26 @@ export const enumAppointmentStatusType = {
    COMPLETED: 'COMPLETED' as const,
    CANCELLED: 'CANCELLED' as const,
    DIDNTSHOW: 'DIDNTSHOW' as const
+}
+
+export const enumFoodRelationType = {
+   BEFORE_EATING: 'BEFORE_EATING' as const,
+   AFTER_EATING: 'AFTER_EATING' as const,
+   IRRELEVANT: 'IRRELEVANT' as const
+}
+
+export const enumMedicationFrequencyType = {
+   ONCE_DAILY: 'ONCE_DAILY' as const,
+   TWICE_DAILY: 'TWICE_DAILY' as const,
+   THREE_TIMES_DAILY: 'THREE_TIMES_DAILY' as const,
+   FOUR_TIMES_DAILY: 'FOUR_TIMES_DAILY' as const,
+   EVERY_6_HOURS: 'EVERY_6_HOURS' as const,
+   EVERY_8_HOURS: 'EVERY_8_HOURS' as const
+}
+
+export const enumDurationUnitType = {
+   DAYS: 'DAYS' as const,
+   WEEKS: 'WEEKS' as const
 }
 
 export const enumSchedulableType = {

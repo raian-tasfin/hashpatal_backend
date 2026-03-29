@@ -6,8 +6,12 @@ export default {
         10,
         12,
         15,
-        35,
-        38
+        20,
+        23,
+        24,
+        25,
+        41,
+        44
     ],
     "types": {
         "TokenPair": {
@@ -130,6 +134,12 @@ export default {
             "complaints": [
                 18
             ],
+            "diagnosis": [
+                21
+            ],
+            "prescription_items": [
+                22
+            ],
             "__typename": [
                 1
             ]
@@ -234,6 +244,27 @@ export default {
                 1
             ]
         },
+        "MedicationOutput": {
+            "uuid": [
+                1
+            ],
+            "name": [
+                1
+            ],
+            "generic_name": [
+                1
+            ],
+            "dose_unit": [
+                1
+            ],
+            "food_relation": [
+                20
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "FoodRelationType": {},
         "DiagnosisOutput": {
             "uuid": [
                 1
@@ -245,6 +276,32 @@ export default {
                 1
             ]
         },
+        "PrescriptionItemOutput": {
+            "medication_uuid": [
+                1
+            ],
+            "medication_name": [
+                1
+            ],
+            "dose_quantity": [
+                23
+            ],
+            "frequency": [
+                24
+            ],
+            "duration_value": [
+                15
+            ],
+            "duration_unit": [
+                25
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "Float": {},
+        "MedicationFrequencyType": {},
+        "DurationUnitType": {},
         "Query": {
             "sayHello": [
                 1
@@ -253,7 +310,7 @@ export default {
                 2,
                 {
                     "data": [
-                        21,
+                        27,
                         "FindUserInput!"
                     ]
                 }
@@ -265,7 +322,7 @@ export default {
                 7,
                 {
                     "data": [
-                        22,
+                        28,
                         "FindDepartmentInput!"
                     ]
                 }
@@ -274,7 +331,7 @@ export default {
                 8,
                 {
                     "data": [
-                        23,
+                        29,
                         "GetAppointmentsInput!"
                     ]
                 }
@@ -283,6 +340,9 @@ export default {
                 18
             ],
             "get_all_diagnosis": [
+                21
+            ],
+            "get_all_medication": [
                 19
             ],
             "__typename": [
@@ -330,7 +390,7 @@ export default {
                 2,
                 {
                     "data": [
-                        25,
+                        31,
                         "RegisterInput!"
                     ]
                 }
@@ -339,7 +399,7 @@ export default {
                 0,
                 {
                     "data": [
-                        26,
+                        32,
                         "LoginInput!"
                     ]
                 }
@@ -348,7 +408,7 @@ export default {
                 0,
                 {
                     "data": [
-                        27,
+                        33,
                         "RefreshLoginInput!"
                     ]
                 }
@@ -357,7 +417,7 @@ export default {
                 12,
                 {
                     "data": [
-                        28,
+                        34,
                         "LogoutInput!"
                     ]
                 }
@@ -366,7 +426,7 @@ export default {
                 12,
                 {
                     "data": [
-                        29,
+                        35,
                         "SyncRolesInput!"
                     ]
                 }
@@ -375,7 +435,7 @@ export default {
                 12,
                 {
                     "data": [
-                        30,
+                        36,
                         "SyncProfileInput!"
                     ]
                 }
@@ -384,7 +444,7 @@ export default {
                 12,
                 {
                     "data": [
-                        33,
+                        39,
                         "AddDepartmentInput!"
                     ]
                 }
@@ -393,7 +453,7 @@ export default {
                 12,
                 {
                     "data": [
-                        34,
+                        40,
                         "ScheduleSyncInput!"
                     ]
                 }
@@ -402,7 +462,7 @@ export default {
                 12,
                 {
                     "data": [
-                        36,
+                        42,
                         "RoutineSyncInput!"
                     ]
                 }
@@ -411,7 +471,7 @@ export default {
                 12,
                 {
                     "data": [
-                        39,
+                        45,
                         "AddComplaintInput!"
                     ]
                 }
@@ -420,8 +480,35 @@ export default {
                 12,
                 {
                     "data": [
-                        40,
+                        46,
                         "AddAppointmentComplaintInput!"
+                    ]
+                }
+            ],
+            "add_appointment_diagnosis": [
+                12,
+                {
+                    "data": [
+                        47,
+                        "AddAppointmentDiagnosisInput!"
+                    ]
+                }
+            ],
+            "add_medication": [
+                12,
+                {
+                    "data": [
+                        48,
+                        "AddMedicationInput!"
+                    ]
+                }
+            ],
+            "add_prescription_item": [
+                12,
+                {
+                    "data": [
+                        49,
+                        "AddPrescriptionItemInput!"
                     ]
                 }
             ],
@@ -492,10 +579,10 @@ export default {
                 1
             ],
             "experience": [
-                31
+                37
             ],
             "academic": [
-                32
+                38
             ],
             "__typename": [
                 1
@@ -548,7 +635,7 @@ export default {
                 1
             ],
             "schedulable": [
-                35
+                41
             ],
             "minutes_per_slot": [
                 15
@@ -566,10 +653,10 @@ export default {
                 1
             ],
             "schedulable": [
-                35
+                41
             ],
             "slots": [
-                37
+                43
             ],
             "__typename": [
                 1
@@ -586,7 +673,7 @@ export default {
                 1
             ],
             "weekDay": [
-                38
+                44
             ],
             "__typename": [
                 1
@@ -613,6 +700,57 @@ export default {
             ],
             "days": [
                 15
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AddAppointmentDiagnosisInput": {
+            "appointment_uuid": [
+                1
+            ],
+            "diagnosis_uuid": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AddMedicationInput": {
+            "name": [
+                1
+            ],
+            "generic_name": [
+                1
+            ],
+            "dose_unit": [
+                1
+            ],
+            "food_relation": [
+                20
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AddPrescriptionItemInput": {
+            "appointment_uuid": [
+                1
+            ],
+            "medication_uuid": [
+                1
+            ],
+            "dose_quantity": [
+                23
+            ],
+            "frequency": [
+                24
+            ],
+            "duration_value": [
+                15
+            ],
+            "duration_unit": [
+                25
             ],
             "__typename": [
                 1

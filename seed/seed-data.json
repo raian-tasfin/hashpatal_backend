@@ -235,5 +235,97 @@
     "Contact Dermatitis",
     "Tinea Corporis (Ringworm)",
     "Acne Vulgaris"
+  ],
+  "medication": [
+    {
+      "name": "Amoxicillin",
+      "generic_name": "Amoxicillin",
+      "dose_unit": "mg",
+      "food_relation": "AFTER_EATING"
+    },
+    {
+      "name": "Gaviscon Syrup",
+      "generic_name": "Sodium Alginate",
+      "dose_unit": "ml",
+      "food_relation": "AFTER_EATING"
+    },
+    {
+      "name": "Ventolin HFA",
+      "generic_name": "Salbutamol",
+      "dose_unit": "puff",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Betnovate-N",
+      "generic_name": "Betamethasone",
+      "dose_unit": "application",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Humalog",
+      "generic_name": "Insulin Lispro",
+      "dose_unit": "unit",
+      "food_relation": "BEFORE_EATING"
+    },
+    {
+      "name": "Paracetamol",
+      "generic_name": "Acetaminophen",
+      "dose_unit": "mg",
+      "food_relation": "AFTER_EATING"
+    },
+    {
+      "name": "Metformin",
+      "generic_name": "Metformin Hydrochloride",
+      "dose_unit": "mg",
+      "food_relation": "AFTER_EATING"
+    },
+    {
+      "name": "Azithromycin",
+      "generic_name": "Azithromycin",
+      "dose_unit": "mg",
+      "food_relation": "BEFORE_EATING"
+    },
+    {
+      "name": "Atorvastatin",
+      "generic_name": "Atorvastatin",
+      "dose_unit": "mg",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Losartan",
+      "generic_name": "Losartan Potassium",
+      "dose_unit": "mg",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Omeprazole",
+      "generic_name": "Omeprazole",
+      "dose_unit": "mg",
+      "food_relation": "BEFORE_EATING"
+    },
+    {
+      "name": "Cetirizine",
+      "generic_name": "Cetirizine Hydrochloride",
+      "dose_unit": "mg",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Ibuprofen",
+      "generic_name": "Ibuprofen",
+      "dose_unit": "mg",
+      "food_relation": "AFTER_EATING"
+    },
+    {
+      "name": "Amlodipine",
+      "generic_name": "Amlodipine Besylate",
+      "dose_unit": "mg",
+      "food_relation": "IRRELEVANT"
+    },
+    {
+      "name": "Pantoprazole",
+      "generic_name": "Pantoprazole Sodium",
+      "dose_unit": "mg",
+      "food_relation": "BEFORE_EATING"
+    }
   ]
 }

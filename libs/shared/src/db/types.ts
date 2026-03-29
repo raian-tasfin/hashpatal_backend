@@ -7,9 +7,17 @@ import type { ColumnType } from "kysely";
 
 export type AppointmentStatusType = "CANCELLED" | "COMPLETED" | "DIDNTSHOW" | "SCHEDULED";
 
+export type DurationUnitType = "DAYS" | "WEEKS";
+
+export type FoodRelationType = "AFTER_EATING" | "BEFORE_EATING" | "IRRELEVANT";
+
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
+
+export type MedicationFrequencyType = "EVERY_6_HOURS" | "EVERY_8_HOURS" | "FOUR_TIMES_DAILY" | "ONCE_DAILY" | "THREE_TIMES_DAILY" | "TWICE_DAILY";
+
+export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type RoleType = "ADMIN" | "DOCTOR" | "LAB_NURSE" | "LAB_TECHNICIAN" | "PATIENT";
 
@@ -90,6 +98,25 @@ export interface DoctorProfile {
   user_id: number;
 }
 
+export interface Medication {
+  dose_unit: string;
+  food_relation: FoodRelationType;
+  generic_name: string;
+  id: Generated<number>;
+  name: string;
+  uuid: Generated<string>;
+}
+
+export interface PrescriptionItem {
+  appointment_id: number;
+  dose_quantity: Numeric;
+  duration_unit: DurationUnitType;
+  duration_value: number;
+  frequency: MedicationFrequencyType;
+  id: Generated<number>;
+  medication_id: number;
+}
+
 export interface RefreshToken {
   expires_at: Timestamp;
   id: Generated<number>;
@@ -141,6 +168,8 @@ export interface DB {
   diagnosis: Diagnosis;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
+  medication: Medication;
+  prescription_item: PrescriptionItem;
   refresh_token: RefreshToken;
   routine: Routine;
   schedule: Schedule;

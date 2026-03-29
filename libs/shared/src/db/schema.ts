@@ -15,11 +15,15 @@ import {
 import {
   AppointmentStatusType,
   create_pg_enum,
+  DurationUnitType,
+  FoodRelationType,
+  MedicationFrequencyType,
   RoleType,
   SchedulableType,
   ShiftType,
   WeekDayType,
 } from './_enums';
+import { numeric } from 'drizzle-orm/pg-core';
 
 /**
  * Enums
@@ -32,6 +36,18 @@ export const appointmentStatusEnum = create_pg_enum(
   AppointmentStatusType,
 );
 export const shiftEnum = create_pg_enum('shift_type', ShiftType);
+export const foodRelationEnum = create_pg_enum(
+  'food_relation_type',
+  FoodRelationType,
+);
+export const durationUnitEnum = create_pg_enum(
+  'duration_unit_type',
+  DurationUnitType,
+);
+export const medicationFrequencyEnum = create_pg_enum(
+  'medication_frequency_type',
+  MedicationFrequencyType,
+);
 
 /**
  * Users
@@ -217,3 +233,29 @@ export const appointment_diagnosis = pgTable(
     unique('appointment_diagnosis_unique').on(t.appointment_id, t.diagnosis_id),
   ],
 );
+
+/**
+ * Medication
+ */
+export const medication = pgTable('medication', {
+  id: serial('id').primaryKey(),
+  uuid: uuid('uuid').defaultRandom().notNull().unique(),
+  name: text('name').notNull().unique(),
+  generic_name: text('generic_name').notNull(),
+  dose_unit: text('dose_unit').notNull(),
+  food_relation: foodRelationEnum('food_relation').notNull(),
+});
+
+export const prescription_item = pgTable('prescription_item', {
+  id: serial('id').primaryKey(),
+  appointment_id: integer('appointment_id')
+    .notNull()
+    .references(() => appointment.id, { onDelete: 'cascade' }),
+  medication_id: integer('medication_id')
+    .notNull()
+    .references(() => medication.id, { onDelete: 'cascade' }),
+  dose_quantity: numeric('dose_quantity').notNull(),
+  frequency: medicationFrequencyEnum('frequency').notNull(),
+  duration_value: integer('duration_value').notNull(),
+  duration_unit: durationUnitEnum('duration_unit').notNull(),
+});

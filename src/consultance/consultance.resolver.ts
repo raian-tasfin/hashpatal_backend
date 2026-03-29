@@ -9,6 +9,7 @@ import {
 import { AppointmentOutput } from 'src/schedule/output';
 import {
   ComplaintOutput,
+  MedicationOutput,
   PatientOutput,
   PreviousAppointmentOutput,
 } from './output';
@@ -17,8 +18,11 @@ import {
   AddAppointmentComplaintInput,
   AddAppointmentDiagnosisInput,
   AddComplaintInput,
+  AddMedicationInput,
+  AddPrescriptionItemInput,
 } from './input';
 import { DiagnosisOutput } from './output/diagnosis.output';
+import { PrescriptionItemOutput } from './output/prescription-item.output';
 
 @Resolver(() => AppointmentOutput)
 export class AppointmentResolver {
@@ -55,6 +59,17 @@ export class AppointmentResolver {
       appointment.uuid,
     );
     return records.map(DiagnosisOutput.from_model);
+  }
+
+  @ResolveField(() => [PrescriptionItemOutput], { nullable: true })
+  async prescription_items(
+    @Parent() appointment: AppointmentOutput,
+  ): Promise<PrescriptionItemOutput[]> {
+    const records =
+      await this._consultanceService.get_appointment_prescription_items(
+        appointment.uuid,
+      );
+    return records.map(PrescriptionItemOutput.from_model);
   }
 }
 
@@ -102,6 +117,20 @@ export class ConsultanceResolver {
     return await this._consultanceService.add_appointment_diagnosis(data);
   }
 
+  @Mutation(() => Boolean)
+  async add_medication(
+    @Args('data') data: AddMedicationInput,
+  ): Promise<boolean> {
+    return await this._consultanceService.add_medication(data);
+  }
+
+  @Mutation(() => Boolean)
+  async add_prescription_item(
+    @Args('data') data: AddPrescriptionItemInput,
+  ): Promise<boolean> {
+    return await this._consultanceService.add_prescription_item(data);
+  }
+
   /**
    * Queries
    */
@@ -115,5 +144,11 @@ export class ConsultanceResolver {
   async get_all_diagnosis(): Promise<DiagnosisOutput[]> {
     const records = await this._consultanceService.get_all_diagnosis();
     return records.map(DiagnosisOutput.from_model);
+  }
+
+  @Query(() => [MedicationOutput])
+  async get_all_medication(): Promise<MedicationOutput[]> {
+    const records = await this._consultanceService.get_all_medication();
+    return records.map(MedicationOutput.from_model);
   }
 }

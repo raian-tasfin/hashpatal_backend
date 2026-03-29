@@ -10,7 +10,14 @@ import { UserService } from 'src/user/user.service';
 import data from './seed-data.json';
 import { ConfigModule } from '@nestjs/config';
 import { PasswordModule } from '@org/shared/password';
-import { DatabaseModule, SchedulableType, ShiftType } from '@org/shared/db';
+import {
+  DatabaseModule,
+  DurationUnitType,
+  FoodRelationType,
+  MedicationFrequencyType,
+  SchedulableType,
+  ShiftType,
+} from '@org/shared/db';
 // import { UserRolesModule } from 'src/user-roles/user-roles.module';
 // import { UserRolesService } from 'src/user-roles/user-roles.service';
 import { RoleType } from '@org/shared/db';
@@ -142,6 +149,32 @@ async function add_diagnosis(app: INestApplicationContext) {
     }
   }
   logger.log(`Diagnosis population phase complete.`);
+}
+
+async function add_medications(app: INestApplicationContext) {
+  const consultanceService = app.get(ConsultanceService);
+  logger.log('Adding medications...');
+  for (const {
+    name,
+    generic_name,
+    dose_unit,
+    food_relation,
+  } of data.medication) {
+    logger.log(`Adding medication: ${name}`);
+    try {
+      const res = await consultanceService.add_medication({
+        name,
+        generic_name,
+        dose_unit,
+        food_relation: food_relation as FoodRelationType,
+      });
+      if (!res) throw Error(`Failed adding medication "${name}"`);
+    } catch (err) {
+      logger.log(`Skipping medication: "${name}"`);
+      logger.error(err.message);
+    }
+  }
+  logger.log(`Medication population phase complete.`);
 }
 
 /**
@@ -461,6 +494,85 @@ async function add_diagnosis_to_appointment(app: INestApplicationContext) {
   logger.log('Diagnosis added to appointment.');
 }
 
+async function add_prescription_items_to_appointment(
+  app: INestApplicationContext,
+) {
+  logger.log('Adding prescription item to appointment...');
+
+  const consultanceService = app.get(ConsultanceService);
+  const scheduleService = app.get(ScheduleService);
+  const userService = app.get(UserService);
+  const doctorService = app.get(DoctorService);
+
+  // get first appointment
+  const patientEmail = 'patient@mail.com';
+  const patient = await userService.find({ email: patientEmail });
+  if (!patient) {
+    logger.error(`No account for patient "${patientEmail}"`);
+    return;
+  }
+
+  const doctorEmail = 'doctor@mail.com';
+  const doctor = await userService.find({ email: doctorEmail });
+  if (!doctor) {
+    logger.error(`No account for doctor "${doctorEmail}"`);
+    return;
+  }
+
+  const doctorProfile = await doctorService.get_profile(doctor.id);
+  if (!doctorProfile?.scheduleId) {
+    logger.error(`No schedule for "${doctorEmail}"`);
+    return;
+  }
+
+  const schedule = await scheduleService.get_schedule_from_id(
+    doctorProfile.scheduleId,
+  );
+  if (!schedule) {
+    logger.error(`No schedule found`);
+    return;
+  }
+
+  const appointments = await scheduleService.get_appointments({
+    scheduleUuid: schedule.uuid,
+    patientUuid: patient.uuid,
+  });
+  if (appointments.length === 0) {
+    logger.error(`No appointments found`);
+    return;
+  }
+  const firstAppointment = appointments[0];
+
+  // get first 3 medications
+  const medication = await consultanceService.get_all_medication();
+  const first5 = medication.slice(0, 5);
+  if (first5.length === 0) {
+    logger.error(`No complaints found`);
+    return;
+  }
+
+  for (const medication of first5) {
+    let cnt = 1;
+    try {
+      await consultanceService.add_prescription_item({
+        appointment_uuid: firstAppointment.uuid,
+        medication_uuid: medication.uuid,
+        dose_quantity: cnt,
+        frequency: MedicationFrequencyType.ONCE_DAILY,
+        duration_value: cnt,
+        duration_unit: DurationUnitType.DAYS,
+      });
+      logger.log(`Added medication "${medication.name}" to appointment`);
+    } catch (err) {
+      logger.error(
+        `Failed adding medication "${medication.name}": ${err.message}`,
+      );
+    }
+    cnt++;
+  }
+  logger.log('Medications added to appointment.');
+}
+
 // async function create_doctor_profiles(app: INestApplicationContext) {
 //   const userService = app.get(UserService);
 //   const doctorService = app.get(DoctorService);
@@ -601,6 +713,9 @@ async function bootstrap() {
 
   await add_diagnosis(app);
   await add_diagnosis_to_appointment(app);
+
+  await add_medications(app);
+  await add_prescription_items_to_appointment(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);

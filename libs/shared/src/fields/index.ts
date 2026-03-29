@@ -16,3 +16,7 @@ export * from './weekday.field';
 export * from './year.field';
 export * from './boolean.field';
 export * from './normal-string.field';
+export * from './food-relation.field';
+export * from './duration-unit.field';
+export * from './medication-frequency.field';
+export * from './float.field';

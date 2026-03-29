@@ -54,6 +54,8 @@ type AppointmentOutput {
   status: AppointmentStatusType!
   patient: PatientOutput
   complaints: [ComplaintOutput!]
+  diagnosis: [DiagnosisOutput!]
+  prescription_items: [PrescriptionItemOutput!]
 }
 
 enum ShiftType {
@@ -106,9 +108,46 @@ type ComplaintOutput {
   name: String!
 }
 
+type MedicationOutput {
+  uuid: String!
+  name: String!
+  generic_name: String!
+  dose_unit: String!
+  food_relation: FoodRelationType!
+}
+
+enum FoodRelationType {
+  BEFORE_EATING
+  AFTER_EATING
+  IRRELEVANT
+}
+
 type DiagnosisOutput {
   uuid: String!
   name: String!
+}
+
+type PrescriptionItemOutput {
+  medication_uuid: String!
+  medication_name: String!
+  dose_quantity: Float!
+  frequency: MedicationFrequencyType!
+  duration_value: Int!
+  duration_unit: DurationUnitType!
+}
+
+enum MedicationFrequencyType {
+  ONCE_DAILY
+  TWICE_DAILY
+  THREE_TIMES_DAILY
+  FOUR_TIMES_DAILY
+  EVERY_6_HOURS
+  EVERY_8_HOURS
+}
+
+enum DurationUnitType {
+  DAYS
+  WEEKS
 }
 
 type Query {
@@ -119,6 +158,7 @@ type Query {
   get_appointments(data: GetAppointmentsInput!): [AppointmentOutput!]!
   get_all_complaints: [ComplaintOutput!]!
   get_all_diagnosis: [DiagnosisOutput!]!
+  get_all_medication: [MedicationOutput!]!
 }
 
 input FindUserInput {
@@ -149,6 +189,9 @@ type Mutation {
   routine_sync(data: RoutineSyncInput!): Boolean!
   add_complaint(data: AddComplaintInput!): Boolean!
   add_appointment_complaint(data: AddAppointmentComplaintInput!): Boolean!
+  add_appointment_diagnosis(data: AddAppointmentDiagnosisInput!): Boolean!
+  add_medication(data: AddMedicationInput!): Boolean!
+  add_prescription_item(data: AddPrescriptionItemInput!): Boolean!
 }
 
 input RegisterInput {
@@ -244,4 +287,25 @@ input AddAppointmentComplaintInput {
   complaint_uuid: String!
   note: String
   days: Int
+}
+
+input AddAppointmentDiagnosisInput {
+  appointment_uuid: String!
+  diagnosis_uuid: String!
+}
+
+input AddMedicationInput {
+  name: String!
+  generic_name: String!
+  dose_unit: String!
+  food_relation: FoodRelationType!
+}
+
+input AddPrescriptionItemInput {
+  appointment_uuid: String!
+  medication_uuid: String!
+  dose_quantity: Float!
+  frequency: MedicationFrequencyType!
+  duration_value: Int!
+  duration_unit: DurationUnitType!
 }

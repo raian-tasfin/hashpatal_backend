@@ -12,6 +12,8 @@ import {
   Routine as RoutineTable,
   Complaint as ComplaintTable,
   Diagnosis as DiagnosisTable,
+  PrescriptionItem as PrescriptionItemTable,
+  Medication as MedicationTable,
 } from './types';
 
 export type AcademicRecord = Selectable<AcademicRecordTable>;
@@ -26,3 +28,5 @@ export type UserRole = Selectable<UserRoleTable>;
 export type Routine = Selectable<RoutineTable>;
 export type Complaint = Selectable<ComplaintTable>;
 export type Diagnosis = Selectable<DiagnosisTable>;
+export type PrescriptionItem = Selectable<PrescriptionItemTable>;
+export type Medication = Selectable<MedicationTable>;
