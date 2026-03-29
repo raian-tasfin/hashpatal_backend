@@ -57,6 +57,7 @@ type AppointmentOutput {
   endTime: String!
   status: AppointmentStatusType!
   patient: PatientOutput
+  complaints: [ComplaintOutput!]
 }
 
 enum ShiftType {
@@ -104,12 +105,18 @@ type PreviousAppointmentOutput {
   date: String!
 }
 
+type ComplaintOutput {
+  uuid: String!
+  name: String!
+}
+
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
   get_appointments(data: GetAppointmentsInput!): [AppointmentOutput!]!
+  get_all_complaints: [ComplaintOutput!]!
 }
 
 input FindUserInput {
@@ -138,6 +145,8 @@ type Mutation {
   department_add(data: AddDepartmentInput!): Boolean!
   schedule_sync(data: ScheduleSyncInput!): Boolean!
   routine_sync(data: RoutineSyncInput!): Boolean!
+  add_complaint(data: AddComplaintInput!): Boolean!
+  add_appointment_complaint(data: AddAppointmentComplaintInput!): Boolean!
 }
 
 input RegisterInput {
@@ -222,4 +231,15 @@ enum WeekDayType {
   WEDNESDAY
   THURSDAY
   FRIDAY
+}
+
+input AddComplaintInput {
+  name: String!
+}
+
+input AddAppointmentComplaintInput {
+  appointment_uuid: String!
+  complaint_uuid: String!
+  note: String
+  days: Int
 }

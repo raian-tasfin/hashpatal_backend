@@ -174,3 +174,21 @@ export const complaint = pgTable('complaint', {
   uuid: uuid('uuid').defaultRandom().notNull().unique(),
   name: text('name').notNull().unique(),
 });
+
+export const appointment_complaint = pgTable(
+  'appointment_complaint',
+  {
+    id: serial('id').primaryKey(),
+    appointment_id: integer('appointment_id')
+      .notNull()
+      .references(() => appointment.id, { onDelete: 'cascade' }),
+    complaint_id: integer('complaint_id')
+      .notNull()
+      .references(() => complaint.id, { onDelete: 'cascade' }),
+    note: text('note'),
+    days: integer('days'),
+  },
+  (t) => [
+    unique('appointment_complaint_unique').on(t.appointment_id, t.complaint_id),
+  ],
+);

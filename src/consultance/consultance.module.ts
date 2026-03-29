@@ -5,13 +5,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { ConsultanceService } from './consultance.service';
-import { AppointmentResolver, PatientResolver } from './consultance.resolver';
+import {
+  AppointmentResolver,
+  PatientResolver,
+  ConsultanceResolver,
+} from './consultance.resolver';
+import { ScheduleModule } from 'src/schedule/schedule.module';
 
 @Module({
   imports: [
     DatabaseModule,
     UserModule,
     DoctorModule,
+    ScheduleModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -20,7 +26,17 @@ import { AppointmentResolver, PatientResolver } from './consultance.resolver';
       }),
     }),
   ],
-  providers: [ConsultanceService, AppointmentResolver, PatientResolver],
-  exports: [ConsultanceService, AppointmentResolver, PatientResolver],
+  providers: [
+    ConsultanceService,
+    AppointmentResolver,
+    PatientResolver,
+    ConsultanceResolver,
+  ],
+  exports: [
+    ConsultanceService,
+    AppointmentResolver,
+    PatientResolver,
+    ConsultanceResolver,
+  ],
 })
 export class ConsultanceModule {}

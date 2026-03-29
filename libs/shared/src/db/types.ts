@@ -41,6 +41,14 @@ export interface Appointment {
   uuid: Generated<string>;
 }
 
+export interface AppointmentComplaint {
+  appointment_id: number;
+  complaint_id: number;
+  days: number | null;
+  id: Generated<number>;
+  note: string | null;
+}
+
 export interface Complaint {
   id: Generated<number>;
   name: string;
@@ -114,6 +122,7 @@ export interface UserRole {
 export interface DB {
   academic_record: AcademicRecord;
   appointment: Appointment;
+  appointment_complaint: AppointmentComplaint;
   complaint: Complaint;
   department: Department;
   doctor_experience: DoctorExperience;

@@ -6,8 +6,8 @@ import { UuidField } from '@org/shared/fields';
 @ObjectType()
 export class PreviousAppointmentOutput {
   id: number;
-  schedule_id: number;
-  patient_id: number;
+  scheduleId: number;
+  patientId: number;
 
   @UuidField()
   uuid: string;
@@ -15,13 +15,22 @@ export class PreviousAppointmentOutput {
   @DateField()
   date: string;
 
+  shift: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+
   static from_model(model: Appointment): PreviousAppointmentOutput {
     const out = new PreviousAppointmentOutput();
     out.id = model.id;
-    out.schedule_id = model.schedule_id;
-    out.patient_id = model.patient_id;
+    out.scheduleId = model.schedule_id;
+    out.patientId = model.patient_id;
     out.uuid = model.uuid;
     out.date = format_date(model.date as any);
+    out.shift = model.shift;
+    out.startTime = model.start_time;
+    out.endTime = model.end_time;
+    out.status = model.status;
     return out;
   }
 }

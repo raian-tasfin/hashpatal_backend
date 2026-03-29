@@ -358,6 +358,14 @@ export class ScheduleService {
     }
   }
 
+  async get_appointment_from_uuid(appointment_uuid: string) {
+    return await this._db
+      .selectFrom('appointment')
+      .selectAll()
+      .where('uuid', '=', appointment_uuid)
+      .executeTakeFirst();
+  }
+
   /**
    * Private Uitilities
    */

@@ -30,6 +30,6 @@ import { DoctorModule } from 'src/doctor/doctor.module';
     DoctorScheduleResolver,
     SchedulableResolver,
   ],
-  exports: [ScheduleResolver, DoctorScheduleResolver],
+  exports: [ScheduleResolver, ScheduleService, DoctorScheduleResolver],
 })
 export class ScheduleModule {}
