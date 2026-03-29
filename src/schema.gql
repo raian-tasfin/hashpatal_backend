@@ -58,6 +58,7 @@ type AppointmentOutput {
   status: AppointmentStatusType!
   patient: PatientOutput
   complaints: [ComplaintOutput!]
+  diagnosis: [DiagnosisOutput!]
 }
 
 enum ShiftType {
@@ -153,6 +154,7 @@ type Mutation {
   routine_sync(data: RoutineSyncInput!): Boolean!
   add_complaint(data: AddComplaintInput!): Boolean!
   add_appointment_complaint(data: AddAppointmentComplaintInput!): Boolean!
+  add_appointment_diagnosis(data: AddAppointmentDiagnosisInput!): Boolean!
 }
 
 input RegisterInput {
@@ -248,4 +250,9 @@ input AddAppointmentComplaintInput {
   complaint_uuid: String!
   note: String
   days: Int
+}
+
+input AddAppointmentDiagnosisInput {
+  appointment_uuid: String!
+  diagnosis_uuid: String!
 }

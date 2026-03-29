@@ -116,6 +116,12 @@ export interface ComplaintOutput {
     __typename: 'ComplaintOutput'
 }
 
+export interface DiagnosisOutput {
+    uuid: Scalars['String']
+    name: Scalars['String']
+    __typename: 'DiagnosisOutput'
+}
+
 export interface Query {
     sayHello: Scalars['String']
     user_find: (UserOutput | null)
@@ -123,6 +129,7 @@ export interface Query {
     department_find: (DepartmentOutput | null)
     get_appointments: AppointmentOutput[]
     get_all_complaints: ComplaintOutput[]
+    get_all_diagnosis: DiagnosisOutput[]
     __typename: 'Query'
 }
 
@@ -259,6 +266,13 @@ export interface ComplaintOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface DiagnosisOutputGenqlSelection{
+    uuid?: boolean | number
+    name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
@@ -266,6 +280,7 @@ export interface QueryGenqlSelection{
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
     get_appointments?: (AppointmentOutputGenqlSelection & { __args: {data: GetAppointmentsInput} })
     get_all_complaints?: ComplaintOutputGenqlSelection
+    get_all_diagnosis?: DiagnosisOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -421,6 +436,14 @@ export interface AddAppointmentComplaintInput {appointment_uuid: Scalars['String
     export const isComplaintOutput = (obj?: { __typename?: any } | null): obj is ComplaintOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isComplaintOutput"')
       return ComplaintOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DiagnosisOutput_possibleTypes: string[] = ['DiagnosisOutput']
+    export const isDiagnosisOutput = (obj?: { __typename?: any } | null): obj is DiagnosisOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDiagnosisOutput"')
+      return DiagnosisOutput_possibleTypes.includes(obj.__typename)
     }
     
 

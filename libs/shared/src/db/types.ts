@@ -49,6 +49,12 @@ export interface AppointmentComplaint {
   note: string | null;
 }
 
+export interface AppointmentDiagnosis {
+  appointment_id: number;
+  diagnosis_id: number;
+  id: Generated<number>;
+}
+
 export interface Complaint {
   id: Generated<number>;
   name: string;
@@ -129,6 +135,7 @@ export interface DB {
   academic_record: AcademicRecord;
   appointment: Appointment;
   appointment_complaint: AppointmentComplaint;
+  appointment_diagnosis: AppointmentDiagnosis;
   complaint: Complaint;
   department: Department;
   diagnosis: Diagnosis;

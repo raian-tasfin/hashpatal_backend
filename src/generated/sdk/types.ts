@@ -6,8 +6,8 @@ export default {
         10,
         12,
         15,
-        34,
-        37
+        35,
+        38
     ],
     "types": {
         "TokenPair": {
@@ -234,6 +234,17 @@ export default {
                 1
             ]
         },
+        "DiagnosisOutput": {
+            "uuid": [
+                1
+            ],
+            "name": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "Query": {
             "sayHello": [
                 1
@@ -242,7 +253,7 @@ export default {
                 2,
                 {
                     "data": [
-                        20,
+                        21,
                         "FindUserInput!"
                     ]
                 }
@@ -254,7 +265,7 @@ export default {
                 7,
                 {
                     "data": [
-                        21,
+                        22,
                         "FindDepartmentInput!"
                     ]
                 }
@@ -263,13 +274,16 @@ export default {
                 8,
                 {
                     "data": [
-                        22,
+                        23,
                         "GetAppointmentsInput!"
                     ]
                 }
             ],
             "get_all_complaints": [
                 18
+            ],
+            "get_all_diagnosis": [
+                19
             ],
             "__typename": [
                 1
@@ -316,7 +330,7 @@ export default {
                 2,
                 {
                     "data": [
-                        24,
+                        25,
                         "RegisterInput!"
                     ]
                 }
@@ -325,7 +339,7 @@ export default {
                 0,
                 {
                     "data": [
-                        25,
+                        26,
                         "LoginInput!"
                     ]
                 }
@@ -334,7 +348,7 @@ export default {
                 0,
                 {
                     "data": [
-                        26,
+                        27,
                         "RefreshLoginInput!"
                     ]
                 }
@@ -343,7 +357,7 @@ export default {
                 12,
                 {
                     "data": [
-                        27,
+                        28,
                         "LogoutInput!"
                     ]
                 }
@@ -352,7 +366,7 @@ export default {
                 12,
                 {
                     "data": [
-                        28,
+                        29,
                         "SyncRolesInput!"
                     ]
                 }
@@ -361,7 +375,7 @@ export default {
                 12,
                 {
                     "data": [
-                        29,
+                        30,
                         "SyncProfileInput!"
                     ]
                 }
@@ -370,7 +384,7 @@ export default {
                 12,
                 {
                     "data": [
-                        32,
+                        33,
                         "AddDepartmentInput!"
                     ]
                 }
@@ -379,7 +393,7 @@ export default {
                 12,
                 {
                     "data": [
-                        33,
+                        34,
                         "ScheduleSyncInput!"
                     ]
                 }
@@ -388,7 +402,7 @@ export default {
                 12,
                 {
                     "data": [
-                        35,
+                        36,
                         "RoutineSyncInput!"
                     ]
                 }
@@ -397,7 +411,7 @@ export default {
                 12,
                 {
                     "data": [
-                        38,
+                        39,
                         "AddComplaintInput!"
                     ]
                 }
@@ -406,7 +420,7 @@ export default {
                 12,
                 {
                     "data": [
-                        39,
+                        40,
                         "AddAppointmentComplaintInput!"
                     ]
                 }
@@ -478,10 +492,10 @@ export default {
                 1
             ],
             "experience": [
-                30
+                31
             ],
             "academic": [
-                31
+                32
             ],
             "__typename": [
                 1
@@ -534,7 +548,7 @@ export default {
                 1
             ],
             "schedulable": [
-                34
+                35
             ],
             "minutes_per_slot": [
                 15
@@ -552,10 +566,10 @@ export default {
                 1
             ],
             "schedulable": [
-                34
+                35
             ],
             "slots": [
-                36
+                37
             ],
             "__typename": [
                 1
@@ -572,7 +586,7 @@ export default {
                 1
             ],
             "weekDay": [
-                37
+                38
             ],
             "__typename": [
                 1

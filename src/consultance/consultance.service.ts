@@ -2,11 +2,16 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   AppointmentStatusType,
   Complaint,
+  Diagnosis,
   KyselyDatabaseService,
 } from '@org/shared/db';
 import { UserService } from 'src/user';
 import { AddComplaintInput } from './input/add-complaint.input';
-import { AddAppointmentComplaintInput, AddDiagnosisInput } from './input';
+import {
+  AddAppointmentComplaintInput,
+  AddDiagnosisInput,
+  AddAppointmentDiagnosisInput,
+} from './input';
 import { ScheduleService } from 'src/schedule/schedule.service';
 
 @Injectable()
@@ -83,6 +88,43 @@ export class ConsultanceService {
     return true;
   }
 
+  async add_appointment_diagnosis({
+    appointment_uuid,
+    diagnosis_uuid,
+  }: AddAppointmentDiagnosisInput): Promise<boolean> {
+    // get appointment
+    const appointment =
+      await this._scheduleService.get_appointment_from_uuid(appointment_uuid);
+    if (!appointment) {
+      this._logger.error(`Appointment "${appointment_uuid}" not found.`);
+      return false;
+    }
+    const appointment_id = appointment.id;
+
+    // get diagnosis
+    const diagnosis = await this._get_diagnosis_from_uuid(diagnosis_uuid);
+    if (!diagnosis) {
+      this._logger.error(`Diagnosis "${diagnosis_uuid}" not found.`);
+      return false;
+    }
+    const diagnosis_id = diagnosis.id;
+
+    // try insertion
+    try {
+      await this._db
+        .insertInto('appointment_diagnosis')
+        .values({
+          appointment_id,
+          diagnosis_id,
+        })
+        .execute();
+      return true;
+    } catch (err) {
+      this._logger.error(err.msg);
+      return false;
+    }
+  }
+
   /**
    * Public Queries
    */
@@ -148,6 +190,34 @@ export class ConsultanceService {
     return await this._db.selectFrom('diagnosis').selectAll().execute();
   }
 
+  async get_appointment_diagnosis(
+    appointment_uuid: string,
+  ): Promise<Diagnosis[]> {
+    this._logger.log(
+      `Fetching diagnosis from appointment "${appointment_uuid}"`,
+    );
+    const appointment = await this._get_appointment_from_uuid(appointment_uuid);
+    if (!appointment) {
+      this._logger.error(`Appointment "${appointment_uuid}" not found.`);
+      return [];
+    }
+    try {
+      return await this._db
+        .selectFrom('appointment_diagnosis')
+        .innerJoin(
+          'diagnosis',
+          'diagnosis.id',
+          'appointment_diagnosis.diagnosis_id',
+        )
+        .select(['diagnosis.id', 'diagnosis.uuid', 'diagnosis.name'])
+        .where('appointment_diagnosis.appointment_id', '=', appointment.id)
+        .execute();
+    } catch (err) {
+      this._logger.error(err.msg);
+      return [];
+    }
+  }
+
   /**
    * Private utilities
    */
@@ -162,6 +232,14 @@ export class ConsultanceService {
   private async _get_appointment_from_uuid(uuid: string) {
     return await this._db
       .selectFrom('appointment')
+      .selectAll()
+      .where('uuid', '=', uuid)
+      .executeTakeFirst();
+  }
+
+  private async _get_diagnosis_from_uuid(uuid: string) {
+    return await this._db
+      .selectFrom('diagnosis')
       .selectAll()
       .where('uuid', '=', uuid)
       .executeTakeFirst();

@@ -201,3 +201,19 @@ export const diagnosis = pgTable('diagnosis', {
   uuid: uuid('uuid').defaultRandom().notNull().unique(),
   name: text('name').notNull().unique(),
 });
+
+export const appointment_diagnosis = pgTable(
+  'appointment_diagnosis',
+  {
+    id: serial('id').primaryKey(),
+    appointment_id: integer('appointment_id')
+      .notNull()
+      .references(() => appointment.id, { onDelete: 'cascade' }),
+    diagnosis_id: integer('diagnosis_id')
+      .notNull()
+      .references(() => diagnosis.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    unique('appointment_diagnosis_unique').on(t.appointment_id, t.diagnosis_id),
+  ],
+);

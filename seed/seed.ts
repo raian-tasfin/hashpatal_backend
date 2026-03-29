@@ -390,6 +390,77 @@ async function add_complaints_to_appointment(app: INestApplicationContext) {
   logger.log('Complaints added to appointment.');
 }
 
+async function add_diagnosis_to_appointment(app: INestApplicationContext) {
+  logger.log('Adding diagnosis to appointment...');
+
+  const consultanceService = app.get(ConsultanceService);
+  const scheduleService = app.get(ScheduleService);
+  const userService = app.get(UserService);
+  const doctorService = app.get(DoctorService);
+
+  // get first appointment
+  const patientEmail = 'patient@mail.com';
+  const patient = await userService.find({ email: patientEmail });
+  if (!patient) {
+    logger.error(`No account for patient "${patientEmail}"`);
+    return;
+  }
+
+  const doctorEmail = 'doctor@mail.com';
+  const doctor = await userService.find({ email: doctorEmail });
+  if (!doctor) {
+    logger.error(`No account for doctor "${doctorEmail}"`);
+    return;
+  }
+
+  const doctorProfile = await doctorService.get_profile(doctor.id);
+  if (!doctorProfile?.scheduleId) {
+    logger.error(`No schedule for "${doctorEmail}"`);
+    return;
+  }
+
+  const schedule = await scheduleService.get_schedule_from_id(
+    doctorProfile.scheduleId,
+  );
+  if (!schedule) {
+    logger.error(`No schedule found`);
+    return;
+  }
+
+  const appointments = await scheduleService.get_appointments({
+    scheduleUuid: schedule.uuid,
+    patientUuid: patient.uuid,
+  });
+  if (appointments.length === 0) {
+    logger.error(`No appointments found`);
+    return;
+  }
+  const firstAppointment = appointments[0];
+
+  // get first 2 diagnosis
+  const diagnosis = await consultanceService.get_all_diagnosis();
+  const first5 = diagnosis.slice(0, 5);
+  if (first5.length === 0) {
+    logger.error(`No complaints found`);
+    return;
+  }
+
+  for (const diagnosis of first5) {
+    try {
+      await consultanceService.add_appointment_diagnosis({
+        appointment_uuid: firstAppointment.uuid,
+        diagnosis_uuid: diagnosis.uuid,
+      });
+      logger.log(`Added diagnosis "${diagnosis.name}" to appointment`);
+    } catch (err) {
+      logger.error(
+        `Failed adding diagnosis "${diagnosis.name}": ${err.message}`,
+      );
+    }
+  }
+  logger.log('Diagnosis added to appointment.');
+}
+
 // async function create_doctor_profiles(app: INestApplicationContext) {
 //   const userService = app.get(UserService);
 //   const doctorService = app.get(DoctorService);
@@ -529,6 +600,7 @@ async function bootstrap() {
   await add_complaints_to_appointment(app);
 
   await add_diagnosis(app);
+  await add_diagnosis_to_appointment(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);
