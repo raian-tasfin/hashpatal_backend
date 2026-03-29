@@ -11,6 +11,7 @@ import {
   Department as DepartmentTable,
   Routine as RoutineTable,
   Complaint as ComplaintTable,
+  Diagnosis as DiagnosisTable,
 } from './types';
 
 export type AcademicRecord = Selectable<AcademicRecordTable>;
@@ -24,3 +25,4 @@ export type User = Selectable<UserTable>;
 export type UserRole = Selectable<UserRoleTable>;
 export type Routine = Selectable<RoutineTable>;
 export type Complaint = Selectable<ComplaintTable>;
+export type Diagnosis = Selectable<DiagnosisTable>;

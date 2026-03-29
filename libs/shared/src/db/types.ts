@@ -61,6 +61,12 @@ export interface Department {
   uuid: Generated<string>;
 }
 
+export interface Diagnosis {
+  id: Generated<number>;
+  name: string;
+  uuid: Generated<string>;
+}
+
 export interface DoctorExperience {
   doctor_profile_id: number;
   end_year: Timestamp | null;
@@ -125,6 +131,7 @@ export interface DB {
   appointment_complaint: AppointmentComplaint;
   complaint: Complaint;
   department: Department;
+  diagnosis: Diagnosis;
   doctor_experience: DoctorExperience;
   doctor_profile: DoctorProfile;
   refresh_token: RefreshToken;

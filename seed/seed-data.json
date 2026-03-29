@@ -207,5 +207,33 @@
     "Itching",
     "Skin lesion",
     "Dry skin"
+  ],
+  "diagnosis": [
+    "Upper Respiratory Tract Infection (URTI)",
+    "Acute Bronchitis",
+    "Allergic Rhinitis (Hay Fever)",
+    "Acute Sinusitis",
+    "Streptococcal Pharyngitis (Strep Throat)",
+    "Bronchial Asthma",
+    "Community-Acquired Pneumonia",
+    "Essential Hypertension (High Blood Pressure)",
+    "Type 2 Diabetes Mellitus",
+    "Hyperlipidemia (High Cholesterol)",
+    "Iron Deficiency Anemia",
+    "Gastroesophageal Reflux Disease (GERD)",
+    "Acute Low Back Pain",
+    "Osteoarthritis (specify joint in notes)",
+    "Muscle Strain / Sprain",
+    "Plantars Fasciitis",
+    "Rheumatoid Arthritis",
+    "Urinary Tract Infection (UTI)",
+    "Acute Gastroenteritis (Stomach Flu)",
+    "Viral Fever / Influenza",
+    "Otitis Media (Middle Ear Infection)",
+    "Conjunctivitis (Pink Eye)",
+    "Atopic Dermatitis (Eczema)",
+    "Contact Dermatitis",
+    "Tinea Corporis (Ringworm)",
+    "Acne Vulgaris"
   ]
 }

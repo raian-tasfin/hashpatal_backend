@@ -64,6 +64,7 @@ export interface AppointmentOutput {
     endTime: Scalars['String']
     status: AppointmentStatusType
     patient: (PatientOutput | null)
+    complaints: (ComplaintOutput[] | null)
     __typename: 'AppointmentOutput'
 }
 
@@ -109,12 +110,19 @@ export interface PreviousAppointmentOutput {
     __typename: 'PreviousAppointmentOutput'
 }
 
+export interface ComplaintOutput {
+    uuid: Scalars['String']
+    name: Scalars['String']
+    __typename: 'ComplaintOutput'
+}
+
 export interface Query {
     sayHello: Scalars['String']
     user_find: (UserOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
     department_find: (DepartmentOutput | null)
     get_appointments: AppointmentOutput[]
+    get_all_complaints: ComplaintOutput[]
     __typename: 'Query'
 }
 
@@ -128,6 +136,8 @@ export interface Mutation {
     department_add: Scalars['Boolean']
     schedule_sync: Scalars['Boolean']
     routine_sync: Scalars['Boolean']
+    add_complaint: Scalars['Boolean']
+    add_appointment_complaint: Scalars['Boolean']
     __typename: 'Mutation'
 }
 
@@ -194,6 +204,7 @@ export interface AppointmentOutputGenqlSelection{
     endTime?: boolean | number
     status?: boolean | number
     patient?: PatientOutputGenqlSelection
+    complaints?: ComplaintOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -241,12 +252,20 @@ export interface PreviousAppointmentOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface ComplaintOutputGenqlSelection{
+    uuid?: boolean | number
+    name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
     department_fetch_all?: DepartmentOutputGenqlSelection
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
     get_appointments?: (AppointmentOutputGenqlSelection & { __args: {data: GetAppointmentsInput} })
+    get_all_complaints?: ComplaintOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -267,6 +286,8 @@ export interface MutationGenqlSelection{
     department_add?: { __args: {data: AddDepartmentInput} }
     schedule_sync?: { __args: {data: ScheduleSyncInput} }
     routine_sync?: { __args: {data: RoutineSyncInput} }
+    add_complaint?: { __args: {data: AddComplaintInput} }
+    add_appointment_complaint?: { __args: {data: AddAppointmentComplaintInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -294,6 +315,10 @@ export interface ScheduleSyncInput {entityUuid: Scalars['String'],schedulable: S
 export interface RoutineSyncInput {entityUuid: Scalars['String'],schedulable: SchedulableType,slots: RoutineSlotInput[]}
 
 export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String'],endTime: Scalars['String'],weekDay: WeekDayType}
+
+export interface AddComplaintInput {name: Scalars['String']}
+
+export interface AddAppointmentComplaintInput {appointment_uuid: Scalars['String'],complaint_uuid: Scalars['String'],note?: (Scalars['String'] | null),days?: (Scalars['Int'] | null)}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']
@@ -388,6 +413,14 @@ export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String']
     export const isPreviousAppointmentOutput = (obj?: { __typename?: any } | null): obj is PreviousAppointmentOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isPreviousAppointmentOutput"')
       return PreviousAppointmentOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ComplaintOutput_possibleTypes: string[] = ['ComplaintOutput']
+    export const isComplaintOutput = (obj?: { __typename?: any } | null): obj is ComplaintOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isComplaintOutput"')
+      return ComplaintOutput_possibleTypes.includes(obj.__typename)
     }
     
 

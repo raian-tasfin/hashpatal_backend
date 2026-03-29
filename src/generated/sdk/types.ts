@@ -6,8 +6,8 @@ export default {
         10,
         12,
         15,
-        33,
-        36
+        34,
+        37
     ],
     "types": {
         "TokenPair": {
@@ -127,6 +127,9 @@ export default {
             "patient": [
                 16
             ],
+            "complaints": [
+                18
+            ],
             "__typename": [
                 1
             ]
@@ -220,6 +223,17 @@ export default {
                 1
             ]
         },
+        "ComplaintOutput": {
+            "uuid": [
+                1
+            ],
+            "name": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "Query": {
             "sayHello": [
                 1
@@ -228,7 +242,7 @@ export default {
                 2,
                 {
                     "data": [
-                        19,
+                        20,
                         "FindUserInput!"
                     ]
                 }
@@ -240,7 +254,7 @@ export default {
                 7,
                 {
                     "data": [
-                        20,
+                        21,
                         "FindDepartmentInput!"
                     ]
                 }
@@ -249,10 +263,13 @@ export default {
                 8,
                 {
                     "data": [
-                        21,
+                        22,
                         "GetAppointmentsInput!"
                     ]
                 }
+            ],
+            "get_all_complaints": [
+                18
             ],
             "__typename": [
                 1
@@ -299,7 +316,7 @@ export default {
                 2,
                 {
                     "data": [
-                        23,
+                        24,
                         "RegisterInput!"
                     ]
                 }
@@ -308,7 +325,7 @@ export default {
                 0,
                 {
                     "data": [
-                        24,
+                        25,
                         "LoginInput!"
                     ]
                 }
@@ -317,7 +334,7 @@ export default {
                 0,
                 {
                     "data": [
-                        25,
+                        26,
                         "RefreshLoginInput!"
                     ]
                 }
@@ -326,7 +343,7 @@ export default {
                 12,
                 {
                     "data": [
-                        26,
+                        27,
                         "LogoutInput!"
                     ]
                 }
@@ -335,7 +352,7 @@ export default {
                 12,
                 {
                     "data": [
-                        27,
+                        28,
                         "SyncRolesInput!"
                     ]
                 }
@@ -344,7 +361,7 @@ export default {
                 12,
                 {
                     "data": [
-                        28,
+                        29,
                         "SyncProfileInput!"
                     ]
                 }
@@ -353,7 +370,7 @@ export default {
                 12,
                 {
                     "data": [
-                        31,
+                        32,
                         "AddDepartmentInput!"
                     ]
                 }
@@ -362,7 +379,7 @@ export default {
                 12,
                 {
                     "data": [
-                        32,
+                        33,
                         "ScheduleSyncInput!"
                     ]
                 }
@@ -371,8 +388,26 @@ export default {
                 12,
                 {
                     "data": [
-                        34,
+                        35,
                         "RoutineSyncInput!"
+                    ]
+                }
+            ],
+            "add_complaint": [
+                12,
+                {
+                    "data": [
+                        38,
+                        "AddComplaintInput!"
+                    ]
+                }
+            ],
+            "add_appointment_complaint": [
+                12,
+                {
+                    "data": [
+                        39,
+                        "AddAppointmentComplaintInput!"
                     ]
                 }
             ],
@@ -443,10 +478,10 @@ export default {
                 1
             ],
             "experience": [
-                29
+                30
             ],
             "academic": [
-                30
+                31
             ],
             "__typename": [
                 1
@@ -499,7 +534,7 @@ export default {
                 1
             ],
             "schedulable": [
-                33
+                34
             ],
             "minutes_per_slot": [
                 15
@@ -517,10 +552,10 @@ export default {
                 1
             ],
             "schedulable": [
-                33
+                34
             ],
             "slots": [
-                35
+                36
             ],
             "__typename": [
                 1
@@ -537,12 +572,37 @@ export default {
                 1
             ],
             "weekDay": [
-                36
+                37
             ],
             "__typename": [
                 1
             ]
         },
-        "WeekDayType": {}
+        "WeekDayType": {},
+        "AddComplaintInput": {
+            "name": [
+                1
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "AddAppointmentComplaintInput": {
+            "appointment_uuid": [
+                1
+            ],
+            "complaint_uuid": [
+                1
+            ],
+            "note": [
+                1
+            ],
+            "days": [
+                15
+            ],
+            "__typename": [
+                1
+            ]
+        }
     }
 }

@@ -56,6 +56,7 @@ import {
 } from './output';
 import { ConsultanceService } from './consultance.service';
 import { AddAppointmentComplaintInput, AddComplaintInput } from './input';
+import { DiagnosisOutput } from './output/diagnosis.output';
 
 @Resolver(() => AppointmentOutput)
 export class AppointmentResolver {
@@ -129,5 +130,11 @@ export class ConsultanceResolver {
   async get_all_complaints(): Promise<ComplaintOutput[]> {
     const records = await this._consultanceService.get_all_complaints();
     return records.map(ComplaintOutput.from_model);
+  }
+
+  @Query(() => [DiagnosisOutput])
+  async get_all_diagnosis(): Promise<DiagnosisOutput[]> {
+    const records = await this._consultanceService.get_all_diagnosis();
+    return records.map(DiagnosisOutput.from_model);
   }
 }

@@ -128,6 +128,22 @@ async function add_complaints(app: INestApplicationContext) {
   logger.log(`Complaint population phase complete.`);
 }
 
+async function add_diagnosis(app: INestApplicationContext) {
+  const consultanceService = app.get(ConsultanceService);
+  logger.log('Adding diagnosis...');
+  for (const name of data.diagnosis) {
+    logger.log(`Adding diagnosis: ${name}`);
+    try {
+      const res = await consultanceService.add_diagnosis({ name });
+      if (!res) throw Error(`Failed adding diagnosis"${name}"`);
+    } catch (err) {
+      logger.log(`Skipping diagnosis: "${name}"`);
+      logger.error(err.message);
+    }
+  }
+  logger.log(`Diagnosis population phase complete.`);
+}
+
 /**
  * Just create an entry with user_id, department_id, experience, academic.
  */
@@ -511,6 +527,8 @@ async function bootstrap() {
 
   await add_complaints(app);
   await add_complaints_to_appointment(app);
+
+  await add_diagnosis(app);
 
   //   await create_doctor_schedules(app);
   //   await create_doctor_routines(app);

@@ -6,7 +6,7 @@ import {
 } from '@org/shared/db';
 import { UserService } from 'src/user';
 import { AddComplaintInput } from './input/add-complaint.input';
-import { AddAppointmentComplaintInput } from './input';
+import { AddAppointmentComplaintInput, AddDiagnosisInput } from './input';
 import { ScheduleService } from 'src/schedule/schedule.service';
 
 @Injectable()
@@ -73,6 +73,16 @@ export class ConsultanceService {
     }
   }
 
+  async add_diagnosis({ name }: AddDiagnosisInput): Promise<boolean> {
+    this._logger.log(`Adding diagnosis '${name}'`);
+    await this._db
+      .insertInto('diagnosis')
+      .values({ name })
+      .onConflict((x) => x.doNothing())
+      .execute();
+    return true;
+  }
+
   /**
    * Public Queries
    */
@@ -131,6 +141,11 @@ export class ConsultanceService {
       this._logger.error(err.msg);
       return [];
     }
+  }
+
+  async get_all_diagnosis(): Promise<Complaint[]> {
+    this._logger.log(`Fetching all diagnosis.`);
+    return await this._db.selectFrom('diagnosis').selectAll().execute();
   }
 
   /**

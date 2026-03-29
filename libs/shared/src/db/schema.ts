@@ -192,3 +192,12 @@ export const appointment_complaint = pgTable(
     unique('appointment_complaint_unique').on(t.appointment_id, t.complaint_id),
   ],
 );
+
+/**
+ * Diagnosis
+ */
+export const diagnosis = pgTable('diagnosis', {
+  id: serial('id').primaryKey(),
+  uuid: uuid('uuid').defaultRandom().notNull().unique(),
+  name: text('name').notNull().unique(),
+});
