@@ -15,6 +15,7 @@ import {
   user_sync_roles,
   user_find,
   doctor_sync_profile,
+  from_doctor_find_schedule_uuid,
 } from '@org/shared/api';
 import { RoleType } from '@org/shared/db';
 import { v4 as uuid4 } from 'uuid';
@@ -300,6 +301,18 @@ describe('End-to-End System Test', () => {
   });
 
   /**
-   * Query Doctor Profile/s
+   * Query Appointments
    */
+  it('Get Appointments: Success.', async () => {
+    // schedule uuid
+    const result = await from_doctor_find_schedule_uuid(sdk, {
+      email: 'doctor@mail.com',
+    });
+    // patient uuid
+    const scheduleUuid = result?.doctor_profile?.schedule?.uuid;
+    const { uuid: patientUuid } = await user_find(sdk, {
+      email: 'patient@mail.com',
+    });
+    // appointments
+  });
 });

@@ -38,6 +38,7 @@ export interface Appointment {
   shift: ShiftType;
   start_time: string;
   status: AppointmentStatusType;
+  uuid: Generated<string>;
 }
 
 export interface Department {

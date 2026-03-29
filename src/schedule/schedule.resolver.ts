@@ -4,16 +4,22 @@ import {
   Parent,
   ResolveField,
   Resolver,
+  Query,
 } from '@nestjs/graphql';
 import { ScheduleService } from './schedule.service';
 import { Inject, Logger } from '@nestjs/common';
 import {
+  AppointmentOutput,
   AvailableShiftOutput,
   AvailableSlotOutput,
   ScheduleOutput,
 } from './output';
 import { DoctorProfileOutput } from 'src/doctor/output';
-import { RoutineSyncInput, ScheduleSyncInput } from './input';
+import {
+  GetAppointmentsInput,
+  RoutineSyncInput,
+  ScheduleSyncInput,
+} from './input';
 
 @Resolver()
 export class ScheduleResolver {
@@ -62,6 +68,17 @@ export class ScheduleResolver {
   // ): Promise<boolean> {
   //   return await this._scheduleService.doctor_blocked_days_remove(data);
   // }
+
+  /**
+   * Queries
+   */
+  @Query(() => [AppointmentOutput])
+  async get_appointments(
+    @Args('data') data: GetAppointmentsInput,
+  ): Promise<AppointmentOutput[]> {
+    const res = await this._scheduleService.get_appointments(data);
+    return res.map(AppointmentOutput.from_model);
+  }
 }
 
 @Resolver(() => DoctorProfileOutput)

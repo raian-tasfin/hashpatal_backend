@@ -48,23 +48,25 @@ type DepartmentOutput {
   doctors: [UserOutput!]
 }
 
-type ScheduleOutput {
+type AppointmentOutput {
   uuid: String!
-  minutes_per_slot: Int!
-  max_booking_days: Int!
-  available_slots(date: String!): [AvailableSlotOutput!]!
-  available_shifts: [AvailableShiftOutput!]!
-}
-
-type AvailableSlotOutput {
+  date: String!
   shift: ShiftType!
   startTime: String!
   endTime: String!
+  status: AppointmentStatusType!
 }
 
 enum ShiftType {
   MORNING
   EVENING
+}
+
+enum AppointmentStatusType {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  DIDNTSHOW
 }
 
 type AvailableShiftOutput {
@@ -73,11 +75,26 @@ type AvailableShiftOutput {
   status: Boolean!
 }
 
+type AvailableSlotOutput {
+  shift: ShiftType!
+  startTime: String!
+  endTime: String!
+}
+
+type ScheduleOutput {
+  uuid: String!
+  minutes_per_slot: Int!
+  max_booking_days: Int!
+  available_slots(date: String!): [AvailableSlotOutput!]!
+  available_shifts: [AvailableShiftOutput!]!
+}
+
 type Query {
   sayHello: String!
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
+  get_appointments(data: GetAppointmentsInput!): [AppointmentOutput!]!
 }
 
 input FindUserInput {
@@ -87,6 +104,13 @@ input FindUserInput {
 
 input FindDepartmentInput {
   uuid: String!
+}
+
+input GetAppointmentsInput {
+  scheduleUuid: String
+  patientUuid: String
+  status: AppointmentStatusType
+  date: String
 }
 
 type Mutation {

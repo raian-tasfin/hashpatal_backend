@@ -110,6 +110,7 @@ export const appointment = pgTable('appointment', {
   patientId: integer('patient_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+  uuid: uuid('uuid').defaultRandom().notNull().unique(),
   date: date('date').notNull(),
   shift: shiftEnum('shift').notNull(),
   startTime: time('start_time').notNull(),

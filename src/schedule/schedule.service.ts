@@ -5,7 +5,7 @@
    We schedule for 15 min (or some number) time blocks. These are related to appointments.
    The slot list are generated from routines.
  */
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   AppointmentStatusType,
   KyselyDatabaseService,
@@ -16,7 +16,11 @@ import {
 } from '@org/shared/db';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { UserService } from 'src/user';
-import { RoutineSyncInput, ScheduleSyncInput } from './input';
+import {
+  GetAppointmentsInput,
+  RoutineSyncInput,
+  ScheduleSyncInput,
+} from './input';
 import { addDays, isAfter, parseISO, startOfToday, format } from 'date-fns';
 import { MakeAppointmentInput } from './input/make-appointment.input';
 
@@ -26,7 +30,6 @@ export class ScheduleService {
 
   constructor(
     @Inject(UserService) private readonly _userService: UserService,
-    @Inject(DoctorService) private readonly _doctorService: DoctorService,
     @Inject(KyselyDatabaseService) private readonly _db: KyselyDatabaseService,
   ) {}
 
@@ -100,6 +103,93 @@ export class ScheduleService {
           )
           .execute();
       }
+      return true;
+    });
+  }
+
+  async make_appointment({
+    scheduleUuid,
+    patientUuid,
+    date,
+    shift,
+  }: MakeAppointmentInput) {
+    // get schedule
+    const schedule = await this.get_schedule_from_uuid(scheduleUuid);
+    if (!schedule) {
+      this._logger.error(`Schedule "${scheduleUuid}" not found.`);
+      return false;
+    }
+    // get patient
+    const user = await this._userService.find({ uuid: patientUuid });
+    if (!user) {
+      this._logger.error(`Patient "${patientUuid}" not found.`);
+      return false;
+    }
+    return await this._db.transaction().execute(async (trx) => {
+      // validate date is within booking window
+      const targetDate = parseISO(date);
+      const maxDate = addDays(startOfToday(), schedule.max_booking_days);
+      if (isAfter(targetDate, maxDate)) {
+        this._logger.error(`Date "${date}" exceeds max booking window.`);
+        return false;
+      }
+      const weekDay = format(targetDate, 'EEEE').toUpperCase() as WeekDayType;
+      // get routine for this shift and weekday
+      const routine = await trx
+        .selectFrom('routine')
+        .selectAll()
+        .where('schedule_id', '=', schedule.id)
+        .where('week_day', '=', weekDay)
+        .where('shift', '=', shift as ShiftType)
+        .executeTakeFirst();
+      if (!routine) {
+        this._logger.error(`No routine for shift "${shift}" on "${weekDay}".`);
+        return false;
+      }
+      // find taken slots
+      const takenSlots = await trx
+        .selectFrom('appointment')
+        .select('start_time')
+        .where('schedule_id', '=', schedule.id)
+        .where('date', '=', date as any)
+        .where('shift', '=', shift as ShiftType)
+        .where('status', '=', AppointmentStatusType.SCHEDULED)
+        .execute();
+      const takenSet = new Set(takenSlots.map((s) => s.start_time));
+      // find first free slot
+      let current = this._timeToMinutes(routine.start_time);
+      const end = this._timeToMinutes(routine.end_time);
+      let assignedStart: string | null = null;
+      while (current + schedule.minutes_per_slot <= end) {
+        const startTime = this._minutesToTime(current);
+        if (!takenSet.has(startTime)) {
+          assignedStart = startTime;
+          break;
+        }
+        current += schedule.minutes_per_slot;
+      }
+      if (!assignedStart) {
+        this._logger.error(
+          `No available slots for shift "${shift}" on "${date}".`,
+        );
+        return false;
+      }
+      const startTime = assignedStart;
+      const endTime = this._minutesToTime(
+        this._timeToMinutes(assignedStart) + schedule.minutes_per_slot,
+      );
+      await trx
+        .insertInto('appointment')
+        .values({
+          schedule_id: schedule.id,
+          patient_id: user.id,
+          date: date as any,
+          shift: shift as ShiftType,
+          start_time: startTime,
+          end_time: endTime,
+          status: AppointmentStatusType.SCHEDULED,
+        })
+        .execute();
       return true;
     });
   }
@@ -237,91 +327,35 @@ export class ScheduleService {
     return results;
   }
 
-  async make_appointment({
+  async get_appointments({
     scheduleUuid,
     patientUuid,
+    status,
     date,
-    shift,
-  }: MakeAppointmentInput) {
-    // get schedule
-    const schedule = await this.get_schedule_from_uuid(scheduleUuid); // ← was missing await
-    if (!schedule) {
-      this._logger.error(`Schedule "${scheduleUuid}" not found.`);
-      return false;
+  }: GetAppointmentsInput) {
+    let query = this._db.selectFrom('appointment').selectAll();
+    if (scheduleUuid) {
+      const schedule = await this.get_schedule_from_uuid(scheduleUuid);
+      if (!schedule) return [];
+      query = query.where('schedule_id', '=', schedule.id);
     }
-    // get patient
-    const user = await this._userService.find({ uuid: patientUuid });
-    if (!user) {
-      this._logger.error(`Patient "${patientUuid}" not found.`);
-      return false;
+    if (patientUuid) {
+      const user = await this._userService.find({ uuid: patientUuid });
+      if (!user) return [];
+      query = query.where('patient_id', '=', user.id);
     }
-    return await this._db.transaction().execute(async (trx) => {
-      // validate date is within booking window
-      const targetDate = parseISO(date);
-      const maxDate = addDays(startOfToday(), schedule.max_booking_days);
-      if (isAfter(targetDate, maxDate)) {
-        this._logger.error(`Date "${date}" exceeds max booking window.`);
-        return false;
-      }
-      const weekDay = format(targetDate, 'EEEE').toUpperCase() as WeekDayType;
-      // get routine for this shift and weekday
-      const routine = await trx
-        .selectFrom('routine')
-        .selectAll()
-        .where('schedule_id', '=', schedule.id)
-        .where('week_day', '=', weekDay)
-        .where('shift', '=', shift as ShiftType)
-        .executeTakeFirst();
-      if (!routine) {
-        this._logger.error(`No routine for shift "${shift}" on "${weekDay}".`);
-        return false;
-      }
-      // find taken slots
-      const takenSlots = await trx
-        .selectFrom('appointment')
-        .select('start_time')
-        .where('schedule_id', '=', schedule.id)
-        .where('date', '=', date as any)
-        .where('shift', '=', shift as ShiftType)
-        .where('status', '=', AppointmentStatusType.SCHEDULED)
-        .execute();
-      const takenSet = new Set(takenSlots.map((s) => s.start_time));
-      // find first free slot
-      let current = this._timeToMinutes(routine.start_time);
-      const end = this._timeToMinutes(routine.end_time);
-      let assignedStart: string | null = null;
-      while (current + schedule.minutes_per_slot <= end) {
-        const startTime = this._minutesToTime(current);
-        if (!takenSet.has(startTime)) {
-          assignedStart = startTime;
-          break;
-        }
-        current += schedule.minutes_per_slot;
-      }
-      if (!assignedStart) {
-        this._logger.error(
-          `No available slots for shift "${shift}" on "${date}".`,
-        );
-        return false;
-      }
-      const startTime = assignedStart;
-      const endTime = this._minutesToTime(
-        this._timeToMinutes(assignedStart) + schedule.minutes_per_slot,
-      );
-      await trx
-        .insertInto('appointment')
-        .values({
-          schedule_id: schedule.id,
-          patient_id: user.id,
-          date: date as any,
-          shift: shift as ShiftType,
-          start_time: startTime,
-          end_time: endTime,
-          status: AppointmentStatusType.SCHEDULED,
-        })
-        .execute();
-      return true;
-    });
+    if (status) {
+      query = query.where('status', '=', status as AppointmentStatusType);
+    }
+    if (date) {
+      query = query.where('date', '=', date as any);
+    }
+    try {
+      return await query.execute();
+    } catch (err) {
+      this._logger.error(err.msg);
+      return [];
+    }
   }
 
   /**
