@@ -28,37 +28,6 @@ export interface UserOutput {
 
 export type RoleType = 'ADMIN' | 'DOCTOR' | 'LAB_NURSE' | 'LAB_TECHNICIAN' | 'PATIENT'
 
-export interface DoctorProfileOutput {
-    doctor_name: (Scalars['String'] | null)
-    experience: (DoctorExperienceOutput[] | null)
-    academic_record: (AcademicRecordOutput[] | null)
-    schedule: (ScheduleOutput | null)
-    __typename: 'DoctorProfileOutput'
-}
-
-export interface DoctorExperienceOutput {
-    startYear: (Scalars['String'] | null)
-    endYear: (Scalars['String'] | null)
-    location: Scalars['String']
-    organization: Scalars['String']
-    title: Scalars['String']
-    __typename: 'DoctorExperienceOutput'
-}
-
-export interface AcademicRecordOutput {
-    degree: Scalars['String']
-    institute: Scalars['String']
-    year: Scalars['String']
-    __typename: 'AcademicRecordOutput'
-}
-
-export interface DepartmentOutput {
-    uuid: Scalars['String']
-    name: Scalars['String']
-    doctors: (UserOutput[] | null)
-    __typename: 'DepartmentOutput'
-}
-
 export interface AppointmentOutput {
     uuid: Scalars['String']
     date: Scalars['String']
@@ -105,6 +74,45 @@ export interface MakeAppointmentOutput {
     date: Scalars['String']
     start_time: Scalars['String']
     __typename: 'MakeAppointmentOutput'
+}
+
+export interface MeOutput {
+    user: UserOutput
+    upcoming_appointments: Scalars['Int']
+    past_visits: Scalars['Int']
+    upcoming_appointment_list: AppointmentOutput[]
+    __typename: 'MeOutput'
+}
+
+export interface DoctorProfileOutput {
+    doctor_name: (Scalars['String'] | null)
+    experience: (DoctorExperienceOutput[] | null)
+    academic_record: (AcademicRecordOutput[] | null)
+    schedule: (ScheduleOutput | null)
+    __typename: 'DoctorProfileOutput'
+}
+
+export interface DoctorExperienceOutput {
+    startYear: (Scalars['String'] | null)
+    endYear: (Scalars['String'] | null)
+    location: Scalars['String']
+    organization: Scalars['String']
+    title: Scalars['String']
+    __typename: 'DoctorExperienceOutput'
+}
+
+export interface AcademicRecordOutput {
+    degree: Scalars['String']
+    institute: Scalars['String']
+    year: Scalars['String']
+    __typename: 'AcademicRecordOutput'
+}
+
+export interface DepartmentOutput {
+    uuid: Scalars['String']
+    name: Scalars['String']
+    doctors: (UserOutput[] | null)
+    __typename: 'DepartmentOutput'
 }
 
 export interface PatientOutput {
@@ -161,10 +169,11 @@ export type DurationUnitType = 'DAYS' | 'WEEKS'
 
 export interface Query {
     sayHello: Scalars['String']
-    me: (UserOutput | null)
+    me: (MeOutput | null)
     user_find: (UserOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
     department_find: (DepartmentOutput | null)
+    get_my_appointments: AppointmentOutput[]
     get_appointments: AppointmentOutput[]
     get_all_complaints: ComplaintOutput[]
     get_all_diagnosis: DiagnosisOutput[]
@@ -214,41 +223,6 @@ export interface UserOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
-export interface DoctorProfileOutputGenqlSelection{
-    doctor_name?: boolean | number
-    experience?: DoctorExperienceOutputGenqlSelection
-    academic_record?: AcademicRecordOutputGenqlSelection
-    schedule?: ScheduleOutputGenqlSelection
-    __typename?: boolean | number
-    __scalar?: boolean | number
-}
-
-export interface DoctorExperienceOutputGenqlSelection{
-    startYear?: boolean | number
-    endYear?: boolean | number
-    location?: boolean | number
-    organization?: boolean | number
-    title?: boolean | number
-    __typename?: boolean | number
-    __scalar?: boolean | number
-}
-
-export interface AcademicRecordOutputGenqlSelection{
-    degree?: boolean | number
-    institute?: boolean | number
-    year?: boolean | number
-    __typename?: boolean | number
-    __scalar?: boolean | number
-}
-
-export interface DepartmentOutputGenqlSelection{
-    uuid?: boolean | number
-    name?: boolean | number
-    doctors?: UserOutputGenqlSelection
-    __typename?: boolean | number
-    __scalar?: boolean | number
-}
-
 export interface AppointmentOutputGenqlSelection{
     uuid?: boolean | number
     date?: boolean | number
@@ -294,6 +268,50 @@ export interface ScheduleOutputGenqlSelection{
 export interface MakeAppointmentOutputGenqlSelection{
     date?: boolean | number
     start_time?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface MeOutputGenqlSelection{
+    user?: UserOutputGenqlSelection
+    upcoming_appointments?: boolean | number
+    past_visits?: boolean | number
+    upcoming_appointment_list?: AppointmentOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DoctorProfileOutputGenqlSelection{
+    doctor_name?: boolean | number
+    experience?: DoctorExperienceOutputGenqlSelection
+    academic_record?: AcademicRecordOutputGenqlSelection
+    schedule?: ScheduleOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DoctorExperienceOutputGenqlSelection{
+    startYear?: boolean | number
+    endYear?: boolean | number
+    location?: boolean | number
+    organization?: boolean | number
+    title?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AcademicRecordOutputGenqlSelection{
+    degree?: boolean | number
+    institute?: boolean | number
+    year?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DepartmentOutputGenqlSelection{
+    uuid?: boolean | number
+    name?: boolean | number
+    doctors?: UserOutputGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -352,10 +370,11 @@ export interface PrescriptionItemOutputGenqlSelection{
 
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
-    me?: UserOutputGenqlSelection
+    me?: MeOutputGenqlSelection
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
     department_fetch_all?: DepartmentOutputGenqlSelection
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
+    get_my_appointments?: (AppointmentOutputGenqlSelection & { __args?: {data?: (GetAppointmentsInput | null)} })
     get_appointments?: (AppointmentOutputGenqlSelection & { __args: {data: GetAppointmentsInput} })
     get_all_complaints?: ComplaintOutputGenqlSelection
     get_all_diagnosis?: DiagnosisOutputGenqlSelection
@@ -446,38 +465,6 @@ export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],m
     
 
 
-    const DoctorProfileOutput_possibleTypes: string[] = ['DoctorProfileOutput']
-    export const isDoctorProfileOutput = (obj?: { __typename?: any } | null): obj is DoctorProfileOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isDoctorProfileOutput"')
-      return DoctorProfileOutput_possibleTypes.includes(obj.__typename)
-    }
-    
-
-
-    const DoctorExperienceOutput_possibleTypes: string[] = ['DoctorExperienceOutput']
-    export const isDoctorExperienceOutput = (obj?: { __typename?: any } | null): obj is DoctorExperienceOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isDoctorExperienceOutput"')
-      return DoctorExperienceOutput_possibleTypes.includes(obj.__typename)
-    }
-    
-
-
-    const AcademicRecordOutput_possibleTypes: string[] = ['AcademicRecordOutput']
-    export const isAcademicRecordOutput = (obj?: { __typename?: any } | null): obj is AcademicRecordOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isAcademicRecordOutput"')
-      return AcademicRecordOutput_possibleTypes.includes(obj.__typename)
-    }
-    
-
-
-    const DepartmentOutput_possibleTypes: string[] = ['DepartmentOutput']
-    export const isDepartmentOutput = (obj?: { __typename?: any } | null): obj is DepartmentOutput => {
-      if (!obj?.__typename) throw new Error('__typename is missing in "isDepartmentOutput"')
-      return DepartmentOutput_possibleTypes.includes(obj.__typename)
-    }
-    
-
-
     const AppointmentOutput_possibleTypes: string[] = ['AppointmentOutput']
     export const isAppointmentOutput = (obj?: { __typename?: any } | null): obj is AppointmentOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentOutput"')
@@ -514,6 +501,46 @@ export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],m
     export const isMakeAppointmentOutput = (obj?: { __typename?: any } | null): obj is MakeAppointmentOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isMakeAppointmentOutput"')
       return MakeAppointmentOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MeOutput_possibleTypes: string[] = ['MeOutput']
+    export const isMeOutput = (obj?: { __typename?: any } | null): obj is MeOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMeOutput"')
+      return MeOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DoctorProfileOutput_possibleTypes: string[] = ['DoctorProfileOutput']
+    export const isDoctorProfileOutput = (obj?: { __typename?: any } | null): obj is DoctorProfileOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDoctorProfileOutput"')
+      return DoctorProfileOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DoctorExperienceOutput_possibleTypes: string[] = ['DoctorExperienceOutput']
+    export const isDoctorExperienceOutput = (obj?: { __typename?: any } | null): obj is DoctorExperienceOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDoctorExperienceOutput"')
+      return DoctorExperienceOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AcademicRecordOutput_possibleTypes: string[] = ['AcademicRecordOutput']
+    export const isAcademicRecordOutput = (obj?: { __typename?: any } | null): obj is AcademicRecordOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAcademicRecordOutput"')
+      return AcademicRecordOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DepartmentOutput_possibleTypes: string[] = ['DepartmentOutput']
+    export const isDepartmentOutput = (obj?: { __typename?: any } | null): obj is DepartmentOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDepartmentOutput"')
+      return DepartmentOutput_possibleTypes.includes(obj.__typename)
     }
     
 

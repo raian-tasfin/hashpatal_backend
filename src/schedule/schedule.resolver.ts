@@ -5,9 +5,10 @@ import {
   ResolveField,
   Resolver,
   Query,
+  Context,
 } from '@nestjs/graphql';
 import { ScheduleService } from './schedule.service';
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, Logger, UseGuards } from '@nestjs/common';
 import {
   AppointmentOutput,
   AvailableShiftOutput,
@@ -24,6 +25,7 @@ import {
 } from './input';
 import { UserService } from 'src/user';
 import { UserOutput } from 'src/user/output';
+import { GqlJwtAuthGuard } from '@org/shared/auth';
 
 @Resolver()
 export class ScheduleResolver {
@@ -83,6 +85,20 @@ export class ScheduleResolver {
   /**
    * Queries
    */
+  @UseGuards(GqlJwtAuthGuard)
+  @Query(() => [AppointmentOutput])
+  async get_my_appointments(
+    @Context() ctx: any,
+    @Args('data', { nullable: true }) data?: GetAppointmentsInput,
+  ): Promise<AppointmentOutput[]> {
+    const patientUuid = ctx.req.user.userId;
+    const res = await this._scheduleService.get_appointments({
+      ...data,
+      patientUuid,
+    });
+    return res.map(AppointmentOutput.from_model);
+  }
+
   @Query(() => [AppointmentOutput])
   async get_appointments(
     @Args('data') data: GetAppointmentsInput,

@@ -175,6 +175,7 @@ type Query {
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
+  get_my_appointments(data: GetAppointmentsInput): [AppointmentOutput!]!
   get_appointments(data: GetAppointmentsInput!): [AppointmentOutput!]!
   get_all_complaints: [ComplaintOutput!]!
   get_all_diagnosis: [DiagnosisOutput!]!
