@@ -85,8 +85,6 @@ type AvailableSlotOutput {
 
 type ScheduleOutput {
   uuid: String!
-  minutes_per_slot: Int!
-  max_booking_days: Int!
   available_slots(date: String!): [AvailableSlotOutput!]!
   available_shifts: [AvailableShiftOutput!]!
 }

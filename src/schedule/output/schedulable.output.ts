@@ -11,10 +11,10 @@ export class ScheduleOutput {
   @UuidField()
   uuid: string;
 
-  @IntegerField()
+  //   @IntegerField()
   minutes_per_slot: number;
 
-  @IntegerField()
+  //   @IntegerField()
   max_booking_days: number;
 
   static from_model(model: Schedule): ScheduleOutput {

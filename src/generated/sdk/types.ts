@@ -5,7 +5,7 @@ export default {
         9,
         10,
         12,
-        15,
+        16,
         20,
         23,
         24,
@@ -132,7 +132,7 @@ export default {
                 10
             ],
             "patient": [
-                16
+                15
             ],
             "complaints": [
                 18
@@ -182,12 +182,6 @@ export default {
             "uuid": [
                 1
             ],
-            "minutes_per_slot": [
-                15
-            ],
-            "max_booking_days": [
-                15
-            ],
             "available_slots": [
                 13,
                 {
@@ -204,7 +198,6 @@ export default {
                 1
             ]
         },
-        "Int": {},
         "PatientOutput": {
             "name": [
                 1
@@ -216,7 +209,7 @@ export default {
                 1
             ],
             "age": [
-                15
+                16
             ],
             "previous_appointments": [
                 17
@@ -225,6 +218,7 @@ export default {
                 1
             ]
         },
+        "Int": {},
         "PreviousAppointmentOutput": {
             "uuid": [
                 1
@@ -293,7 +287,7 @@ export default {
                 24
             ],
             "duration_value": [
-                15
+                16
             ],
             "duration_unit": [
                 25
@@ -650,10 +644,10 @@ export default {
                 41
             ],
             "minutes_per_slot": [
-                15
+                16
             ],
             "max_booking_days": [
-                15
+                16
             ],
             "__typename": [
                 1
@@ -722,7 +716,7 @@ export default {
                 1
             ],
             "days": [
-                15
+                16
             ],
             "__typename": [
                 1
@@ -770,7 +764,7 @@ export default {
                 24
             ],
             "duration_value": [
-                15
+                16
             ],
             "duration_unit": [
                 25

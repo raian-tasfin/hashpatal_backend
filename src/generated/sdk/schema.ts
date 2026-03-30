@@ -92,8 +92,6 @@ export interface AvailableSlotOutput {
 
 export interface ScheduleOutput {
     uuid: Scalars['String']
-    minutes_per_slot: Scalars['Int']
-    max_booking_days: Scalars['Int']
     available_slots: AvailableSlotOutput[]
     available_shifts: AvailableShiftOutput[]
     __typename: 'ScheduleOutput'
@@ -271,8 +269,6 @@ export interface AvailableSlotOutputGenqlSelection{
 
 export interface ScheduleOutputGenqlSelection{
     uuid?: boolean | number
-    minutes_per_slot?: boolean | number
-    max_booking_days?: boolean | number
     available_slots?: (AvailableSlotOutputGenqlSelection & { __args: {date: Scalars['String']} })
     available_shifts?: AvailableShiftOutputGenqlSelection
     __typename?: boolean | number
