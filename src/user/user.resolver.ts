@@ -18,7 +18,7 @@ import {
   RegisterInput,
   SyncRolesInput,
 } from './input';
-import { TokenPair, UserOutput } from './output';
+import { MeOutput, TokenPair, UserOutput } from './output';
 import { UserService } from './user.service';
 import { GqlJwtAuthGuard } from '@org/shared/auth';
 
@@ -64,13 +64,11 @@ export class UserResolver {
    * Queries
    */
   @UseGuards(GqlJwtAuthGuard)
-  @Query(() => UserOutput, { nullable: true })
-  async me(@Context() ctx: any): Promise<UserOutput | null> {
+  @Query(() => MeOutput, { nullable: true })
+  async me(@Context() ctx: any): Promise<MeOutput | null> {
     const uuid = ctx.req.user.userId;
-    const user = await this._userService.find({ uuid });
-    return user ? UserOutput.from_model(user) : null;
+    return await this._userService.me(uuid);
   }
-
   @Query(() => UserOutput, { nullable: true })
   async user_find(
     @Args('data') data: FindUserInput,

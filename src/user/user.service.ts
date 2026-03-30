@@ -8,7 +8,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { KyselyDatabaseService, RoleType, User } from '@org/shared/db';
+import {
+  AppointmentStatusType,
+  KyselyDatabaseService,
+  RoleType,
+  User,
+} from '@org/shared/db';
 import { DB } from '@org/shared/db/types';
 import { PasswordService } from '@org/shared/password';
 import { addDays } from 'date-fns';
@@ -22,7 +27,8 @@ import {
   RegisterInput,
   SyncRolesInput,
 } from './input';
-import { TokenPair } from './output';
+import { MeOutput, TokenPair, UserOutput } from './output';
+import { AppointmentOutput } from 'src/schedule/output';
 
 @Injectable()
 export class UserService {
@@ -73,6 +79,36 @@ export class UserService {
     const email = key.email ?? null;
     const uuid = key.uuid ?? null;
     return this._find_user_by_keys({ email, uuid }).executeTakeFirst();
+  }
+
+  async me(uuid: string): Promise<MeOutput | null> {
+    const user = await this.find({ uuid });
+    if (!user) return null;
+
+    const [upcoming, past] = await Promise.all([
+      this._get_appointments(user.id, AppointmentStatusType.SCHEDULED),
+      this._get_appointments(user.id, AppointmentStatusType.COMPLETED),
+    ]);
+
+    return {
+      user: UserOutput.from_model(user),
+      upcoming_appointments: upcoming.length,
+      past_visits: past.length,
+      upcoming_appointment_list: upcoming.map(AppointmentOutput.from_model),
+    };
+  }
+
+  private async _get_appointments(
+    userId: number,
+    status: AppointmentStatusType,
+  ) {
+    return await this._db
+      .selectFrom('appointment')
+      .selectAll()
+      .where('patient_id', '=', userId)
+      .where('status', '=', status)
+      .orderBy('date', 'asc')
+      .execute();
   }
 
   async login({ email, password }: LoginInput) {

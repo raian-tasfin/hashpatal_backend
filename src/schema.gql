@@ -24,33 +24,6 @@ enum RoleType {
   PATIENT
 }
 
-type DoctorProfileOutput {
-  doctor_name: String
-  experience: [DoctorExperienceOutput!]
-  academic_record: [AcademicRecordOutput!]
-  schedule: ScheduleOutput
-}
-
-type DoctorExperienceOutput {
-  startYear: String
-  endYear: String
-  location: String!
-  organization: String!
-  title: String!
-}
-
-type AcademicRecordOutput {
-  degree: String!
-  institute: String!
-  year: String!
-}
-
-type DepartmentOutput {
-  uuid: String!
-  name: String!
-  doctors: [UserOutput!]
-}
-
 type AppointmentOutput {
   uuid: String!
   date: String!
@@ -100,6 +73,40 @@ type ScheduleOutput {
 type MakeAppointmentOutput {
   date: String!
   start_time: String!
+}
+
+type MeOutput {
+  user: UserOutput!
+  upcoming_appointments: Int!
+  past_visits: Int!
+  upcoming_appointment_list: [AppointmentOutput!]!
+}
+
+type DoctorProfileOutput {
+  doctor_name: String
+  experience: [DoctorExperienceOutput!]
+  academic_record: [AcademicRecordOutput!]
+  schedule: ScheduleOutput
+}
+
+type DoctorExperienceOutput {
+  startYear: String
+  endYear: String
+  location: String!
+  organization: String!
+  title: String!
+}
+
+type AcademicRecordOutput {
+  degree: String!
+  institute: String!
+  year: String!
+}
+
+type DepartmentOutput {
+  uuid: String!
+  name: String!
+  doctors: [UserOutput!]
 }
 
 type PatientOutput {
@@ -164,7 +171,7 @@ enum DurationUnitType {
 
 type Query {
   sayHello: String!
-  me: UserOutput
+  me: MeOutput
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
