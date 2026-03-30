@@ -187,6 +187,7 @@ type Mutation {
   department_add(data: AddDepartmentInput!): Boolean!
   schedule_sync(data: ScheduleSyncInput!): Boolean!
   routine_sync(data: RoutineSyncInput!): Boolean!
+  set_appointment_status(data: SetAppointmentStatusInput!): Boolean!
   add_complaint(data: AddComplaintInput!): Boolean!
   add_appointment_complaint(data: AddAppointmentComplaintInput!): Boolean!
   add_appointment_diagnosis(data: AddAppointmentDiagnosisInput!): Boolean!
@@ -276,6 +277,11 @@ enum WeekDayType {
   WEDNESDAY
   THURSDAY
   FRIDAY
+}
+
+input SetAppointmentStatusInput {
+  uuid: String!
+  status: AppointmentStatusType!
 }
 
 input AddComplaintInput {

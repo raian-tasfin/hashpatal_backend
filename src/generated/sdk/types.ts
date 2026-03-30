@@ -467,11 +467,20 @@ export default {
                     ]
                 }
             ],
-            "add_complaint": [
+            "set_appointment_status": [
                 12,
                 {
                     "data": [
                         45,
+                        "SetAppointmentStatusInput!"
+                    ]
+                }
+            ],
+            "add_complaint": [
+                12,
+                {
+                    "data": [
+                        46,
                         "AddComplaintInput!"
                     ]
                 }
@@ -480,7 +489,7 @@ export default {
                 12,
                 {
                     "data": [
-                        46,
+                        47,
                         "AddAppointmentComplaintInput!"
                     ]
                 }
@@ -489,7 +498,7 @@ export default {
                 12,
                 {
                     "data": [
-                        47,
+                        48,
                         "AddAppointmentDiagnosisInput!"
                     ]
                 }
@@ -498,7 +507,7 @@ export default {
                 12,
                 {
                     "data": [
-                        48,
+                        49,
                         "AddMedicationInput!"
                     ]
                 }
@@ -507,7 +516,7 @@ export default {
                 12,
                 {
                     "data": [
-                        49,
+                        50,
                         "AddPrescriptionItemInput!"
                     ]
                 }
@@ -680,6 +689,17 @@ export default {
             ]
         },
         "WeekDayType": {},
+        "SetAppointmentStatusInput": {
+            "uuid": [
+                1
+            ],
+            "status": [
+                10
+            ],
+            "__typename": [
+                1
+            ]
+        },
         "AddComplaintInput": {
             "name": [
                 1

@@ -172,6 +172,7 @@ export interface Mutation {
     department_add: Scalars['Boolean']
     schedule_sync: Scalars['Boolean']
     routine_sync: Scalars['Boolean']
+    set_appointment_status: Scalars['Boolean']
     add_complaint: Scalars['Boolean']
     add_appointment_complaint: Scalars['Boolean']
     add_appointment_diagnosis: Scalars['Boolean']
@@ -357,6 +358,7 @@ export interface MutationGenqlSelection{
     department_add?: { __args: {data: AddDepartmentInput} }
     schedule_sync?: { __args: {data: ScheduleSyncInput} }
     routine_sync?: { __args: {data: RoutineSyncInput} }
+    set_appointment_status?: { __args: {data: SetAppointmentStatusInput} }
     add_complaint?: { __args: {data: AddComplaintInput} }
     add_appointment_complaint?: { __args: {data: AddAppointmentComplaintInput} }
     add_appointment_diagnosis?: { __args: {data: AddAppointmentDiagnosisInput} }
@@ -389,6 +391,8 @@ export interface ScheduleSyncInput {entityUuid: Scalars['String'],schedulable: S
 export interface RoutineSyncInput {entityUuid: Scalars['String'],schedulable: SchedulableType,slots: RoutineSlotInput[]}
 
 export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String'],endTime: Scalars['String'],weekDay: WeekDayType}
+
+export interface SetAppointmentStatusInput {uuid: Scalars['String'],status: AppointmentStatusType}
 
 export interface AddComplaintInput {name: Scalars['String']}
 

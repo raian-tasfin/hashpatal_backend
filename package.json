@@ -21,7 +21,9 @@
     "gql:gen": "pnpm genql --schema ./src/schema.gql --output ./src/generated/sdk",
     "test:e2e": "pnpm vitest run --config vitest.config.e2e.ts",
     "test:e2e:watch": "pnpm vitest --config vitest.config.e2e.ts",
-    "db:update": "pnpm db:push; pnpm db:gen; pnpm gql:gen; pnpm start:dev"
+    "db:update": "pnpm db:push; pnpm db:gen; pnpm gql:gen; pnpm start:dev",
+    "gql:gen:dev": "genql --endpoint http://localhost:4000/graphql --output ./src/generated/sdk",
+    "sdk:sync": "pnpm gql:gen && cp -r ./src/generated/sdk ../frontend/lib/sdk"
   },
   "dependencies": {
     "@apollo/server": "^5.4.0",
