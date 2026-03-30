@@ -21,7 +21,7 @@ export interface UserOutput {
     email: Scalars['String']
     birthDate: Scalars['String']
     name: Scalars['String']
-    user_roles: RoleType[]
+    user_roles: (RoleType[] | null)
     doctor_profile: (DoctorProfileOutput | null)
     __typename: 'UserOutput'
 }
@@ -108,6 +108,14 @@ export interface AcademicRecordOutput {
     __typename: 'AcademicRecordOutput'
 }
 
+export interface MyDoctorProfileOutput {
+    today_appointment_count: Scalars['Int']
+    total_patients: Scalars['Int']
+    completed_consultations: Scalars['Int']
+    today_appointments: AppointmentOutput[]
+    __typename: 'MyDoctorProfileOutput'
+}
+
 export interface DepartmentOutput {
     uuid: Scalars['String']
     name: Scalars['String']
@@ -171,6 +179,7 @@ export interface Query {
     sayHello: Scalars['String']
     me: (MeOutput | null)
     user_find: (UserOutput | null)
+    my_doctor_profile: (MyDoctorProfileOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
     department_find: (DepartmentOutput | null)
     get_my_appointments: AppointmentOutput[]
@@ -198,6 +207,7 @@ export interface Mutation {
     add_appointment_diagnosis: Scalars['Boolean']
     add_medication: Scalars['Boolean']
     add_prescription_item: Scalars['Boolean']
+    complete_consultation: Scalars['Boolean']
     __typename: 'Mutation'
 }
 
@@ -308,6 +318,15 @@ export interface AcademicRecordOutputGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface MyDoctorProfileOutputGenqlSelection{
+    today_appointment_count?: boolean | number
+    total_patients?: boolean | number
+    completed_consultations?: boolean | number
+    today_appointments?: AppointmentOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface DepartmentOutputGenqlSelection{
     uuid?: boolean | number
     name?: boolean | number
@@ -372,6 +391,7 @@ export interface QueryGenqlSelection{
     sayHello?: boolean | number
     me?: MeOutputGenqlSelection
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
+    my_doctor_profile?: MyDoctorProfileOutputGenqlSelection
     department_fetch_all?: DepartmentOutputGenqlSelection
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
     get_my_appointments?: (AppointmentOutputGenqlSelection & { __args?: {data?: (GetAppointmentsInput | null)} })
@@ -406,6 +426,7 @@ export interface MutationGenqlSelection{
     add_appointment_diagnosis?: { __args: {data: AddAppointmentDiagnosisInput} }
     add_medication?: { __args: {data: AddMedicationInput} }
     add_prescription_item?: { __args: {data: AddPrescriptionItemInput} }
+    complete_consultation?: { __args: {data: CompleteConsultationInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -447,6 +468,10 @@ export interface AddAppointmentDiagnosisInput {appointment_uuid: Scalars['String
 export interface AddMedicationInput {name: Scalars['String'],generic_name: Scalars['String'],dose_unit: Scalars['String'],food_relation: FoodRelationType}
 
 export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],medication_uuid: Scalars['String'],dose_quantity: Scalars['Float'],frequency: MedicationFrequencyType,duration_value: Scalars['Int'],duration_unit: DurationUnitType}
+
+export interface CompleteConsultationInput {appointment_uuid: Scalars['String'],complaint_uuids?: (Scalars['String'][] | null),diagnosis_uuids?: (Scalars['String'][] | null),prescription_items?: (PrescriptionItemDetailInput[] | null)}
+
+export interface PrescriptionItemDetailInput {medication_uuid: Scalars['String'],dose_quantity: Scalars['Float'],frequency: MedicationFrequencyType,duration_value: Scalars['Int'],duration_unit: DurationUnitType}
 
 
     const TokenPair_possibleTypes: string[] = ['TokenPair']
@@ -533,6 +558,14 @@ export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],m
     export const isAcademicRecordOutput = (obj?: { __typename?: any } | null): obj is AcademicRecordOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAcademicRecordOutput"')
       return AcademicRecordOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MyDoctorProfileOutput_possibleTypes: string[] = ['MyDoctorProfileOutput']
+    export const isMyDoctorProfileOutput = (obj?: { __typename?: any } | null): obj is MyDoctorProfileOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMyDoctorProfileOutput"')
+      return MyDoctorProfileOutput_possibleTypes.includes(obj.__typename)
     }
     
 

@@ -20,10 +20,13 @@ import {
   AddComplaintInput,
   AddMedicationInput,
   AddPrescriptionItemInput,
+  CompleteConsultationInput,
   SetAppointmentStatusInput,
 } from './input';
 import { DiagnosisOutput } from './output/diagnosis.output';
 import { PrescriptionItemOutput } from './output/prescription-item.output';
+import { UseGuards } from '@nestjs/common';
+import { GqlJwtAuthGuard } from '@org/shared/auth';
 
 @Resolver(() => AppointmentOutput)
 export class AppointmentResolver {
@@ -161,5 +164,13 @@ export class ConsultanceResolver {
   async get_all_medication(): Promise<MedicationOutput[]> {
     const records = await this._consultanceService.get_all_medication();
     return records.map(MedicationOutput.from_model);
+  }
+
+  @UseGuards(GqlJwtAuthGuard)
+  @Mutation(() => Boolean)
+  async complete_consultation(
+    @Args('data') data: CompleteConsultationInput,
+  ): Promise<boolean> {
+    return await this._consultanceService.complete_consultation(data);
   }
 }

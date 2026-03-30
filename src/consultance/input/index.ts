@@ -5,3 +5,5 @@ export * from './add-complaint.input';
 export * from './add-diagnosis.input';
 export * from './add-medication.input';
 export * from './set-appointment-status.input';
+export * from './prescription-item-detail.input';
+export * from './complete-consultation.input';

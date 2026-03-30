@@ -1,10 +1,12 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import {
   Args,
   Mutation,
   Parent,
   ResolveField,
   Resolver,
+  Query,
+  Context,
 } from '@nestjs/graphql';
 import { SyncProfileInput } from './input';
 import {
@@ -14,6 +16,9 @@ import {
 } from './output';
 import { UserOutput } from 'src/user/output';
 import { DoctorService } from './doctor.service';
+import { GqlJwtAuthGuard } from '@org/shared/auth';
+import { MyDoctorProfileOutput } from './output/my-doctor-profile.output';
+import { AppointmentOutput } from 'src/schedule/output';
 
 @Resolver(() => UserOutput)
 export class DoctorUserResolver {
@@ -35,6 +40,24 @@ export class DoctorUserResolver {
   @ResolveField(() => DoctorProfileOutput, { nullable: true })
   async doctor_profile(@Parent() user: UserOutput) {
     return await this._doctorService.get_profile(user.id);
+  }
+
+  @UseGuards(GqlJwtAuthGuard)
+  @Query(() => MyDoctorProfileOutput, { nullable: true })
+  async my_doctor_profile(
+    @Context() ctx: any,
+  ): Promise<MyDoctorProfileOutput | null> {
+    const uuid = ctx.req.user.userId;
+    const res = await this._doctorService.my_doctor_profile(uuid);
+    if (!res) return null;
+    return {
+      today_appointment_count: res.today_appointment_count,
+      total_patients: res.total_patients,
+      completed_consultations: res.completed_consultations,
+      today_appointments: res.today_appointments.map(
+        AppointmentOutput.from_model,
+      ),
+    };
   }
 }
 

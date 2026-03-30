@@ -18,6 +18,7 @@ import {
   AddMedicationInput,
   AddPrescriptionItemInput,
   SetAppointmentStatusInput,
+  CompleteConsultationInput,
 } from './input';
 import { ScheduleService } from 'src/schedule/schedule.service';
 
@@ -341,6 +342,43 @@ export class ConsultanceService {
       this._logger.error(err.msg);
       return [];
     }
+  }
+
+  async complete_consultation({
+    appointment_uuid,
+    complaint_uuids,
+    diagnosis_uuids,
+    prescription_items,
+  }: CompleteConsultationInput): Promise<boolean> {
+    // add complaints
+    if (complaint_uuids?.length) {
+      for (const complaint_uuid of complaint_uuids) {
+        await this.add_appointment_complaint({
+          appointment_uuid,
+          complaint_uuid,
+        });
+      }
+    }
+    // add diagnosis
+    if (diagnosis_uuids?.length) {
+      for (const diagnosis_uuid of diagnosis_uuids) {
+        await this.add_appointment_diagnosis({
+          appointment_uuid,
+          diagnosis_uuid,
+        });
+      }
+    }
+    // add prescription items
+    if (prescription_items?.length) {
+      for (const item of prescription_items) {
+        await this.add_prescription_item({ appointment_uuid, ...item });
+      }
+    }
+    // mark as completed
+    return await this.set_appointment_status({
+      uuid: appointment_uuid,
+      status: AppointmentStatusType.COMPLETED,
+    });
   }
 
   /**

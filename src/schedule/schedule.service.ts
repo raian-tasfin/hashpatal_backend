@@ -112,7 +112,7 @@ export class ScheduleService {
     patientUuid,
     date,
     shift,
-  }: MakeAppointmentInput) {
+  }: MakeAppointmentInput & { patientUuid: string }) {
     // get schedule
     const schedule = await this.get_schedule_from_uuid(scheduleUuid);
     if (!schedule) {
@@ -280,7 +280,7 @@ export class ScheduleService {
       .executeTakeFirst();
     if (!schedule) return [];
     // setup date range
-    const tomorrow = addDays(startOfToday(), 1);
+    const tomorrow = startOfToday();
     const maxDate = addDays(startOfToday(), schedule.max_booking_days);
     // setup result array
     const results: {

@@ -103,6 +103,13 @@ type AcademicRecordOutput {
   year: String!
 }
 
+type MyDoctorProfileOutput {
+  today_appointment_count: Int!
+  total_patients: Int!
+  completed_consultations: Int!
+  today_appointments: [AppointmentOutput!]!
+}
+
 type DepartmentOutput {
   uuid: String!
   name: String!
@@ -173,6 +180,7 @@ type Query {
   sayHello: String!
   me: MeOutput
   user_find(data: FindUserInput!): UserOutput
+  my_doctor_profile: MyDoctorProfileOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
   get_my_appointments(data: GetAppointmentsInput): [AppointmentOutput!]!
@@ -215,6 +223,7 @@ type Mutation {
   add_appointment_diagnosis(data: AddAppointmentDiagnosisInput!): Boolean!
   add_medication(data: AddMedicationInput!): Boolean!
   add_prescription_item(data: AddPrescriptionItemInput!): Boolean!
+  complete_consultation(data: CompleteConsultationInput!): Boolean!
 }
 
 input RegisterInput {
@@ -337,6 +346,21 @@ input AddMedicationInput {
 
 input AddPrescriptionItemInput {
   appointment_uuid: String!
+  medication_uuid: String!
+  dose_quantity: Float!
+  frequency: MedicationFrequencyType!
+  duration_value: Int!
+  duration_unit: DurationUnitType!
+}
+
+input CompleteConsultationInput {
+  appointment_uuid: String!
+  complaint_uuids: [String!]
+  diagnosis_uuids: [String!]
+  prescription_items: [PrescriptionItemDetailInput!]
+}
+
+input PrescriptionItemDetailInput {
   medication_uuid: String!
   dose_quantity: Float!
   frequency: MedicationFrequencyType!
