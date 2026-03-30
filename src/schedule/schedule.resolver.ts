@@ -98,6 +98,7 @@ export class DoctorScheduleResolver {
     @Parent()
     { scheduleId }: DoctorProfileOutput,
   ): Promise<ScheduleOutput | null> {
+    if (!scheduleId) return null;
     const res = await this._scheduleService.get_schedule_from_id(scheduleId);
     return res ? ScheduleOutput.from_model(res) : null;
   }

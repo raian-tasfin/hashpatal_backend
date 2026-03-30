@@ -48,6 +48,9 @@ export default {
         },
         "RoleType": {},
         "DoctorProfileOutput": {
+            "doctor_name": [
+                1
+            ],
             "experience": [
                 5
             ],

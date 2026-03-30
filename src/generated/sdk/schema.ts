@@ -28,6 +28,7 @@ export interface UserOutput {
 export type RoleType = 'ADMIN' | 'DOCTOR' | 'LAB_NURSE' | 'LAB_TECHNICIAN' | 'PATIENT'
 
 export interface DoctorProfileOutput {
+    doctor_name: (Scalars['String'] | null)
     experience: (DoctorExperienceOutput[] | null)
     academic_record: (AcademicRecordOutput[] | null)
     schedule: (ScheduleOutput | null)
@@ -203,6 +204,7 @@ export interface UserOutputGenqlSelection{
 }
 
 export interface DoctorProfileOutputGenqlSelection{
+    doctor_name?: boolean | number
     experience?: DoctorExperienceOutputGenqlSelection
     academic_record?: AcademicRecordOutputGenqlSelection
     schedule?: ScheduleOutputGenqlSelection

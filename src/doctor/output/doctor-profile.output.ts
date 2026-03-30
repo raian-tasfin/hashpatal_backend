@@ -1,15 +1,26 @@
 import { ObjectType } from '@nestjs/graphql';
 import { DoctorProfile } from '@org/shared/db';
-import { plainToInstance } from 'class-transformer';
+import { StringField } from '@org/shared/fields';
 
 @ObjectType()
 export class DoctorProfileOutput {
   id: number;
-  userId: number;
-  scheduleId: number;
-  department: number;
+  user_id: number;
+  scheduleId: number | null;
+  department_id: number | null;
 
-  static from_model(model: DoctorProfile): DoctorProfileOutput {
-    return plainToInstance(DoctorProfileOutput, model);
+  @StringField({ nullable: true })
+  doctor_name?: string;
+
+  static from_model(
+    model: DoctorProfile & { doctor_name?: string },
+  ): DoctorProfileOutput {
+    const out = new DoctorProfileOutput();
+    out.id = model.id;
+    out.user_id = model.user_id;
+    out.scheduleId = model.scheduleId;
+    out.department_id = model.department_id;
+    out.doctor_name = model.doctor_name;
+    return out;
   }
 }

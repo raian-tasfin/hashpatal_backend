@@ -117,11 +117,18 @@ export class DoctorService {
     }
   }
 
-  async get_profile(userId: number): Promise<DoctorProfile | undefined> {
+  async get_profile(userId: number) {
     return await this._db
       .selectFrom('doctor_profile')
-      .selectAll()
-      .where('user_id', '=', userId)
+      .innerJoin('user_account', 'user_account.id', 'doctor_profile.user_id')
+      .select([
+        'doctor_profile.id',
+        'doctor_profile.user_id',
+        'doctor_profile.scheduleId',
+        'doctor_profile.department_id',
+        'user_account.name as doctor_name',
+      ])
+      .where('doctor_profile.user_id', '=', userId)
       .executeTakeFirst();
   }
 

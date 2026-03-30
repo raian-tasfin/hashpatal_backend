@@ -20,6 +20,7 @@ enum RoleType {
 }
 
 type DoctorProfileOutput {
+  doctor_name: String
   experience: [DoctorExperienceOutput!]
   academic_record: [AcademicRecordOutput!]
   schedule: ScheduleOutput
