@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 import { DB } from './types';
+import fs from 'fs';
 
 @Injectable()
 export class KyselyDatabaseService
@@ -13,6 +14,10 @@ export class KyselyDatabaseService
       dialect: new PostgresDialect({
         pool: new Pool({
           connectionString: process.env.DB_URL,
+          ssl: {
+            ca: fs.readFileSync('certs/ca.pem', 'utf8'),
+            rejectUnauthorized: true,
+          },
         }),
       }),
     });
