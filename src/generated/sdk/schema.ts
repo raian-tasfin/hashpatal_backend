@@ -20,6 +20,7 @@ export interface UserOutput {
     uuid: Scalars['String']
     email: Scalars['String']
     birthDate: Scalars['String']
+    name: Scalars['String']
     user_roles: RoleType[]
     doctor_profile: (DoctorProfileOutput | null)
     __typename: 'UserOutput'
@@ -80,6 +81,8 @@ export interface AvailableShiftOutput {
     date: Scalars['String']
     shift: ShiftType
     status: Scalars['Boolean']
+    start_time: Scalars['String']
+    end_time: Scalars['String']
     __typename: 'AvailableShiftOutput'
 }
 
@@ -96,6 +99,12 @@ export interface ScheduleOutput {
     available_slots: AvailableSlotOutput[]
     available_shifts: AvailableShiftOutput[]
     __typename: 'ScheduleOutput'
+}
+
+export interface MakeAppointmentOutput {
+    date: Scalars['String']
+    start_time: Scalars['String']
+    __typename: 'MakeAppointmentOutput'
 }
 
 export interface PatientOutput {
@@ -152,6 +161,7 @@ export type DurationUnitType = 'DAYS' | 'WEEKS'
 
 export interface Query {
     sayHello: Scalars['String']
+    me: (UserOutput | null)
     user_find: (UserOutput | null)
     department_fetch_all: (DepartmentOutput[] | null)
     department_find: (DepartmentOutput | null)
@@ -172,6 +182,7 @@ export interface Mutation {
     department_add: Scalars['Boolean']
     schedule_sync: Scalars['Boolean']
     routine_sync: Scalars['Boolean']
+    make_appointment: (MakeAppointmentOutput | null)
     set_appointment_status: Scalars['Boolean']
     add_complaint: Scalars['Boolean']
     add_appointment_complaint: Scalars['Boolean']
@@ -196,6 +207,7 @@ export interface UserOutputGenqlSelection{
     uuid?: boolean | number
     email?: boolean | number
     birthDate?: boolean | number
+    name?: boolean | number
     user_roles?: boolean | number
     doctor_profile?: DoctorProfileOutputGenqlSelection
     __typename?: boolean | number
@@ -256,6 +268,8 @@ export interface AvailableShiftOutputGenqlSelection{
     date?: boolean | number
     shift?: boolean | number
     status?: boolean | number
+    start_time?: boolean | number
+    end_time?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -273,6 +287,13 @@ export interface ScheduleOutputGenqlSelection{
     max_booking_days?: boolean | number
     available_slots?: (AvailableSlotOutputGenqlSelection & { __args: {date: Scalars['String']} })
     available_shifts?: AvailableShiftOutputGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface MakeAppointmentOutputGenqlSelection{
+    date?: boolean | number
+    start_time?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -331,6 +352,7 @@ export interface PrescriptionItemOutputGenqlSelection{
 
 export interface QueryGenqlSelection{
     sayHello?: boolean | number
+    me?: UserOutputGenqlSelection
     user_find?: (UserOutputGenqlSelection & { __args: {data: FindUserInput} })
     department_fetch_all?: DepartmentOutputGenqlSelection
     department_find?: (DepartmentOutputGenqlSelection & { __args: {data: FindDepartmentInput} })
@@ -358,6 +380,7 @@ export interface MutationGenqlSelection{
     department_add?: { __args: {data: AddDepartmentInput} }
     schedule_sync?: { __args: {data: ScheduleSyncInput} }
     routine_sync?: { __args: {data: RoutineSyncInput} }
+    make_appointment?: (MakeAppointmentOutputGenqlSelection & { __args: {data: MakeAppointmentInput} })
     set_appointment_status?: { __args: {data: SetAppointmentStatusInput} }
     add_complaint?: { __args: {data: AddComplaintInput} }
     add_appointment_complaint?: { __args: {data: AddAppointmentComplaintInput} }
@@ -391,6 +414,8 @@ export interface ScheduleSyncInput {entityUuid: Scalars['String'],schedulable: S
 export interface RoutineSyncInput {entityUuid: Scalars['String'],schedulable: SchedulableType,slots: RoutineSlotInput[]}
 
 export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String'],endTime: Scalars['String'],weekDay: WeekDayType}
+
+export interface MakeAppointmentInput {scheduleUuid: Scalars['String'],patientUuid: Scalars['String'],date: Scalars['String'],shift: ShiftType}
 
 export interface SetAppointmentStatusInput {uuid: Scalars['String'],status: AppointmentStatusType}
 
@@ -481,6 +506,14 @@ export interface AddPrescriptionItemInput {appointment_uuid: Scalars['String'],m
     export const isScheduleOutput = (obj?: { __typename?: any } | null): obj is ScheduleOutput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isScheduleOutput"')
       return ScheduleOutput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MakeAppointmentOutput_possibleTypes: string[] = ['MakeAppointmentOutput']
+    export const isMakeAppointmentOutput = (obj?: { __typename?: any } | null): obj is MakeAppointmentOutput => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMakeAppointmentOutput"')
+      return MakeAppointmentOutput_possibleTypes.includes(obj.__typename)
     }
     
 

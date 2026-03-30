@@ -1,6 +1,6 @@
 import { ObjectType } from '@nestjs/graphql';
 import { DateField } from '@org/shared/date';
-import { BooleanField, ShiftField } from '@org/shared/fields';
+import { BooleanField, ShiftField, TimeField } from '@org/shared/fields';
 
 @ObjectType()
 export class AvailableShiftOutput {
@@ -12,4 +12,10 @@ export class AvailableShiftOutput {
 
   @BooleanField()
   status: boolean;
+
+  @TimeField()
+  start_time: string;
+
+  @TimeField()
+  end_time: string;
 }

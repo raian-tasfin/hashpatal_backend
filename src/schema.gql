@@ -11,6 +11,7 @@ type UserOutput {
   uuid: String!
   email: String!
   birthDate: String!
+  name: String!
   user_roles: [RoleType!]!
   doctor_profile: DoctorProfileOutput
 }
@@ -79,6 +80,8 @@ type AvailableShiftOutput {
   date: String!
   shift: ShiftType!
   status: Boolean!
+  start_time: String!
+  end_time: String!
 }
 
 type AvailableSlotOutput {
@@ -92,6 +95,11 @@ type ScheduleOutput {
   max_booking_days: Int!
   available_slots(date: String!): [AvailableSlotOutput!]!
   available_shifts: [AvailableShiftOutput!]!
+}
+
+type MakeAppointmentOutput {
+  date: String!
+  start_time: String!
 }
 
 type PatientOutput {
@@ -156,6 +164,7 @@ enum DurationUnitType {
 
 type Query {
   sayHello: String!
+  me: UserOutput
   user_find(data: FindUserInput!): UserOutput
   department_fetch_all: [DepartmentOutput!]
   department_find(data: FindDepartmentInput!): DepartmentOutput
@@ -191,6 +200,7 @@ type Mutation {
   department_add(data: AddDepartmentInput!): Boolean!
   schedule_sync(data: ScheduleSyncInput!): Boolean!
   routine_sync(data: RoutineSyncInput!): Boolean!
+  make_appointment(data: MakeAppointmentInput!): MakeAppointmentOutput
   set_appointment_status(data: SetAppointmentStatusInput!): Boolean!
   add_complaint(data: AddComplaintInput!): Boolean!
   add_appointment_complaint(data: AddAppointmentComplaintInput!): Boolean!
@@ -281,6 +291,13 @@ enum WeekDayType {
   WEDNESDAY
   THURSDAY
   FRIDAY
+}
+
+input MakeAppointmentInput {
+  scheduleUuid: String!
+  patientUuid: String!
+  date: String!
+  shift: ShiftType!
 }
 
 input SetAppointmentStatusInput {

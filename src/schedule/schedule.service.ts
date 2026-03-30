@@ -117,13 +117,13 @@ export class ScheduleService {
     const schedule = await this.get_schedule_from_uuid(scheduleUuid);
     if (!schedule) {
       this._logger.error(`Schedule "${scheduleUuid}" not found.`);
-      return false;
+      return null;
     }
     // get patient
     const user = await this._userService.find({ uuid: patientUuid });
     if (!user) {
       this._logger.error(`Patient "${patientUuid}" not found.`);
-      return false;
+      return null;
     }
     return await this._db.transaction().execute(async (trx) => {
       // validate date is within booking window
@@ -131,7 +131,7 @@ export class ScheduleService {
       const maxDate = addDays(startOfToday(), schedule.max_booking_days);
       if (isAfter(targetDate, maxDate)) {
         this._logger.error(`Date "${date}" exceeds max booking window.`);
-        return false;
+        return null;
       }
       const weekDay = format(targetDate, 'EEEE').toUpperCase() as WeekDayType;
       // get routine for this shift and weekday
@@ -144,7 +144,7 @@ export class ScheduleService {
         .executeTakeFirst();
       if (!routine) {
         this._logger.error(`No routine for shift "${shift}" on "${weekDay}".`);
-        return false;
+        return null;
       }
       // find taken slots
       const takenSlots = await trx
@@ -172,7 +172,7 @@ export class ScheduleService {
         this._logger.error(
           `No available slots for shift "${shift}" on "${date}".`,
         );
-        return false;
+        return null;
       }
       const startTime = assignedStart;
       const endTime = this._minutesToTime(
@@ -190,7 +190,7 @@ export class ScheduleService {
           status: AppointmentStatusType.SCHEDULED,
         })
         .execute();
-      return true;
+      return { date, start_time: startTime };
     });
   }
 
@@ -287,6 +287,8 @@ export class ScheduleService {
       date: string;
       shift: string;
       status: boolean;
+      start_time: string;
+      end_time: string;
     }[] = [];
     // we check each day
     let current = tomorrow;
@@ -319,6 +321,8 @@ export class ScheduleService {
         results.push({
           date,
           shift: routine.shift,
+          start_time: routine.start_time,
+          end_time: routine.end_time,
           status: bookedCount < capacity,
         });
       }

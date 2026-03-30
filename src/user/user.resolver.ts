@@ -1,6 +1,7 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import {
   Args,
+  Context,
   Mutation,
   Parent,
   Query,
@@ -19,6 +20,7 @@ import {
 } from './input';
 import { TokenPair, UserOutput } from './output';
 import { UserService } from './user.service';
+import { GqlJwtAuthGuard } from '@org/shared/auth';
 
 @Resolver(() => UserOutput)
 export class UserResolver {
@@ -61,6 +63,14 @@ export class UserResolver {
   /**
    * Queries
    */
+  @UseGuards(GqlJwtAuthGuard)
+  @Query(() => UserOutput, { nullable: true })
+  async me(@Context() ctx: any): Promise<UserOutput | null> {
+    const uuid = ctx.req.user.userId;
+    const user = await this._userService.find({ uuid });
+    return user ? UserOutput.from_model(user) : null;
+  }
+
   @Query(() => UserOutput, { nullable: true })
   async user_find(
     @Args('data') data: FindUserInput,

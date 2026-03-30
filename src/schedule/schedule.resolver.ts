@@ -12,11 +12,13 @@ import {
   AppointmentOutput,
   AvailableShiftOutput,
   AvailableSlotOutput,
+  MakeAppointmentOutput,
   ScheduleOutput,
 } from './output';
 import { DoctorProfileOutput } from 'src/doctor/output';
 import {
   GetAppointmentsInput,
+  MakeAppointmentInput,
   RoutineSyncInput,
   ScheduleSyncInput,
 } from './input';
@@ -41,6 +43,13 @@ export class ScheduleResolver {
   @Mutation(() => Boolean)
   async routine_sync(@Args('data') data: RoutineSyncInput): Promise<boolean> {
     return await this._scheduleService.routine_sync(data);
+  }
+
+  @Mutation(() => MakeAppointmentOutput, { nullable: true })
+  async make_appointment(
+    @Args('data') data: MakeAppointmentInput,
+  ): Promise<MakeAppointmentOutput | null> {
+    return await this._scheduleService.make_appointment(data);
   }
 
   // @Mutation(() => Boolean)

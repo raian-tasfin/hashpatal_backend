@@ -1,13 +1,12 @@
 import { ObjectType } from '@nestjs/graphql';
 import { DateField, format_date } from '@org/shared/date';
 import { User } from '@org/shared/db';
-import { EmailField, UuidField } from '@org/shared/fields';
+import { EmailField, StringField, UuidField } from '@org/shared/fields';
 import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
 export class UserOutput {
   id: number;
-  name: string;
 
   @UuidField()
   uuid: string;
@@ -17,6 +16,9 @@ export class UserOutput {
 
   @DateField()
   birthDate: string;
+
+  @StringField()
+  name: string;
 
   static from_model(model: User): UserOutput {
     const out = new UserOutput();
