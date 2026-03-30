@@ -8,10 +8,6 @@ export class MakeAppointmentInput {
   @UuidField()
   scheduleUuid: string;
 
-  // patient
-  @UuidField()
-  patientUuid: string;
-
   // shift
   @DateField()
   date: string;
