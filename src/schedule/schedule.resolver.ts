@@ -47,11 +47,17 @@ export class ScheduleResolver {
     return await this._scheduleService.routine_sync(data);
   }
 
+  @UseGuards(GqlJwtAuthGuard)
   @Mutation(() => MakeAppointmentOutput, { nullable: true })
   async make_appointment(
     @Args('data') data: MakeAppointmentInput,
+    @Context() ctx: any,
   ): Promise<MakeAppointmentOutput | null> {
-    return await this._scheduleService.make_appointment(data);
+    const patientUuid = ctx.req.user.userId;
+    return await this._scheduleService.make_appointment({
+      ...data,
+      patientUuid,
+    });
   }
 
   // @Mutation(() => Boolean)
