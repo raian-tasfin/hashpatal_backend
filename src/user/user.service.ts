@@ -85,13 +85,17 @@ export class UserService {
     const user = await this.find({ uuid });
     if (!user) return null;
 
-    const [upcoming, past] = await Promise.all([
+    const [upcoming, past, roles] = await Promise.all([
       this._get_appointments(user.id, AppointmentStatusType.SCHEDULED),
       this._get_appointments(user.id, AppointmentStatusType.COMPLETED),
+      this._find_roles(user.id),
     ]);
 
+    const userOutput = UserOutput.from_model(user);
+    userOutput.user_roles = roles;
+
     return {
-      user: UserOutput.from_model(user),
+      user: userOutput,
       upcoming_appointments: upcoming.length,
       past_visits: past.length,
       upcoming_appointment_list: upcoming.map(AppointmentOutput.from_model),

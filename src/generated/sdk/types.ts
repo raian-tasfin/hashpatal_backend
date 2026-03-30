@@ -750,9 +750,6 @@ export default {
             "scheduleUuid": [
                 1
             ],
-            "patientUuid": [
-                1
-            ],
             "date": [
                 1
             ],

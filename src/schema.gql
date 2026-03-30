@@ -12,7 +12,7 @@ type UserOutput {
   email: String!
   birthDate: String!
   name: String!
-  user_roles: [RoleType!]!
+  user_roles: [RoleType!]
   doctor_profile: DoctorProfileOutput
 }
 

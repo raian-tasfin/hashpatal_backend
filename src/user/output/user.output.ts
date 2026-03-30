@@ -1,8 +1,7 @@
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { DateField, format_date } from '@org/shared/date';
-import { User } from '@org/shared/db';
+import { RoleType, User } from '@org/shared/db';
 import { EmailField, StringField, UuidField } from '@org/shared/fields';
-import { plainToInstance } from 'class-transformer';
 
 @ObjectType()
 export class UserOutput {
@@ -19,6 +18,9 @@ export class UserOutput {
 
   @StringField()
   name: string;
+
+  @Field(() => [RoleType], { nullable: true })
+  user_roles?: RoleType[];
 
   static from_model(model: User): UserOutput {
     const out = new UserOutput();

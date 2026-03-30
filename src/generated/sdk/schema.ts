@@ -434,7 +434,7 @@ export interface RoutineSyncInput {entityUuid: Scalars['String'],schedulable: Sc
 
 export interface RoutineSlotInput {shift: ShiftType,startTime: Scalars['String'],endTime: Scalars['String'],weekDay: WeekDayType}
 
-export interface MakeAppointmentInput {scheduleUuid: Scalars['String'],patientUuid: Scalars['String'],date: Scalars['String'],shift: ShiftType}
+export interface MakeAppointmentInput {scheduleUuid: Scalars['String'],date: Scalars['String'],shift: ShiftType}
 
 export interface SetAppointmentStatusInput {uuid: Scalars['String'],status: AppointmentStatusType}
 

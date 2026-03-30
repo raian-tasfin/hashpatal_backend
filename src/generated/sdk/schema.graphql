@@ -299,7 +299,6 @@ enum WeekDayType {
 
 input MakeAppointmentInput {
   scheduleUuid: String!
-  patientUuid: String!
   date: String!
   shift: ShiftType!
 }
