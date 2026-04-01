@@ -42,7 +42,7 @@ export class UserService {
     @Inject(JwtService) private readonly _jwtService: JwtService,
   ) {}
 
-  async register(data: RegisterInput): Promise<User> {
+  async register(data: RegisterInput): Promise<boolean> {
     const { email, password, name, birthDate } = data;
     this._logger.log(`Registering user with email ${email}, name: ${name}`);
     const password_hash = await this._passwordService.hash(password);
@@ -63,7 +63,7 @@ export class UserService {
           .insertInto('user_role')
           .values({ user_id: newUser.id, role: RoleType.PATIENT })
           .executeTakeFirstOrThrow();
-        return newUser;
+        return true;
       });
     } catch (err: any) {
       this._logger.warn(`${err.message}`);

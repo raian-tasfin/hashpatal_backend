@@ -455,7 +455,7 @@ export default {
         },
         "Mutation": {
             "user_register": [
-                2,
+                8,
                 {
                     "data": [
                         34,

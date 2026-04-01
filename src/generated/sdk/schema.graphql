@@ -203,7 +203,7 @@ input GetAppointmentsInput {
 }
 
 type Mutation {
-  user_register(data: RegisterInput!): UserOutput!
+  user_register(data: RegisterInput!): Boolean!
   user_login(data: LoginInput!): TokenPair!
   user_refresh_token(data: RefreshLoginInput!): TokenPair!
   user_logout(data: LogoutInput!): Boolean!

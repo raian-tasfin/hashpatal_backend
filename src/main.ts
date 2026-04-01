@@ -11,12 +11,8 @@ async function bootstrap() {
   apply_global_config(app);
   app.enableCors();
   const configService = app.get(ConfigService);
-  //   const port = configService.get<number>('APP_PORT') as number;
-  const port =
-    process.env.PORT ||
-    (configService.get<number>('APP_PORT') as number) ||
-    4000;
-  await app.listen(port, '0.0.0.0');
+  const port = configService.get<number>('APP_PORT') as number;
+  await app.listen(port);
 }
 
 bootstrap();

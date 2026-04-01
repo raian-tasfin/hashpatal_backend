@@ -191,7 +191,7 @@ export interface Query {
 }
 
 export interface Mutation {
-    user_register: UserOutput
+    user_register: Scalars['Boolean']
     user_login: TokenPair
     user_refresh_token: TokenPair
     user_logout: Scalars['Boolean']
@@ -410,7 +410,7 @@ export interface FindDepartmentInput {uuid: Scalars['String']}
 export interface GetAppointmentsInput {scheduleUuid?: (Scalars['String'] | null),patientUuid?: (Scalars['String'] | null),status?: (AppointmentStatusType | null),date?: (Scalars['String'] | null)}
 
 export interface MutationGenqlSelection{
-    user_register?: (UserOutputGenqlSelection & { __args: {data: RegisterInput} })
+    user_register?: { __args: {data: RegisterInput} }
     user_login?: (TokenPairGenqlSelection & { __args: {data: LoginInput} })
     user_refresh_token?: (TokenPairGenqlSelection & { __args: {data: RefreshLoginInput} })
     user_logout?: { __args: {data: LogoutInput} }
