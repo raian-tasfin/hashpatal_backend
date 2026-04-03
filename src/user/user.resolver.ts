@@ -1,4 +1,4 @@
-import { Inject, UseGuards } from '@nestjs/common';
+import { Inject, Logger, UseGuards } from '@nestjs/common';
 import {
   Args,
   Context,
@@ -24,6 +24,8 @@ import { GqlJwtAuthGuard } from '@org/shared/auth';
 
 @Resolver(() => UserOutput)
 export class UserResolver {
+  private readonly _logger = new Logger(UserResolver.name);
+
   constructor(
     @Inject(UserService) private readonly _userService: UserService,
   ) {}
@@ -68,7 +70,10 @@ export class UserResolver {
   @Query(() => MeOutput, { nullable: true })
   async me(@Context() ctx: any): Promise<MeOutput | null> {
     const uuid = ctx.req.user.userId;
-    return await this._userService.me(uuid);
+    this._logger.log(`Called me with ${uuid}`);
+    const res = await this._userService.me(uuid);
+    this._logger.log(res);
+    return res;
   }
   @Query(() => UserOutput, { nullable: true })
   async user_find(

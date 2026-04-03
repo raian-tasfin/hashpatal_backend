@@ -82,6 +82,7 @@ export class UserService {
   }
 
   async me(uuid: string): Promise<MeOutput | null> {
+    this._logger.log(`Called me with ${uuid}`);
     const user = await this.find({ uuid });
     if (!user) return null;
 
@@ -94,12 +95,18 @@ export class UserService {
     const userOutput = UserOutput.from_model(user);
     userOutput.user_roles = roles;
 
-    return {
+    const res = {
       user: userOutput,
       upcoming_appointments: upcoming.length,
       past_visits: past.length,
       upcoming_appointment_list: upcoming.map(AppointmentOutput.from_model),
     };
+    this._logger.log(`Found ${res}`);
+    this._logger.log(`Found ${res.user}`);
+    this._logger.log(`Found ${res.upcoming_appointments}`);
+    this._logger.log(`Found ${res.past_visits}`);
+
+    return res;
   }
 
   private async _get_appointments(

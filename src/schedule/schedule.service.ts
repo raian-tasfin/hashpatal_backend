@@ -280,7 +280,7 @@ export class ScheduleService {
       .executeTakeFirst();
     if (!schedule) return [];
     // setup date range
-    const tomorrow = startOfToday();
+    const startDate = startOfToday();
     const maxDate = addDays(startOfToday(), schedule.max_booking_days);
     // setup result array
     const results: {
@@ -291,7 +291,7 @@ export class ScheduleService {
       end_time: string;
     }[] = [];
     // we check each day
-    let current = tomorrow;
+    let current = startDate;
     while (!isAfter(current, maxDate)) {
       // fetch routine
       const date = format(current, 'yyyy-MM-dd');

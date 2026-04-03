@@ -172,6 +172,12 @@
           "shift": "EVENING",
           "startTime": "14:30",
           "endTime": "19:00"
+        },
+        {
+          "weekDay": "FRIDAY",
+          "shift": "EVENING",
+          "startTime": "14:30",
+          "endTime": "19:00"
         }
       ]
     }
