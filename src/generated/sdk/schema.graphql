@@ -172,6 +172,27 @@ enum DurationUnitType {
   WEEKS
 }
 
+type AdminDashboardOutput {
+  count_active_doctors: Int!
+  count_scheduled_appointments: Int!
+  count_completed_appointments_today: Int!
+}
+
+type UserListItemOutput {
+  uuid: String!
+  name: String!
+  email: String!
+  roles: [RoleType!]!
+}
+
+type DoctorListItemOutput {
+  uuid: String!
+  name: String!
+  email: String!
+  department_uuid: String
+  department_name: String
+}
+
 type Query {
   sayHello: String!
   me: MeOutput
@@ -184,6 +205,9 @@ type Query {
   get_all_complaints: [ComplaintOutput!]!
   get_all_diagnosis: [DiagnosisOutput!]!
   get_all_medication: [MedicationOutput!]!
+  admin_dashboard: AdminDashboardOutput!
+  admin_get_all_users: [UserListItemOutput!]!
+  admin_get_all_doctors: [DoctorListItemOutput!]!
 }
 
 input FindUserInput {
@@ -220,6 +244,7 @@ type Mutation {
   add_medication(data: AddMedicationInput!): Boolean!
   add_prescription_item(data: AddPrescriptionItemInput!): Boolean!
   complete_consultation(data: CompleteConsultationInput!): Boolean!
+  admin_assign_doctor_department(doctorUuid: String!, departmentUuid: String): Boolean!
 }
 
 input RegisterInput {

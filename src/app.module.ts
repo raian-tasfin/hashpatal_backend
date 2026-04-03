@@ -16,6 +16,7 @@ import { DoctorModule } from './doctor/doctor.module';
 import { DepartmentModule } from './department/department.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { ConsultanceModule } from './consultance/consultance.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ConsultanceModule } from './consultance/consultance.module';
     DepartmentModule,
     ScheduleModule,
     ConsultanceModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

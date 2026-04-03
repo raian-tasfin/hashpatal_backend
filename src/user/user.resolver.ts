@@ -35,7 +35,6 @@ export class UserResolver {
    */
   @Mutation(() => Boolean)
   async user_register(@Args('data') data: RegisterInput): Promise<boolean> {
-    //     return UserOutput.from_model(await this._userService.register(data));
     return await this._userService.register(data);
   }
 
